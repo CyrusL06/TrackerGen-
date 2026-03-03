@@ -1,9 +1,10 @@
 import React from "react";
 import { cn } from "../../lib/utils";
 
-export function Card({ children, className = "" }) {
+export function Card({ children, className = "", style }) {
   return (
     <article
+      style={style}
       className={cn(
         "rounded-xl border border-[rgba(148,163,184,0.2)] bg-[linear-gradient(180deg,rgba(9,14,28,0.9),rgba(4,8,20,0.9))] shadow-[0_12px_28px_rgba(2,6,23,0.35)]",
         className,

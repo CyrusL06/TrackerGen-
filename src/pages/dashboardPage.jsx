@@ -87,6 +87,12 @@ export default function DashboardPage() {
             },
             options: {
               cutout: "56%",
+              animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 1100,
+                easing: "easeOutQuart",
+              },
               plugins: {
                 legend: { display: false },
                 tooltip: { enabled: true },
@@ -119,6 +125,10 @@ export default function DashboardPage() {
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              animation: {
+                duration: 1200,
+                easing: "easeOutQuart",
+              },
               scales: {
                 y: {
                   beginAtZero: true,
@@ -154,7 +164,7 @@ export default function DashboardPage() {
   return (
     <section className="dashboard-shell">
       <div className="dashboard-wrap">
-        <header className="dashboard-header">
+        <header className="dashboard-header motion-rise motion-delay-1">
           <div>
             <h1>Income and Expense Tracker</h1>
             <p>Take control of your finances</p>
@@ -169,7 +179,7 @@ export default function DashboardPage() {
         </header>
 
         <div className="dashboard-layout">
-          <aside className="dashboard-sidebar">
+          <aside className="dashboard-sidebar motion-rise motion-delay-2">
             <div className="dashboard-avatar">
               <span />
             </div>
@@ -179,7 +189,7 @@ export default function DashboardPage() {
               {menuItems.map((item) => (
                 <button
                   key={item.id}
-                  className={`dashboard-nav-item ${item.active ? "active" : ""}`}
+                  className={`dashboard-nav-item ${item.active ? "active" : ""} panel-hover`}
                   type="button"
                 >
                   <span className="dashboard-dot" />
@@ -193,10 +203,14 @@ export default function DashboardPage() {
             </UIButton>
           </aside>
 
-          <main className="dashboard-main">
+          <main className="dashboard-main motion-rise motion-delay-3">
             <div className="dashboard-stats">
-              {statCards.map((item) => (
-                <Card key={item.id}>
+              {statCards.map((item, index) => (
+                <Card
+                  key={item.id}
+                  className="panel-hover motion-rise"
+                  style={{ animationDelay: `${0.4 + index * 0.08}s` }}
+                >
                   <CardHeader>
                     <CardTitle>{item.title}</CardTitle>
                   </CardHeader>
@@ -209,7 +223,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="dashboard-charts">
-              <Card className="dashboard-chart-card">
+              <Card className="dashboard-chart-card panel-hover motion-rise" style={{ animationDelay: "0.72s" }}>
                 <CardHeader>
                   <h3 className="dashboard-chart-title">Spending by Category</h3>
                 </CardHeader>
@@ -227,7 +241,7 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card className="dashboard-chart-card">
+              <Card className="dashboard-chart-card panel-hover motion-rise" style={{ animationDelay: "0.8s" }}>
                 <CardHeader>
                   <h3 className="dashboard-chart-title">Monthly Overview</h3>
                 </CardHeader>

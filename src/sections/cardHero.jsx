@@ -1,27 +1,29 @@
 import React from "react";
 import Button from "./buttons";
 
+
 export default function CardHero() {
   return (
     <section id="hero" className="mx-auto w-full max-w-7xl px-4 pb-10 pt-14 md:px-8 md:pb-14 md:pt-16">
       <div className="mx-auto max-w-3xl text-center">
-        <h1 className="hero-title">
+        <h1 className="hero-title motion-rise motion-delay-2">
           Your All-in-One
           <br />
-          Crypto Companion
+          Saving Companion
         </h1>
-        <p className="hero-subtitle">
-          Simplify crypto investing, trading, and portfolio management with cutting-edge tools
+        <p className="hero-subtitle motion-rise motion-delay-3">
+          Simplify expense and portfolio management with cutting-edge tools
           designed for everyone from beginners to pros.
         </p>
-        <div className="mt-6">
+        <div className="mt-6 motion-rise motion-delay-4">
           <Button to="/dashboard">Get Started</Button>
         </div>
       </div>
 
-      <div id="product" className="metrics-shell mt-14 rounded-[28px] p-4 md:p-7">
+      <div id="product" className="metrics-shell mt-14 rounded-[28px] p-4 md:p-7 motion-rise motion-delay-5">
         <div className="metrics-grid">
-          <article className="metric-panel">
+          
+          <article className="metric-panel panel-hover motion-rise" style={{ animationDelay: "0.52s" }}>
             <p className="metric-label">Total Revenue</p>
             <p className="metric-value">$15,231.89</p>
             <p className="metric-change">+20.1% from last month</p>
@@ -38,7 +40,7 @@ export default function CardHero() {
             </div>
           </article>
 
-          <article className="metric-panel">
+          <article className="metric-panel panel-hover motion-rise" style={{ animationDelay: "0.6s" }}>
             <p className="metric-label">Subscriptions</p>
             <p className="metric-value">+2350</p>
             <p className="metric-change">+180.1% from last month</p>
@@ -54,7 +56,7 @@ export default function CardHero() {
             </div>
           </article>
 
-          <article className="metric-panel">
+          <article className="metric-panel panel-hover motion-rise" style={{ animationDelay: "0.68s" }}>
             <div className="calendar-head">
               <button aria-label="Previous month">&lt;</button>
               <p>June 2023</p>
@@ -76,7 +78,7 @@ export default function CardHero() {
             </div>
           </article>
 
-          <article id="pricing" className="metric-panel">
+          <article id="pricing" className="metric-panel panel-hover motion-rise" style={{ animationDelay: "0.76s" }}>
             <p className="metric-title">Move Goal</p>
             <p className="metric-change">Set your daily activity goal.</p>
             <div className="goal-wrap">
