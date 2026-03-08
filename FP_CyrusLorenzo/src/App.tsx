@@ -1,17 +1,19 @@
-import "./App.css";
 import HomePage from "./pages/homePage";
 import DashboardPage from "./pages/dashboardPage";
 import { useRoutePath } from "./router/router";
+import { Routes, Route } from "react-router-dom";
+
+
 
 const App = () => {
   const path = useRoutePath();
   const isDashboardPath = path === "/dashboard";
 
   return (
-    <div className="page-shell">
-      {isDashboardPath ? <DashboardPage /> : <HomePage />}
-    </div>
-  );
+    <Routes>
+        <Route path="/" element={<HomePage />} />
+    </Routes>
+  )
 };
 
 export default App;
