@@ -21,6 +21,7 @@ export default function Button({
   variant = "primary",
   size = "md",
   className = "",
+  style,
   onClick,
   href,
   to,
@@ -34,6 +35,7 @@ export default function Button({
         type="button"
         onClick={() => navigateTo(to)}
         className={classes}
+        style={style}
       >
         {children}
       </button>
@@ -42,14 +44,14 @@ export default function Button({
 
   if (href) {
     return (
-      <a href={href} className={classes}>
+      <a href={href} className={classes} style={style}>
         {children}
       </a>
     );
   }
 
   return (
-    <button type={type} onClick={onClick} className={classes}>
+    <button type={type} onClick={onClick} className={classes} style={style}>
       {children}
     </button>
   );
