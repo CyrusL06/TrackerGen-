@@ -1,5 +1,5 @@
 import React from "react";
-import { navigateTo } from "../router/router";
+import { Link } from "react-router-dom";
 
 const STYLES = {
   primary:
@@ -31,14 +31,9 @@ export default function Button({
 
   if (to) {
     return (
-      <button
-        type="button"
-        onClick={() => navigateTo(to)}
-        className={classes}
-        style={style}
-      >
+      <Link to={to} className={classes} style={style}>
         {children}
-      </button>
+      </Link>
     );
   }
 

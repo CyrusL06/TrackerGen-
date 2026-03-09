@@ -1,5 +1,5 @@
 import React from "react";
-import { productColumns, workflowSteps } from "../contents";
+import { productColumns, workflowSteps } from "../assets/contents";
 
 export default function ProductSection() {
   return (

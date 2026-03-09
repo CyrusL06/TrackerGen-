@@ -34,7 +34,7 @@ export default function CardHero() {
         </p>
 
         <div className={`mt-6 ${riseInClass}`} style={{ animationDelay: "0.3s" }}>
-          <Button to="/dashboard">Get Started</Button>
+          <Button to="/login">Get Started</Button>
         </div>
       </div>
 
