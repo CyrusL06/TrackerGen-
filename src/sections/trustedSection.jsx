@@ -1,5 +1,5 @@
 import React from "react";
-import { trustedLogos } from "../contents";
+import { trustedLogos } from "../assets/contents";
 
 const riseInClass =
   "opacity-0 translate-y-[18px] [animation:rise-in_0.82s_cubic-bezier(0.22,1,0.36,1)_forwards] motion-reduce:animate-none motion-reduce:opacity-100 motion-reduce:translate-y-0";

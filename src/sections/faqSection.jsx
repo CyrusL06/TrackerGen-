@@ -1,5 +1,5 @@
 import React from "react";
-import { faqs } from "../contents";
+import { faqs } from "../assets/contents";
 
 export default function FaqSection() {
   return (

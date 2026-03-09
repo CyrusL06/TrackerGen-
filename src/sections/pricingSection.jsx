@@ -1,5 +1,5 @@
 import React from "react";
-import { pricingPlans } from "../contents";
+import { pricingPlans } from "../assets/contents";
 import Button from "./buttons";
 
 export default function PricingSection() {
