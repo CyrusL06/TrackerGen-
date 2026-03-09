@@ -1,5 +1,5 @@
 import React from "react";
-import { navigations } from "../contents";
+import { navigations } from "../assets/contents";
 import NavTextMenu from "./navTextMenu";
 import Button from "./buttons";
 
@@ -34,7 +34,7 @@ export default function Navbar() {
         </div>
 
         <Button
-          to="/dashboard"
+          to="/login"
           size="sm"
           style={{ animationDelay: "0.22s" }}
           className={`ml-auto md:justify-self-end ${riseInClass}`}
