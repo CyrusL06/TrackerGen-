@@ -19,7 +19,7 @@ const SIZES = {
 export default function Button({
   children,
   variant = "primary",
-  size = "md",
+  size = "sm",
   className = "",
   style,
   onClick,
@@ -27,7 +27,10 @@ export default function Button({
   to,
   type = "button",
 }) {
-  const classes = `inline-flex items-center justify-center rounded-full font-semibold tracking-normal transition-all duration-200 ${SIZES[size] ?? SIZES.md} ${STYLES[variant] ?? STYLES.primary} ${className}`;
+  const classes = `inline-flex items-center justify-center 
+          rounded-full font-semibold tracking-normal transition-all 
+          duration-200 ${SIZES[size] ?? SIZES.md} 
+          ${STYLES[variant] ?? STYLES.primary} ${className}`;
 
   if (to) {
     return (

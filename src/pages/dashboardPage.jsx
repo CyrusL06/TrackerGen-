@@ -14,9 +14,11 @@ import { Suspense, lazy } from "react"
 
 import data from "../assets/data.json"
 
+
+
 export default function Page() {
 
-  const suspense = "h-28 rounded-lg bg-muted/40 animate-pulse";
+const skeleton = <div className="h-28 rounded-lg bg-muted/40 animate-pulse" />;
 
   const ChartAreaInteractive = lazy(() =>
   import("@/components/chart-area-interactive").then((m) => ({ default: m.ChartAreaInteractive }))
@@ -53,15 +55,15 @@ export default function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                    <Suspense className={suspense}>
+                    <Suspense fallback={skeleton}>
                        <SectionCards />
                     </Suspense>
               <div className="px-4 lg:px-6">
-                   <Suspense className={suspense}>
+                   <Suspense fallback={skeleton}>
                          <ChartAreaInteractive />
                    </Suspense>
               </div>
-                  <Suspense className={suspense}>
+                  <Suspense fallback={skeleton}>
                     <DataTable data={data} />
                   </Suspense>
             </div>
