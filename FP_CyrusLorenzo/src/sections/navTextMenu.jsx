@@ -1,11 +1,12 @@
 import React from "react";
 
-export default function NavTextMenu({ text, href, className = "", style }) {
+export default function NavTextMenu({ text, className = "", style }) {
   return (
     <a
-      href={href}
+      
+      href="../"
       style={style}
-      className={`text-lg font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--text-main)] ${className}`}
+      className={`text-[16px]  text-[var(--text-muted)] transition-colors hover:text-[var(--text-main)] ${className}`}
     >
       {text}
     </a>

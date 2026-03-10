@@ -11,6 +11,7 @@ export default function HomePage() {
       <main className="pb-8">
         <TrustedSection />
         <ProductSection />
+
       </main>
       <Footer />
     </>
