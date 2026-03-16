@@ -1,11 +1,13 @@
-import React from "react";
+import { FONTS, LAYOUT } from "@/components/ui2.0/brand";
 
 export default function Footer() {
   return (
-    <footer className="mx-auto mt-20 w-full max-w-7xl px-4 pb-10 md:px-8">
-      <div className="flex items-center justify-between gap-4 border-t border-white/12 pt-4 text-slate-400">
-        <p className="m-0 text-[1.05rem] text-slate-100">TrackGen</p>
-        <span className="text-[0.86rem]">(c) {new Date().getFullYear()} All rights reserved.</span>
+    <footer className="border-t border-[#222220]">
+      <div
+        className={`${LAYOUT.footer} flex flex-col gap-2 text-[0.72rem] text-[#6b6860] sm:flex-row sm:items-center sm:justify-between ${FONTS.mono}`}
+      >
+        <span>© 2026 TrackerGen</span>
+        <span>Built for people who care about their money.</span>
       </div>
     </footer>
   );

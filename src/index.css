@@ -79,10 +79,10 @@ body {
   background: rgba(52, 211, 153, 0.28);
 }
 
-a {
+/* a {
   color: inherit;
   text-decoration: none;
-}
+} */
 
 @keyframes rise-in {
   from {
