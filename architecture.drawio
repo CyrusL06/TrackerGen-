@@ -1,0 +1,290 @@
+<mxfile host="65bd71144e">
+    <diagram id="lIYf2z5HcMyvlVeW4ZJF" name="Routing">
+        <mxGraphModel dx="393" dy="215" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="5" value="Server" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
+                    <mxGeometry x="510" y="75.9" width="70" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" style="edgeStyle=none;html=1;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="165.36" y="114.99999999999997" as="sourcePoint"/>
+                        <mxPoint x="510" y="114.99999999999997" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="12" value="GET" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="8" vertex="1" connectable="0">
+                    <mxGeometry x="-0.1254" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="6" value="" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/computer_and_terminals/Personal_Computer.svg;" parent="1" vertex="1">
+                    <mxGeometry x="105" y="85" width="60.36" height="81.8" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Client&lt;div&gt;HTML&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="178" width="60" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" style="edgeStyle=none;html=1;entryX=0.911;entryY=0.822;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="5" target="6" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="340" y="165"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="13" value="RENDER" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="9" vertex="1" connectable="0">
+                    <mxGeometry x="0.0888" y="-1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="15" value="Client-Server Architecture" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=4" parent="1" vertex="1">
+                    <mxGeometry x="260" y="15" width="300" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="410" y="35.9" width="20" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="But I want to send react not ejs files..." style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="215" y="195" width="220" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" style="edgeStyle=none;html=1;" parent="1" source="18" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="560" y="400" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <UserObject label="&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;express&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;express&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;React&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;react&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; { &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;renderToPipeableStream&lt;/span&gt;&lt;span&gt; } &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;react-dom/server&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;App&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;./App.js&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;const&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;app&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;express&lt;/span&gt;&lt;span&gt;();&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;ͼ11&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;.&lt;/span&gt;&lt;span&gt;get(&lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;/&quot;&lt;/span&gt;&lt;span&gt;, (&lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;req&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;res&lt;/span&gt;&lt;span&gt;) =&amp;gt; {&lt;/span&gt;&lt;br&gt;&lt;span&gt;  &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;const&lt;/span&gt;&lt;span&gt; { pipe } &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;renderToPipeableStream&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span class=&quot;ͼ13&quot;&gt;&amp;lt;App&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ13&quot;&gt;/&amp;gt;&lt;/span&gt;&lt;span&gt;, {&lt;/span&gt;&lt;br&gt;&lt;span&gt;    bootstrapScripts: [&lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;/client.js&quot;&lt;/span&gt;&lt;span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span&gt;    onShellReady() {&lt;/span&gt;&lt;br&gt;&lt;span&gt;      &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;.&lt;/span&gt;&lt;span&gt;setHeader(&lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;content-type&quot;&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;text/html&quot;&lt;/span&gt;&lt;span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span&gt;      &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;pipe&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;res&lt;/span&gt;&lt;span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span&gt;    }&lt;/span&gt;&lt;br&gt;&lt;span&gt;  });&lt;/span&gt;&lt;br&gt;&lt;span&gt;});&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;ͼ11&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;.&lt;/span&gt;&lt;span&gt;listen(&lt;/span&gt;&lt;span class=&quot;ͼy&quot;&gt;3000&lt;/span&gt;&lt;span&gt;);&lt;/span&gt;" link="&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;express&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;express&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;React&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;react&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; { &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;renderToPipeableStream&lt;/span&gt;&lt;span&gt; } &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;react-dom/server&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;import&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;App&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;./App.js&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;ͼv&quot;&gt;const&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;app&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;express&lt;/span&gt;&lt;span&gt;();&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;ͼ11&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;.&lt;/span&gt;&lt;span&gt;get(&lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;/&quot;&lt;/span&gt;&lt;span&gt;, (&lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;req&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;res&lt;/span&gt;&lt;span&gt;) =&amp;gt; {&lt;/span&gt;&lt;br&gt;&lt;span&gt;  &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;const&lt;/span&gt;&lt;span&gt; { pipe } &lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;renderToPipeableStream&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span class=&quot;ͼ13&quot;&gt;&amp;lt;App&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span class=&quot;ͼ13&quot;&gt;/&amp;gt;&lt;/span&gt;&lt;span&gt;, {&lt;/span&gt;&lt;br&gt;&lt;span&gt;    bootstrapScripts: [&lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;/client.js&quot;&lt;/span&gt;&lt;span&gt;],&lt;/span&gt;&lt;br&gt;&lt;span&gt;    onShellReady() {&lt;/span&gt;&lt;br&gt;&lt;span&gt;      &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;.&lt;/span&gt;&lt;span&gt;setHeader(&lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;content-type&quot;&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span class=&quot;ͼz&quot;&gt;&quot;text/html&quot;&lt;/span&gt;&lt;span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span&gt;      &lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;pipe&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span class=&quot;ͼ11&quot;&gt;res&lt;/span&gt;&lt;span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span&gt;    }&lt;/span&gt;&lt;br&gt;&lt;span&gt;  });&lt;/span&gt;&lt;br&gt;&lt;span&gt;});&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span class=&quot;ͼ11&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;ͼv&quot;&gt;.&lt;/span&gt;&lt;span&gt;listen(&lt;/span&gt;&lt;span class=&quot;ͼy&quot;&gt;3000&lt;/span&gt;&lt;span&gt;);&lt;/span&gt;" id="18">
+                    <mxCell style="text;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                        <mxGeometry x="120" y="260" width="350" height="280" as="geometry"/>
+                    </mxCell>
+                </UserObject>
+                <mxCell id="20" value="We can Use this&lt;div&gt;&amp;nbsp;to render&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="570" y="380" width="110" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="110" y="260" width="340" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="- Server has React Components&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;-Server Renders them to HTML&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;- Browser Received HTML&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;-Browser downlaod the client bundle&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font color=&quot;#000000&quot;&gt;-React hydrates that HTML&lt;br&gt;&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="595" y="85" width="220" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="`renderToPepeableStream` for streaming HTML from the server" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="490" y="270" width="360" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="`hydrateRoot` for streaming HTML from the server" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="300" width="290" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="27" target="29" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="200" y="720"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="27" value="APP" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="610" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="HomePage" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="235" y="690" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="Login" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="235" y="760" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="&quot;/&quot; -&amp;gt; HomePage" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="365" y="705" width="110" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="&quot;/login&quot; -&amp;gt; LogInPage" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="365" y="775" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="DashBoard" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="235" y="830" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="&quot;/dashboard&quot; -&amp;gt; ProtectedRoute -&amp;gt; Dashboard" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="370" y="845" width="270" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.323;exitY=0.996;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="208.76" y="670" as="sourcePoint"/>
+                        <mxPoint x="245" y="790.24" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="200" y="670"/>
+                            <mxPoint x="200" y="790"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="39" style="edgeStyle=orthogonalEdgeStyle;html=1;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="200" y="780" as="sourcePoint"/>
+                        <mxPoint x="235" y="860" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="200" y="860"/>
+                            <mxPoint x="235" y="860"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="40" value="NestedChildren" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="760" width="110" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="MainLayout.tsx" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="355" y="1000" width="100" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="" style="group" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="42.5" y="1042" width="205" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="HomePage" style="swimlane;whiteSpace=wrap;html=1;" parent="46" vertex="1">
+                    <mxGeometry x="2.5" width="200" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Heading&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="2" vertex="1">
+                    <mxGeometry x="10" y="40" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="Footer" style="rounded=0;whiteSpace=wrap;html=1;" parent="46" vertex="1">
+                    <mxGeometry y="210" width="205" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="" style="group" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="310" y="1042" width="205" height="250" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Login" style="swimlane;whiteSpace=wrap;html=1;" parent="47" vertex="1">
+                    <mxGeometry x="5" width="200" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="Footer" style="rounded=0;whiteSpace=wrap;html=1;" parent="47" vertex="1">
+                    <mxGeometry y="210" width="205" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="" style="group" parent="1" vertex="1" connectable="0">
+                    <mxGeometry x="572.5" y="1042" width="205" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="DashBoard" style="swimlane;whiteSpace=wrap;html=1;" parent="48" vertex="1">
+                    <mxGeometry x="2.5" width="200" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" value="Footer" style="rounded=0;whiteSpace=wrap;html=1;" parent="48" vertex="1">
+                    <mxGeometry y="220" width="205" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="E8XHH7rhVsizFmnBN_3d-48" value="IDEA OCR API scans the receipt&lt;div&gt;AND AUTOMATICALLY DIvide the cases if it was food etc&lt;/div&gt;&lt;div&gt;ANd put in dashboard good to keep receipt&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="65" y="1433" width="330" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="E8XHH7rhVsizFmnBN_3d-49" value="If you want ot bring back items but you dont&amp;nbsp;&lt;div&gt;have physica; copoes then use this.&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="435" y="1443" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="E8XHH7rhVsizFmnBN_3d-50" value="Bank INtegration-&amp;gt; payment calls? -&amp;gt; Notifcation if user should take a snapshot of receipt..." style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="155" y="1545" width="510" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="E8XHH7rhVsizFmnBN_3d-51" value="&lt;p data-start=&quot;97&quot; data-end=&quot;120&quot;&gt;A very strong setup is:&lt;/p&gt;&lt;ol data-start=&quot;122&quot; data-end=&quot;321&quot;&gt;&lt;li data-section-id=&quot;mdtt9u&quot; data-start=&quot;122&quot; data-end=&quot;171&quot;&gt;&lt;p data-start=&quot;125&quot; data-end=&quot;171&quot;&gt;&lt;strong data-start=&quot;125&quot; data-end=&quot;142&quot;&gt;Bank sync API&lt;/strong&gt; for automatic transactions&lt;/p&gt;&lt;/li&gt;&lt;li data-section-id=&quot;wb7ob9&quot; data-start=&quot;172&quot; data-end=&quot;218&quot;&gt;&lt;p data-start=&quot;175&quot; data-end=&quot;218&quot;&gt;&lt;strong data-start=&quot;175&quot; data-end=&quot;194&quot;&gt;Receipt OCR API&lt;/strong&gt; for uploaded receipts&lt;/p&gt;&lt;/li&gt;&lt;li data-section-id=&quot;1s02ime&quot; data-start=&quot;219&quot; data-end=&quot;271&quot;&gt;&lt;p data-start=&quot;222&quot; data-end=&quot;271&quot;&gt;&lt;strong data-start=&quot;222&quot; data-end=&quot;238&quot;&gt;Payments API&lt;/strong&gt; only if you want premium plans&lt;/p&gt;&lt;/li&gt;&lt;li data-section-id=&quot;13qw6ef&quot; data-start=&quot;272&quot; data-end=&quot;321&quot;&gt;&lt;p data-start=&quot;275&quot; data-end=&quot;321&quot;&gt;&lt;strong data-start=&quot;275&quot; data-end=&quot;291&quot;&gt;FX/rates API&lt;/strong&gt; if you support multi-currency&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;" style="text;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="35" y="1620" width="320" height="230" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="XOfHK2AefzJwjSD9Ctys" name="Log-In">
+        <mxGraphModel dx="393" dy="373" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="xJRC6AUFxkrk-GbA1wDT-1" value="Rendering" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="30" y="28" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="xJRC6AUFxkrk-GbA1wDT-2" value="STATIC HTML ONLY" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="80" width="140" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="xJRC6AUFxkrk-GbA1wDT-3" value="CLIENT - side REACT (SPA)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="25" y="140" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="xJRC6AUFxkrk-GbA1wDT-4" style="edgeStyle=none;html=1;entryX=0.471;entryY=0.333;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="xJRC6AUFxkrk-GbA1wDT-2" target="xJRC6AUFxkrk-GbA1wDT-3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="xJRC6AUFxkrk-GbA1wDT-5" value="Server-Side React (SSR)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="35" y="200" width="160" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="xJRC6AUFxkrk-GbA1wDT-7" style="edgeStyle=none;html=1;entryX=0.488;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="xJRC6AUFxkrk-GbA1wDT-3" target="xJRC6AUFxkrk-GbA1wDT-5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="xJRC6AUFxkrk-GbA1wDT-8" value="Text" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="35" y="258" width="50" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="wiYBXPSEruTEyk9QtOU9" name="API calls? ">
+        <mxGraphModel dx="600" dy="-712" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="aqMI4fpaJ9VDme8-W8mA-1" value="IDEA OCR API scans the receipt&lt;div&gt;AND AUTOMATICALLY DIvide the cases if it was food etc&lt;/div&gt;&lt;div&gt;ANd put in dashboard good to keep receipt&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="1200" width="330" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="aqMI4fpaJ9VDme8-W8mA-2" value="If you want ot bring back items but you dont&amp;nbsp;&lt;div&gt;have physica; copoes then use this.&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="420" y="1210" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="aqMI4fpaJ9VDme8-W8mA-3" value="Bank INtegration-&amp;gt; payment calls? -&amp;gt; Notifcation if user should take a snapshot of receipt..." style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="140" y="1312" width="510" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="aqMI4fpaJ9VDme8-W8mA-4" value="&lt;p data-start=&quot;97&quot; data-end=&quot;120&quot;&gt;A very strong setup is:&lt;/p&gt;&lt;ol data-start=&quot;122&quot; data-end=&quot;321&quot;&gt;&lt;li data-section-id=&quot;mdtt9u&quot; data-start=&quot;122&quot; data-end=&quot;171&quot;&gt;&lt;p data-start=&quot;125&quot; data-end=&quot;171&quot;&gt;&lt;strong data-start=&quot;125&quot; data-end=&quot;142&quot;&gt;Bank sync API&lt;/strong&gt; for automatic transactions&lt;/p&gt;&lt;/li&gt;&lt;li data-section-id=&quot;wb7ob9&quot; data-start=&quot;172&quot; data-end=&quot;218&quot;&gt;&lt;p data-start=&quot;175&quot; data-end=&quot;218&quot;&gt;&lt;strong data-start=&quot;175&quot; data-end=&quot;194&quot;&gt;Receipt OCR API&lt;/strong&gt; for uploaded receipts&lt;/p&gt;&lt;/li&gt;&lt;li data-section-id=&quot;1s02ime&quot; data-start=&quot;219&quot; data-end=&quot;271&quot;&gt;&lt;p data-start=&quot;222&quot; data-end=&quot;271&quot;&gt;&lt;strong data-start=&quot;222&quot; data-end=&quot;238&quot;&gt;Payments API&lt;/strong&gt; only if you want premium plans&lt;/p&gt;&lt;/li&gt;&lt;li data-section-id=&quot;13qw6ef&quot; data-start=&quot;272&quot; data-end=&quot;321&quot;&gt;&lt;p data-start=&quot;275&quot; data-end=&quot;321&quot;&gt;&lt;strong data-start=&quot;275&quot; data-end=&quot;291&quot;&gt;FX/rates API&lt;/strong&gt; if you support multi-currency&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;" style="text;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="20" y="1387" width="320" height="230" as="geometry"/>
+                </mxCell>
+                <mxCell id="aqMI4fpaJ9VDme8-W8mA-5" value="Can recognize if that company need physical copy of receipts.." style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="195" y="1660" width="360" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="Hblp2dfsXlVOAgWX2dYC" name="Latency Problem">
+        <mxGraphModel dx="545" dy="353" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-1" value="1.Current Build 1.08mb really haevy on bad network such as 3G really slow even in&amp;nbsp;&lt;div&gt;Slow 4G? how do we fix this problem??&amp;nbsp;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="70" width="470" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-2" value="- The reason this application being heavy is that&amp;nbsp;&lt;div&gt;Dashboard is imported eagerly, heavy dashboard&amp;nbsp; code ships on&lt;/div&gt;&lt;div&gt;first load.&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="130" width="370" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-3" value="- Chart components pull large librarys" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="550" width="220" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-4" value="- Multiple font family and weights" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="590" width="200" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-5" value="- Remove useless blocks that are not used." style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="630" width="250" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-6" value="- Use CDN compression + caching headers." style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="670" width="260" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-7" value="lazy(() =&amp;gt; import(&quot;./BigComponent&quot;))" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="145" y="200" width="220" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-8" value="- React.lazy and suspense enable code-splitting for components" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Verdana;labelBackgroundColor=#FFF138;" parent="1" vertex="1">
+                    <mxGeometry x="75" y="230" width="410" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-9" value="Bundle Splitting" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Verdana;labelBackgroundColor=#FFF138;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="260" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-10" value="Improvements:" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Verdana;labelBackgroundColor=#00FF21;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="370" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-12" value="latency improvements showed that payload imporvement is about:&lt;div&gt;~77.4% smaller (raw)&lt;/div&gt;&lt;div&gt;~75% smaller (gzip)&lt;/div&gt;&lt;div&gt;~ For latency on slow 3G, it was roughly 4-5 seconfs faster transfer&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="70" y="400" width="380" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="VbvLLBouVKKCXff4ny4d-13" value="- Optimize Image" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Verdana;labelBackgroundColor=#FFF138;" parent="1" vertex="1">
+                    <mxGeometry x="75" y="280" width="130" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="dWpa5x2GhLSCU0oa65am" name="DashBoard">
+        <mxGraphModel dx="538" dy="515" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="6nCWWTwabWOBzuLQ4uZY-2" value="DashBoard" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="190" y="130" width="440" height="340" as="geometry"/>
+                </mxCell>
+                <mxCell id="6nCWWTwabWOBzuLQ4uZY-3" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="6nCWWTwabWOBzuLQ4uZY-2" vertex="1">
+                    <mxGeometry y="30" width="110" height="310" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="GFokQQAttnuWyzjU9Y0e" name="Page-5">
+        <mxGraphModel dx="538" dy="515" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
