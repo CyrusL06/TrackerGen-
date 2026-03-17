@@ -2,7 +2,8 @@
 
 > A full-stack JavaScript application built with React and Node.js — featuring a RESTful API backend and deployed live on Cloudflare Pages.
 
-🔗 **Live Demo:** [trackergen2.pages.dev](https://trackergen2.pages.dev)
+🔗 **Live Demo:** [https://trackergen30.pages.dev/]
+   **Server Demo:** [https://trackergen.onrender.com]
 
 ---
 
