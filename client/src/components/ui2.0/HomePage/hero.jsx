@@ -1,11 +1,11 @@
 import BtnPrimary from "./btnPrimary";
-import { COLORS, FONTS, LAYOUT } from "../brand";
+import { FONTS, LAYOUT } from "../brand";
 
 function BtnGhost({ children }) {
   return (
     <a
-      href="#how-it-works"
-      className={`flex items-center gap-1.5 text-[0.78rem] tracking-[0.05em] text-[#6b6860] no-underline transition-colors duration-200 hover:text-[#f2ede6] ${FONTS.mono}`}
+      href="#workflow"
+      className={`flex items-center gap-1.5 text-[0.78rem] tracking-[0.05em] text-[color:var(--brand-muted)] no-underline transition-colors duration-200 hover:text-[color:var(--brand-text)] ${FONTS.mono}`}
     >
       {children}
     </a>
@@ -13,52 +13,58 @@ function BtnGhost({ children }) {
 }
 
 export default function Hero() {
+  const proofPoints = [
+    ["Fast entry", "Capture income and expenses without leaving the page."],
+    ["Monthly clarity", "See cash flow, spending mix, and savings rate together."],
+    ["Focused review", "A private preview built around the essentials, not feature sprawl."],
+  ];
+
   return (
-    
-    <section id="home" className={`${LAYOUT.content} flex flex-col pt-28 pb-28 jus`}>
-      <div className="mx-auto">          {/* Center */}
-           <div
-        className={`mb-6 inline-flex items-center gap-2 border border-[rgba(200,241,53,0.3)] px-[0.7rem] py-[0.3rem] text-[0.72rem] uppercase tracking-[0.1em] text-[#c8f135] ${FONTS.mono}`}
-      >
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#c8f135] animate-pulse motion-reduce:animate-none" />
-        Now in early access
-      </div>
-      <h1
-        className={`mb-2 text-[clamp(3.5rem,6vw,6rem)] leading-[0.95] tracking-[0.02em] text-[#f2ede6] ${FONTS.display}`}
-      >
-        Track every
-        <br />
-        <span className={`block text-[clamp(3rem,5.5vw,5.5rem)] text-[#f1a935] ${FONTS.serif}`}>
-          dollar.
-        </span>
-        Know where
-        <br />
-        it goes.
-      </h1>
+    <section id="home" className={`${LAYOUT.content} flex flex-col pt-28 pb-28`}>
+      <div className="mx-auto max-w-[42rem]">
+        <div
+          className={`delight-rise mb-6 inline-flex items-center gap-2 border border-[color:var(--brand-border)] bg-[color:var(--brand-surface)] px-[0.7rem] py-[0.3rem] text-[0.72rem] uppercase tracking-[0.1em] text-[color:var(--brand-accent)] ${FONTS.mono}`}
+        >
+          <span className="delight-orbit h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--brand-accent)]" />
+          Private preview
+        </div>
+        <h1
+          className={`delight-rise delight-delay-1 mb-3 text-[clamp(3.5rem,6vw,6rem)] leading-[0.95] tracking-[0.02em] text-[color:var(--brand-text)] ${FONTS.display}`}
+        >
+          A cleaner way
+          <br />
+          to review your
+          <br />
+          <span className={`block text-[clamp(3rem,5.5vw,5.4rem)] text-[color:var(--brand-accent)] ${FONTS.serif}`}>
+            monthly money.
+          </span>
+        </h1>
 
-      <p className={`my-6 max-w-[360px] text-[0.88rem] leading-[1.7] text-[#8c8c8c] ${FONTS.mono}`}>
-        Built for people who actually want to see their numbers.{" "}
-        <strong className="font-medium text-[#f2ede6]">Real-time expense tracking</strong> and
-        portfolio management - no fluff, no bloat.
-      </p>
+        <p className={`delight-rise delight-delay-2 my-6 max-w-[36rem] text-[0.92rem] leading-[1.8] text-[color:var(--brand-muted)] ${FONTS.mono}`}>
+          TrackerGen is a focused cash-flow tracker in private preview. Sign in, add income and
+          expenses, and review a clear monthly snapshot without fake banking claims or overloaded
+          dashboards.
+        </p>
 
-      <div className="flex flex-wrap items-center gap-4">
-        <BtnPrimary href="/login">Get Started Free</BtnPrimary>
-        <BtnGhost>See how it works</BtnGhost>
-      </div>
+        <div className="delight-rise delight-delay-3 flex flex-wrap items-center gap-4">
+          <BtnPrimary href="/login">Preview the dashboard</BtnPrimary>
+          <BtnGhost>See the workflow</BtnGhost>
+        </div>
 
-      <div className="mt-12 flex flex-wrap gap-8 border-t border-[#222220] pt-8">
-        {[["12K+","Active users"],["$2.4M","Tracked monthly"],["99.9%","Uptime"]].map(([num, label]) => (
-          <div key={label}>
-            <span className={`block text-[2rem] tracking-[0.02em] text-[#f2ede6] ${FONTS.display}`}>
-              {num}
-            </span>
-            <span className={`text-[0.7rem] uppercase tracking-[0.08em] text-[#6b6860] ${FONTS.mono}`}>
-              {label}
-            </span>
-          </div>
-        ))}
-      </div>
+        <div className="mt-12 grid gap-px border border-[color:var(--brand-border)] bg-[color:var(--brand-border)] md:grid-cols-3 delight-rise delight-delay-4">
+          {proofPoints.map(([title, description]) => (
+            <div key={title} className="delight-card bg-[color:var(--brand-bg)] px-5 py-6">
+              <span
+                className={`mb-3 block text-[0.68rem] uppercase tracking-[0.16em] text-[color:var(--brand-accent)] ${FONTS.mono}`}
+              >
+                {title}
+              </span>
+              <p className={`text-[0.82rem] leading-[1.7] text-[color:var(--brand-muted)] ${FONTS.mono}`}>
+                {description}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
