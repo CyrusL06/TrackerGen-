@@ -12,14 +12,14 @@
   font-weight: 400;
 
   color-scheme: dark;
-  --text-main: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #7a8ca5;
-  --border-soft: rgba(148, 163, 184, 0.24);
+  --text-main: #f5efe6;
+  --text-muted: #b6ab9c;
+  --text-dim: #92877b;
+  --border-soft: rgba(201, 168, 106, 0.24);
   --accent: oklch(0.97 0 0);
-  --accent-strong: #10b981;
-  --accent-soft: #5eead4;
-  --bg-page: #000000;
+  --accent-strong: #c9a86a;
+  --accent-soft: #e5d1ad;
+  --bg-page: #12100d;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -76,13 +76,8 @@ body {
 }
 
 ::selection {
-  background: rgba(52, 211, 153, 0.28);
+  background: rgba(201, 168, 106, 0.28);
 }
-
-/* a {
-  color: inherit;
-  text-decoration: none;
-} */
 
 @keyframes rise-in {
   from {
@@ -93,6 +88,27 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes soft-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes ambient-sheen {
+  0% {
+    background-position: 140% 50%;
+  }
+
+  100% {
+    background-position: -40% 50%;
   }
 }
 
@@ -115,6 +131,85 @@ body {
 
   50% {
     transform: translateY(-4px);
+  }
+}
+
+.delight-rise {
+  animation: rise-in 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.delight-delay-1 {
+  animation-delay: 80ms;
+}
+
+.delight-delay-2 {
+  animation-delay: 160ms;
+}
+
+.delight-delay-3 {
+  animation-delay: 240ms;
+}
+
+.delight-delay-4 {
+  animation-delay: 320ms;
+}
+
+.delight-card {
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 240ms ease,
+    box-shadow 240ms ease,
+    background-color 240ms ease;
+}
+
+.delight-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16);
+}
+
+.delight-chip {
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+.delight-chip:hover {
+  transform: translateY(-2px);
+}
+
+.delight-glow {
+  background-image: linear-gradient(
+    120deg,
+    rgba(201, 168, 106, 0.12) 0%,
+    rgba(229, 209, 173, 0.22) 45%,
+    rgba(201, 168, 106, 0.12) 100%
+  );
+  background-size: 220% 100%;
+  animation: ambient-sheen 7.5s linear infinite;
+}
+
+.delight-orbit {
+  animation: soft-bob 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delight-rise,
+  .delight-glow,
+  .delight-orbit {
+    animation: none !important;
+  }
+
+  .delight-card,
+  .delight-chip {
+    transition: none !important;
+  }
+
+  .delight-card:hover,
+  .delight-chip:hover {
+    transform: none;
+    box-shadow: none;
   }
 }
 
@@ -203,5 +298,12 @@ body {
   }
   html {
     @apply font-sans;
+  }
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 3px;
   }
 }

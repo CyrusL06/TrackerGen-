@@ -23,15 +23,27 @@ export const LAYOUT = {
 };
 
 export const COLORS = {
-  bg: "#0a0a08",
-  surface: "#111110",
-  surface2: "#161615",
-  border: "#222220",
-  text: "#f2ede6",
-  muted: "#6b6860",
-  accent: "#c8f135",
-  amber: "#f1a935",
-  danger: "#ff6b6b",
+  bg: "#12100d",
+  surface: "#1a1713",
+  surface2: "#211d18",
+  border: "#312a24",
+  text: "#f5efe6",
+  muted: "#b6ab9c",
+  accent: "#c9a86a",
+  amber: "#d6804d",
+  danger: "#dd6b5f",
+};
+
+export const BRAND_VARS = {
+  "--brand-bg": COLORS.bg,
+  "--brand-surface": COLORS.surface,
+  "--brand-surface-2": COLORS.surface2,
+  "--brand-border": COLORS.border,
+  "--brand-text": COLORS.text,
+  "--brand-muted": COLORS.muted,
+  "--brand-accent": COLORS.accent,
+  "--brand-amber": COLORS.amber,
+  "--brand-danger": COLORS.danger,
 };
 
 export const cx = (...classes) => classes.filter(Boolean).join(" ");
