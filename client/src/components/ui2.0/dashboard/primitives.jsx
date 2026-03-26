@@ -2,7 +2,7 @@ import { ArrowUpRight, ArrowDownRight, X, Coffee } from "lucide-react";
 import { CATEGORY_ICONS, COLORS, FONTS, TW, cx } from "./shared.js";
 
 export function SurfaceCard({ className = "", children }) {
-  return <div className={cx(TW.panel, className)}>{children}</div>;
+  return <div className={cx(TW.panel, "delight-card", className)}>{children}</div>;
 }
 
 export function Eyebrow({ children, className = "" }) {
@@ -20,7 +20,7 @@ export function DisplayTitle({ children, className = "" }) {
 export function Tag({ children, color = COLORS.accent }) {
   return (
     <span
-      className="inline-block border px-[7px] py-[2px] text-[9px] uppercase tracking-[0.1em]"
+      className="inline-block border px-2 py-1 text-[10px] uppercase tracking-[0.12em]"
       style={{
         ...FONTS.mono,
         color,
@@ -47,7 +47,9 @@ export function NavTab({ active, onClick, children }) {
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cx(
+        "delight-chip",
         TW.tabButton,
         active
           ? "border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] text-[color:var(--dashboard-text)]"
@@ -63,13 +65,13 @@ export function StatCard({ label, value, change, up, accent, sub }) {
   return (
     <SurfaceCard className="relative overflow-hidden px-5 py-[18px]">
       <div className="absolute inset-x-0 top-0 h-0.5" style={{ backgroundColor: accent }} />
-      <div className="mb-2.5 text-[9px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
+      <div className="mb-2.5 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]">
         {label}
       </div>
       <div className="mb-2 text-[26px] font-bold tracking-[-0.01em]" style={{ color: accent }}>
         {value}
       </div>
-      <div className="flex items-center gap-1 text-[10px]">
+      <div className="flex items-center gap-1 text-[11px]">
         {up ? (
           <ArrowUpRight size={11} color={COLORS.accent} />
         ) : (
@@ -89,7 +91,7 @@ export function TxnRow({ txn, onDelete }) {
   return (
     <div className="flex items-center justify-between border-b border-[color:var(--dashboard-border)] py-2.5 transition-colors hover:bg-[color:var(--dashboard-surface-2)]">
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)]">
+        <div className="delight-chip flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)]">
           <Icon size={13} color={isPositive ? COLORS.accent : COLORS.muted} />
         </div>
         <div>
@@ -102,7 +104,7 @@ export function TxnRow({ txn, onDelete }) {
 
       <div className="flex items-center gap-3">
         <div
-          className="text-[12px] font-semibold"
+          className="text-[13px] font-semibold"
           style={{ color: isPositive ? COLORS.accent : COLORS.red }}
         >
           {isPositive ? "+" : "-"}${Math.abs(txn.amount).toFixed(2)}
@@ -110,9 +112,11 @@ export function TxnRow({ txn, onDelete }) {
         <button
           type="button"
           onClick={() => onDelete(txn.id)}
-          className="flex items-center p-0.5 text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)]"
+          aria-label={`Remove ${txn.name}`}
+          className="flex items-center gap-1 rounded-[3px] px-1.5 py-1 text-[10px] uppercase tracking-[0.08em] text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)]"
         >
           <X size={11} />
+          <span>Remove</span>
         </button>
       </div>
     </div>

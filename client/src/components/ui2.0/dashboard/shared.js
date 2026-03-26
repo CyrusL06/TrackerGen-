@@ -16,7 +16,7 @@ export const COLORS = {
   surface2: "#141412",
   border: "#1e1e1c",
   text: BRAND_COLORS.text,
-  muted: "#5a5854",
+  muted: BRAND_COLORS.muted,
   accent: BRAND_COLORS.accent,
   amber: BRAND_COLORS.amber,
   red: BRAND_COLORS.danger,
@@ -44,25 +44,25 @@ export const TW = {
   pageTexture: "pointer-events-none absolute inset-0 opacity-40",
   pageShell: "relative mx-auto max-w-[1100px] px-4 py-8 sm:p-8",
   panel: "border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)]",
-  panelPadding: "px-5 py-[18px]",
-  eyebrow: "mb-[3px] text-[9px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
-  displayTitle: "text-[1.3rem] tracking-[0.04em]",
+  panelPadding: "px-5 py-5",
+  eyebrow: "mb-1 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
+  displayTitle: "text-[1.45rem] tracking-[0.04em]",
   fieldLabel:
-    "mb-[5px] block text-[9px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
-  fieldError: "mt-1 text-[9px] text-[color:var(--dashboard-red)]",
+    "mb-1.5 block text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
+  fieldError: "mt-1 text-[10px] text-[color:var(--dashboard-red)]",
   inputBase:
-    "w-full border bg-[color:var(--dashboard-surface-2)] px-3 py-[9px] text-[11px] tracking-[0.03em] text-[color:var(--dashboard-text)] outline-none transition-colors placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)]",
+    "w-full border bg-[color:var(--dashboard-surface-2)] px-3 py-2.5 text-[12px] tracking-[0.03em] text-[color:var(--dashboard-text)] outline-none transition-colors placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)]",
   primaryButton:
-    "inline-flex items-center gap-1.5 bg-[color:var(--dashboard-accent)] px-[14px] py-[7px] text-[11px] font-semibold uppercase tracking-[0.06em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.85]",
+    "delight-chip inline-flex items-center gap-1.5 bg-[color:var(--dashboard-accent)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--dashboard-bg)] shadow-[0_10px_22px_rgba(0,0,0,0.12)] transition-opacity hover:opacity-[0.88] disabled:cursor-not-allowed disabled:opacity-60",
   secondaryButton:
-    "inline-flex items-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-[10px] py-[5px] text-[10px] tracking-[0.05em] text-[color:var(--dashboard-muted)] transition-colors hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)]",
+    "delight-chip inline-flex items-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-3 py-2 text-[10px] tracking-[0.07em] text-[color:var(--dashboard-muted)] transition-colors hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)]",
   tabGroup:
-    "flex flex-wrap gap-[2px] rounded-[4px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] p-[3px]",
+    "flex flex-wrap gap-1 rounded-[4px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] p-1",
   tabButton:
-    "rounded-[3px] border px-[13px] py-[5px] text-[10px] capitalize tracking-[0.05em] transition-all",
+    "rounded-[3px] border px-4 py-2 text-[10px] uppercase tracking-[0.08em] transition-all",
 };
 
-export const NAV_TABS = ["overview", "transactions", "goals"];
+export const NAV_TABS = ["overview", "activity"];
 
 export const CATEGORY_ICONS = {
   Housing: Home,

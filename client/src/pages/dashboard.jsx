@@ -36,11 +36,64 @@ const initialTxns = [
 const formatWholeDollars = (value) =>
   `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
+const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function formatCurrencyDelta(value) {
+  const prefix = value >= 0 ? "+" : "-";
+  return `${prefix}${formatWholeDollars(Math.abs(value))}`;
+}
+
+function formatTxnDate(rawDate) {
+  if (!rawDate) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+    const [, month, day] = rawDate.split("-");
+    const label = monthLabels[Number(month) - 1];
+    return `${label} ${Number(day)}`;
+  }
+
+  return rawDate;
+}
+
+function getMonthLabel(rawDate) {
+  if (!rawDate) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+    const [, month] = rawDate.split("-");
+    return monthLabels[Number(month) - 1] ?? null;
+  }
+
+  return rawDate.slice(0, 3);
+}
+
+function applyAmountToCashFlow(snapshot, txn, direction) {
+  const monthLabel = getMonthLabel(txn.date);
+  if (!monthLabel) return snapshot;
+
+  return snapshot.map((month) => {
+    if (month.month !== monthLabel) return month;
+
+    if (txn.amount > 0) {
+      return {
+        ...month,
+        income: Math.max(0, month.income + Math.abs(txn.amount) * direction),
+      };
+    }
+
+    return {
+      ...month,
+      expenses: Math.max(0, month.expenses + Math.abs(txn.amount) * direction),
+    };
+  });
+}
+
 export default function Dashboard() {
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning." : hour < 18 ? "Good afternoon." : "Good evening.";
   const [txns, setTxns] = useState(initialTxns);
   const [cashFlow, setCashFlow] = useState(initialCashFlow);
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [statusMessage, setStatusMessage] = useState(null);
+  const [lastRemoved, setLastRemoved] = useState(null);
   const [form, setForm] = useState({
     name: "",
     amount: "",
@@ -54,53 +107,60 @@ export default function Dashboard() {
   const totalExpenses = txns
     .filter((txn) => txn.amount < 0)
     .reduce((sum, txn) => sum + Math.abs(txn.amount), 0);
-  const netWorth = 48320 + (totalIncome - totalExpenses);
+  const netChange = totalIncome - totalExpenses;
   const savingsRate =
     totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
+  const incomeEntries = txns.filter((txn) => txn.amount > 0).length;
+  const expenseEntries = txns.filter((txn) => txn.amount < 0).length;
+  const visibleTxns = activeTab === "overview" ? txns.slice(0, 5) : txns;
+  const contextNote =
+    savingsRate >= 20
+      ? `${greeting} Your snapshot is holding steady.`
+      : `${greeting} A quick review could help tighten this month.`;
 
   const statCards = [
     {
-      label: "Net Worth",
-      value: `$${netWorth.toLocaleString()}`,
-      change: "+3.2%",
-      up: true,
-      accent: COLORS.text,
-      sub: "vs last month",
+      label: "Net Change",
+      value: formatCurrencyDelta(netChange),
+      change: `${txns.length} entries`,
+      up: netChange >= 0,
+      accent: netChange >= 0 ? COLORS.text : COLORS.red,
+      sub: "current snapshot",
     },
     {
       label: "Income",
       value: formatWholeDollars(totalIncome),
-      change: "+$400",
+      change: `${incomeEntries} entries`,
       up: true,
       accent: COLORS.accent,
-      sub: "vs last month",
+      sub: "tracked income",
     },
     {
       label: "Expenses",
       value: formatWholeDollars(totalExpenses),
-      change: "+$120",
+      change: `${expenseEntries} entries`,
       up: false,
       accent: COLORS.amber,
-      sub: "vs last month",
+      sub: "tracked spend",
     },
     {
       label: "Savings Rate",
       value: `${savingsRate}%`,
-      change: "+2.1%",
-      up: true,
+      change: totalIncome > 0 ? formatCurrencyDelta(totalIncome - totalExpenses) : "$0",
+      up: totalIncome - totalExpenses >= 0,
       accent: COLORS.accent,
-      sub: "this month",
+      sub: "left after spend",
     },
   ];
 
   function validate() {
     const nextErrors = {};
 
-    if (!form.name.trim()) nextErrors.name = "Required";
+    if (!form.name.trim()) nextErrors.name = "Add a short description";
     if (!form.amount || Number.isNaN(Number(form.amount)) || Number(form.amount) <= 0) {
-      nextErrors.amount = "Enter a valid amount";
+      nextErrors.amount = "Enter an amount greater than 0";
     }
-    if (!form.date) nextErrors.date = "Required";
+    if (!form.date) nextErrors.date = "Choose a date";
 
     return nextErrors;
   }
@@ -116,29 +176,23 @@ export default function Dashboard() {
       form.type === "expense" ? -Math.abs(Number(form.amount)) : Math.abs(Number(form.amount));
     const newTxn = {
       id: Date.now(),
-      name: form.name,
+      name: form.name.trim(),
       cat: form.cat,
       amount,
-      date: form.date,
+      date: formatTxnDate(form.date),
     };
 
     setTxns((prev) => [newTxn, ...prev]);
-    setCashFlow((prev) =>
-      prev.map((month, index) =>
-        index === prev.length - 1
-          ? {
-              ...month,
-              income: form.type === "income" ? month.income + Math.abs(amount) : month.income,
-              expenses:
-                form.type === "expense" ? month.expenses + Math.abs(amount) : month.expenses,
-            }
-          : month
-      )
-    );
+    setCashFlow((prev) => applyAmountToCashFlow(prev, newTxn, 1));
 
     setForm({ name: "", amount: "", cat: "Food & Drink", type: "expense", date: "" });
     setErrors({});
     setShowForm(false);
+    setLastRemoved(null);
+    setStatusMessage({
+      tone: "success",
+      text: `${newTxn.name} is in. The monthly snapshot already reflects it.`,
+    });
   }
 
   function resetFormState() {
@@ -147,46 +201,117 @@ export default function Dashboard() {
   }
 
   function deleteTxn(id) {
+    const removedTxn = txns.find((txn) => txn.id === id);
+    if (!removedTxn) return;
+
     setTxns((prev) => prev.filter((txn) => txn.id !== id));
+    setCashFlow((prev) => applyAmountToCashFlow(prev, removedTxn, -1));
+    setLastRemoved(removedTxn);
+    setStatusMessage({
+      tone: "warning",
+      text: `${removedTxn.name} was removed from the snapshot.`,
+      action: "Undo",
+    });
   }
 
   function openForm() {
     setShowForm(true);
+    setStatusMessage(null);
   }
 
   function updateFormField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      return { ...prev, [field]: undefined };
+    });
   }
 
   function updateFormType(type) {
     setForm((prev) => ({ ...prev, type }));
   }
 
+  function undoRemove() {
+    if (!lastRemoved) return;
+
+    setTxns((prev) => [lastRemoved, ...prev]);
+    setCashFlow((prev) => applyAmountToCashFlow(prev, lastRemoved, 1));
+    setStatusMessage({
+      tone: "success",
+      text: `${lastRemoved.name} is back in the log.`,
+    });
+    setLastRemoved(null);
+  }
+
   return (
     <div className={TW.page} style={{ ...FONTS.mono, ...PAGE_VARS }}>
-      <div
-        className={TW.pageTexture}
-        style={{ backgroundImage: DASHBOARD_TEXTURE }}
-      />
+      <div className={TW.pageTexture} style={{ backgroundImage: DASHBOARD_TEXTURE }} />
       <TopNav
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onAddTransaction={openForm}
+        contextNote={contextNote}
       />
 
       <div className={TW.pageShell}>
-        <StatsSection cards={statCards} />
+        {statusMessage ? (
+          <div
+            className={`delight-rise mb-4 flex flex-col gap-3 border px-4 py-3 text-[12px] leading-6 sm:flex-row sm:items-center sm:justify-between ${
+              statusMessage.tone === "warning"
+                ? "border-[color:var(--dashboard-amber)]/40 bg-[color:var(--dashboard-amber)]/10"
+                : "border-[color:var(--dashboard-accent)]/40 bg-[color:var(--dashboard-accent)]/10"
+            }`}
+            role="status"
+          >
+            <span>{statusMessage.text}</span>
+            {statusMessage.action === "Undo" ? (
+              <button type="button" onClick={undoRemove} className={TW.secondaryButton}>
+                Undo remove
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
-        <div className="mb-2.5 grid gap-2.5 lg:grid-cols-[1.4fr_1fr]">
-          <CashFlowSection cashFlow={cashFlow} />
-          <SpendingSection totalExpenses={totalExpenses} />
+        <div className="delight-rise mb-4 flex flex-col gap-3 border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-3 text-[12px] leading-6 text-[color:var(--dashboard-muted)] sm:flex-row sm:items-center sm:justify-between">
+          <span>{contextNote}</span>
+          <span className="rounded-full border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-text)]">
+            {activeTab === "overview" ? "Review mode" : "Activity mode"}
+          </span>
         </div>
 
-        <TransactionsSection
-          txns={txns}
-          onAddTransaction={openForm}
-          onDeleteTransaction={deleteTxn}
-        />
+        <StatsSection cards={statCards} />
+
+        {activeTab === "overview" ? (
+          <>
+            <div className="mb-2.5 grid gap-2.5 lg:grid-cols-[1.4fr_1fr]">
+              <CashFlowSection cashFlow={cashFlow} />
+              <SpendingSection totalExpenses={totalExpenses} />
+            </div>
+
+            <TransactionsSection
+              txns={visibleTxns}
+              onAddTransaction={openForm}
+              onDeleteTransaction={deleteTxn}
+              title="Latest activity"
+              summary="The newest entries live here so you can review changes quickly before making another update."
+            />
+          </>
+        ) : (
+          <div className="grid gap-2.5 lg:grid-cols-[1.35fr_0.95fr]">
+            <TransactionsSection
+              txns={visibleTxns}
+              onAddTransaction={openForm}
+              onDeleteTransaction={deleteTxn}
+              title="Activity log"
+              summary="Review, remove, or add entries from the full list without losing sight of the month."
+            />
+
+            <div className="grid gap-2.5">
+              <CashFlowSection cashFlow={cashFlow} />
+              <SpendingSection totalExpenses={totalExpenses} />
+            </div>
+          </div>
+        )}
       </div>
 
       <TransactionModal

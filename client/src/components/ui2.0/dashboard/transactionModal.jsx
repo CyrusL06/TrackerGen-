@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { X } from "lucide-react";
 import { CATEGORIES, COLORS, FONTS, TW, cx } from "./shared.js";
 import { FieldError, FieldLabel } from "./primitives.jsx";
@@ -21,13 +22,40 @@ export default function TransactionModal({
         : "border-[color:var(--dashboard-border)]"
     );
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[4px]">
-      <div className="w-full max-w-[420px] overflow-hidden border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)]">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[4px]"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="transaction-modal-title"
+        className="delight-rise w-full max-w-[420px] overflow-hidden border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)]"
+      >
         <div className="flex items-center justify-between border-b border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-5 py-4">
           <div className="flex items-center gap-2">
             <div className="h-4 w-1 bg-[color:var(--dashboard-accent)]" />
-            <span className="text-[1.1rem] tracking-[0.06em]" style={FONTS.display}>
+            <span
+              id="transaction-modal-title"
+              className="text-[1.1rem] tracking-[0.06em]"
+              style={FONTS.display}
+            >
               New Transaction
             </span>
           </div>
@@ -41,7 +69,20 @@ export default function TransactionModal({
           </button>
         </div>
 
-        <div className="p-5">
+        <form
+          className="p-5"
+          onSubmit={(event) => {
+            event.preventDefault();
+            onSubmit();
+          }}
+        >
+          <p className="mb-5 text-[12px] leading-6 text-[color:var(--dashboard-muted)]">
+            Add one clean entry for this month so the snapshot stays accurate and easy to review.
+          </p>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--dashboard-accent)] delight-orbit" />
+            Esc closes
+          </div>
           <div className="mb-[18px]">
             <FieldLabel>Type</FieldLabel>
             <div className="grid grid-cols-2 gap-[6px]">
@@ -80,6 +121,7 @@ export default function TransactionModal({
           <div className="mb-[14px]">
             <FieldLabel>Description</FieldLabel>
             <input
+              autoFocus
               className={inputClassName(Boolean(errors.name))}
               placeholder="e.g. Grocery run, Salary..."
               value={form.name}
@@ -138,14 +180,18 @@ export default function TransactionModal({
             </select>
           </div>
 
-          <button
-            type="button"
-            onClick={onSubmit}
-            className="w-full bg-[color:var(--dashboard-accent)] px-3 py-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.88]"
-          >
-            Add Transaction →
-          </button>
-        </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <button type="button" onClick={onClose} className={TW.secondaryButton}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="w-full bg-[color:var(--dashboard-accent)] px-3 py-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.88] sm:w-auto sm:min-w-[11rem]"
+            >
+              Add Transaction
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
