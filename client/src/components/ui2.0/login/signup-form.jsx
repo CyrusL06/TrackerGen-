@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { PREVIEW_ACCESS_KEY, FONTS } from "@/components/ui2.0/brand";
+import { PREVIEW_ACCESS_KEY } from "@/components/ui2.0/brand";
 import {
   AuthDivider,
   AuthField,
@@ -8,7 +8,7 @@ import {
   AuthSocialButtons,
 } from "./auth-primitives.jsx";
 
-export function LoginForm({ className = "", ...props }) {
+export function SignupForm({ className = "", ...props }) {
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
@@ -34,6 +34,12 @@ export function LoginForm({ className = "", ...props }) {
 
       <div className="grid gap-5">
         <AuthField
+          label="Name"
+          name="name"
+          autoComplete="name"
+          placeholder="Jordan Lee"
+        />
+        <AuthField
           label="Email address"
           type="email"
           name="email"
@@ -44,25 +50,17 @@ export function LoginForm({ className = "", ...props }) {
           label="Password"
           type="password"
           name="password"
-          autoComplete="current-password"
-          placeholder="Enter your password"
-          auxiliary={
-            <button
-              type="button"
-              className={`text-[0.72rem] text-[rgba(242,237,230,0.62)] transition-colors hover:text-[rgba(242,237,230,0.86)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] ${FONTS.mono}`}
-            >
-              Forgot password?
-            </button>
-          }
+          autoComplete="new-password"
+          placeholder="Create a password"
         />
       </div>
 
       <div className="grid gap-4">
-        <AuthPrimaryButton>Log in</AuthPrimaryButton>
+        <AuthPrimaryButton>Create account</AuthPrimaryButton>
       </div>
 
       <AuthFinePrint>
-        By continuing, you agree to the preview terms and privacy policy for this build.
+        By signing up, you agree to the preview terms, acceptable use, and privacy policy.
       </AuthFinePrint>
     </form>
   );
