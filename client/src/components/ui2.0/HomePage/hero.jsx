@@ -5,7 +5,7 @@ function BtnGhost({ children }) {
   return (
     <a
       href="#workflow"
-      className={`flex items-center gap-1.5 text-[0.78rem] tracking-[0.05em] text-[color:var(--brand-muted)] no-underline transition-colors duration-200 hover:text-[color:var(--brand-text)] ${FONTS.mono}`}
+      className={`inline-flex min-h-11 items-center gap-1.5 text-[0.78rem] tracking-[0.05em] text-[color:var(--brand-muted)] no-underline transition-colors duration-200 hover:text-[color:var(--brand-text)] ${FONTS.mono}`}
     >
       {children}
     </a>
@@ -25,17 +25,17 @@ export default function Hero() {
         <div
           className={`delight-rise mb-6 inline-flex items-center gap-2 border border-[color:var(--brand-border)] bg-[color:var(--brand-surface)] px-[0.7rem] py-[0.3rem] text-[0.72rem] uppercase tracking-[0.1em] text-[color:var(--brand-accent)] ${FONTS.mono}`}
         >
-          <span className="delight-orbit h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--brand-accent)]" />
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--brand-accent)]" />
           Private preview
         </div>
         <h1
-          className={`delight-rise delight-delay-1 mb-3 text-[clamp(3.5rem,6vw,6rem)] leading-[0.95] tracking-[0.02em] text-[color:var(--brand-text)] ${FONTS.display}`}
+          className={`delight-rise delight-delay-1 mb-3 text-[clamp(3.3rem,5.8vw,5.6rem)] leading-[0.98] tracking-[0.02em] text-[color:var(--brand-text)] ${FONTS.display}`}
         >
           A cleaner way
           <br />
           to review your
           <br />
-          <span className={`block text-[clamp(3rem,5.5vw,5.4rem)] text-[color:var(--brand-accent)] ${FONTS.serif}`}>
+          <span className={`block text-[clamp(2.8rem,5.2vw,4.9rem)] text-[color:var(--brand-accent)] ${FONTS.serif}`}>
             monthly money.
           </span>
         </h1>

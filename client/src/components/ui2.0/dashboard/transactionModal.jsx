@@ -3,6 +3,9 @@ import { X } from "lucide-react";
 import { CATEGORIES, COLORS, FONTS, TW, cx } from "./shared.js";
 import { FieldError, FieldLabel } from "./primitives.jsx";
 
+const mixWithTransparent = (color, amount) =>
+  `color-mix(in srgb, ${color} ${amount}%, transparent)`;
+
 export default function TransactionModal({
   show,
   form,
@@ -63,6 +66,7 @@ export default function TransactionModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close transaction form"
             className="flex p-1 text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-text)]"
           >
             <X size={16} />
@@ -79,8 +83,8 @@ export default function TransactionModal({
           <p className="mb-5 text-[12px] leading-6 text-[color:var(--dashboard-muted)]">
             Add one clean entry for this month so the snapshot stays accurate and easy to review.
           </p>
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--dashboard-accent)] delight-orbit" />
+          <div className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-3 py-2 text-[11px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--dashboard-accent)]" />
             Esc closes
           </div>
           <div className="mb-[18px]">
@@ -96,7 +100,7 @@ export default function TransactionModal({
                     type="button"
                     onClick={() => onTypeChange(type)}
                     className={cx(
-                      "border px-[9px] py-[9px] text-[11px] capitalize tracking-[0.06em] transition-all",
+                      "min-h-11 border px-[9px] py-[9px] text-[12px] capitalize tracking-[0.06em] transition-all",
                       isActive
                         ? ""
                         : "border-[color:var(--dashboard-border)] text-[color:var(--dashboard-muted)]"
@@ -106,7 +110,7 @@ export default function TransactionModal({
                         ? {
                             color: activeColor,
                             borderColor: activeColor,
-                            backgroundColor: `${activeColor}20`,
+                            backgroundColor: mixWithTransparent(activeColor, 14),
                           }
                         : undefined
                     }
@@ -152,7 +156,6 @@ export default function TransactionModal({
                 type="date"
                 value={form.date}
                 onChange={(event) => onFieldChange("date", event.target.value)}
-                style={{ colorScheme: "dark" }}
               />
               <FieldError>{errors.date}</FieldError>
             </div>
@@ -186,7 +189,7 @@ export default function TransactionModal({
             </button>
             <button
               type="submit"
-              className="w-full bg-[color:var(--dashboard-accent)] px-3 py-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.88] sm:w-auto sm:min-w-[11rem]"
+              className="w-full min-h-11 border border-[color:var(--dashboard-border)] bg-[linear-gradient(135deg,var(--dashboard-accent),var(--dashboard-amber))] px-3 py-3 text-[12px] font-medium uppercase tracking-[0.08em] text-[color:var(--dashboard-bg)] shadow-[0_10px_20px_rgba(0,0,0,0.12)] transition-opacity hover:opacity-[0.95] sm:w-auto sm:min-w-[11rem]"
             >
               Add Transaction
             </button>

@@ -12,14 +12,37 @@
   font-weight: 400;
 
   color-scheme: dark;
-  --text-main: #f5efe6;
-  --text-muted: #b6ab9c;
-  --text-dim: #92877b;
-  --border-soft: rgba(201, 168, 106, 0.24);
+  --theme-shadow: rgba(0, 0, 0, 0.14);
+  --text-main: #f2e7d8;
+  --text-muted: #b6a492;
+  --text-dim: #8a7a69;
+  --border-soft: rgba(210, 164, 106, 0.18);
   --accent: oklch(0.97 0 0);
-  --accent-strong: #c9a86a;
-  --accent-soft: #e5d1ad;
-  --bg-page: #12100d;
+  --accent-strong: #d2a46a;
+  --accent-soft: #e1c39d;
+  --bg-page: #130f0c;
+  --glow-a: rgba(210, 164, 106, 0.12);
+  --glow-b: rgba(142, 163, 122, 0.08);
+  --brand-bg: #130f0c;
+  --brand-surface: #1c1612;
+  --brand-surface-2: #241c16;
+  --brand-border: #3a2d22;
+  --brand-text: #f2e7d8;
+  --brand-muted: #b6a492;
+  --brand-accent: #d2a46a;
+  --brand-amber: #bd7451;
+  --brand-sage: #8ea07a;
+  --brand-danger: #cc8673;
+  --dashboard-bg: #130f0c;
+  --dashboard-surface: #17120f;
+  --dashboard-surface-2: #211914;
+  --dashboard-border: #34271f;
+  --dashboard-text: #f2e7d8;
+  --dashboard-muted: #b6a492;
+  --dashboard-accent: #d2a46a;
+  --dashboard-amber: #bd7451;
+  --dashboard-sage: #8ea07a;
+  --dashboard-red: #cc8673;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -58,6 +81,40 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+:root[data-theme="light"] {
+  color-scheme: light;
+  --theme-shadow: rgba(111, 84, 52, 0.1);
+  --text-main: #3f2d22;
+  --text-muted: #7c6756;
+  --text-dim: #9a836e;
+  --border-soft: rgba(175, 110, 55, 0.16);
+  --accent-strong: #af6e37;
+  --accent-soft: #d9b287;
+  --bg-page: #f5ecdf;
+  --glow-a: rgba(175, 110, 55, 0.12);
+  --glow-b: rgba(111, 134, 97, 0.08);
+  --brand-bg: #f5ecdf;
+  --brand-surface: #fbf6ee;
+  --brand-surface-2: #f1e4d5;
+  --brand-border: #d7c0a7;
+  --brand-text: #3f2d22;
+  --brand-muted: #7c6756;
+  --brand-accent: #af6e37;
+  --brand-amber: #c57b4f;
+  --brand-sage: #6f8661;
+  --brand-danger: #ba705b;
+  --dashboard-bg: #f6efe5;
+  --dashboard-surface: #fdf8f1;
+  --dashboard-surface-2: #efe2d3;
+  --dashboard-border: #dcc7b1;
+  --dashboard-text: #34251d;
+  --dashboard-muted: #7c6756;
+  --dashboard-accent: #af6e37;
+  --dashboard-amber: #c57b4f;
+  --dashboard-sage: #6f8661;
+  --dashboard-red: #ba705b;
+}
+
 html,
 body {
   height: 100%;
@@ -68,7 +125,11 @@ body {
   margin: 0;
   min-height: 100vh;
   color: var(--text-main);
-  background: var(--bg-page);
+  background:
+    radial-gradient(circle at 14% 8%, var(--glow-a), transparent 28%),
+    radial-gradient(circle at 84% 4%, var(--glow-b), transparent 24%),
+    var(--bg-page);
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 #root {
@@ -76,13 +137,13 @@ body {
 }
 
 ::selection {
-  background: rgba(201, 168, 106, 0.28);
+  background: color-mix(in srgb, var(--brand-accent) 24%, transparent);
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(10px);
   }
 
   to {
@@ -98,7 +159,7 @@ body {
   }
 
   50% {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
   }
 }
 
@@ -135,68 +196,56 @@ body {
 }
 
 .delight-rise {
-  animation: rise-in 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .delight-delay-1 {
-  animation-delay: 80ms;
+  animation-delay: 60ms;
 }
 
 .delight-delay-2 {
-  animation-delay: 160ms;
+  animation-delay: 120ms;
 }
 
 .delight-delay-3 {
-  animation-delay: 240ms;
+  animation-delay: 180ms;
 }
 
 .delight-delay-4 {
-  animation-delay: 320ms;
+  animation-delay: 240ms;
 }
 
 .delight-card {
   transition:
-    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 240ms ease,
-    box-shadow 240ms ease,
-    background-color 240ms ease;
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
 }
 
 .delight-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px var(--theme-shadow);
 }
 
 .delight-chip {
   transition:
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    color 220ms ease,
-    border-color 220ms ease,
-    background-color 220ms ease;
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
 }
 
 .delight-chip:hover {
-  transform: translateY(-2px);
-}
-
-.delight-glow {
-  background-image: linear-gradient(
-    120deg,
-    rgba(201, 168, 106, 0.12) 0%,
-    rgba(229, 209, 173, 0.22) 45%,
-    rgba(201, 168, 106, 0.12) 100%
-  );
-  background-size: 220% 100%;
-  animation: ambient-sheen 7.5s linear infinite;
+  transform: translateY(-1px);
 }
 
 .delight-orbit {
-  animation: soft-bob 5s ease-in-out infinite;
+  animation: soft-bob 8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .delight-rise,
-  .delight-glow,
   .delight-orbit {
     animation: none !important;
   }
@@ -294,7 +343,8 @@ body {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--bg-page);
+    color: var(--text-main);
   }
   html {
     @apply font-sans;

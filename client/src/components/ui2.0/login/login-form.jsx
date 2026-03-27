@@ -35,11 +35,10 @@ export function LoginForm({ className = "", ...props }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { isLoaded, signIn, setActive } = useSignIn();
-  const borderClass = "border-white/14";
+  const borderClass = "border-[color:var(--brand-border)]";
   const mutedTextClass = "text-[color:var(--brand-muted)]";
   const iconColor = "var(--brand-muted)";
 
-  //Sign in for clerk API calls
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!isLoaded || isSubmitting) return;
@@ -94,9 +93,6 @@ export function LoginForm({ className = "", ...props }) {
         <p className={`mt-3 max-w-md text-[0.84rem] leading-6 ${mutedTextClass} ${FONTS.mono}`}>
           Enter the preview credentials you were given to reopen your monthly snapshot and activity log.
         </p>
-        <p className={`mt-3 max-w-md text-[0.72rem] uppercase tracking-[0.12em] text-[color:var(--brand-muted)] ${FONTS.mono}`}>
-          Quiet entry. No extra setup steps.
-        </p>
       </div>
 
       {fields.map(({ id, label, type, placeholder, autoComplete, icon, code }) => (
@@ -121,7 +117,7 @@ export function LoginForm({ className = "", ...props }) {
             )}
           </div>
 
-          <div className={`flex items-center gap-3 border-b ${borderClass} pb-3 transition-colors focus-within:border-[color:var(--brand-accent)]`}>
+          <div className={`flex min-h-11 items-center gap-3 border-b ${borderClass} pb-3 transition-colors focus-within:border-[color:var(--brand-accent)] focus-within:shadow-[inset_0_-1px_0_0_var(--brand-accent)]`}>
             {createElement(icon, { size: 16, color: iconColor })}
             <input
               id={id}
@@ -130,7 +126,7 @@ export function LoginForm({ className = "", ...props }) {
               placeholder={placeholder}
               onChange={(e) => setFormData((prev) => ({ ...prev, [id]: e.target.value }))}
               autoComplete={autoComplete}
-              className={`w-full bg-transparent text-[0.92rem] text-[color:var(--brand-text)] outline-none placeholder:text-[color:var(--brand-muted)] ${FONTS.mono}`}
+              className={`w-full bg-transparent text-[0.92rem] text-[color:var(--brand-text)] placeholder:text-[color:var(--brand-muted)] focus-visible:outline-none ${FONTS.mono}`}
             />
           </div>
         </label>
@@ -141,7 +137,7 @@ export function LoginForm({ className = "", ...props }) {
       >
         <input
           type="checkbox"
-          className="h-4 w-4 rounded border border-white/20 bg-transparent accent-[color:var(--brand-accent)]"
+          className="h-4 w-4 rounded border border-[color:var(--brand-border)] bg-transparent accent-[color:var(--brand-accent)]"
         />
         Keep me signed in on this device
       </label>
@@ -156,7 +152,7 @@ export function LoginForm({ className = "", ...props }) {
       ) : null}
 
       {isSubmitting ? (
-        <div className={`delight-rise rounded-full border border-[color:var(--brand-border)] bg-[color:var(--brand-surface-2)] px-3 py-2 text-[0.72rem] uppercase tracking-[0.12em] text-[color:var(--brand-muted)] ${FONTS.mono}`}>
+        <div className={`delight-rise flex min-h-11 items-center rounded-full border border-[color:var(--brand-border)] bg-[color:var(--brand-surface-2)] px-3 py-2 text-[0.72rem] uppercase tracking-[0.12em] text-[color:var(--brand-muted)] ${FONTS.mono}`}>
           Checking your preview access...
         </div>
       ) : null}
@@ -164,7 +160,7 @@ export function LoginForm({ className = "", ...props }) {
       <button
         type="submit"
         disabled={!isLoaded || isSubmitting}
-        className={`delight-chip group inline-flex items-center justify-between border border-[color:var(--brand-accent)] bg-[color:var(--brand-accent)] px-4 py-3 text-[0.84rem] uppercase tracking-[0.14em] text-[color:var(--brand-bg)] shadow-[0_10px_22px_rgba(0,0,0,0.12)] transition-colors hover:bg-transparent hover:text-[color:var(--brand-accent)] disabled:cursor-not-allowed disabled:opacity-60 ${FONTS.mono}`}
+        className={`delight-chip group inline-flex min-h-11 items-center justify-between border border-[color:var(--brand-border)] bg-[linear-gradient(135deg,var(--brand-accent),var(--brand-amber))] px-4 py-3 text-[0.84rem] uppercase tracking-[0.14em] text-[color:var(--brand-bg)] shadow-[0_10px_20px_rgba(0,0,0,0.12)] transition-colors hover:opacity-[0.95] disabled:cursor-not-allowed disabled:opacity-60 ${FONTS.mono}`}
       >
         <span>{isSubmitting ? "Signing in..." : "Enter dashboard"}</span>
         <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />

@@ -1,6 +1,9 @@
 import { ArrowUpRight, ArrowDownRight, X, Coffee } from "lucide-react";
 import { CATEGORY_ICONS, COLORS, FONTS, TW, cx } from "./shared.js";
 
+const mixWithTransparent = (color, amount) =>
+  `color-mix(in srgb, ${color} ${amount}%, transparent)`;
+
 export function SurfaceCard({ className = "", children }) {
   return <div className={cx(TW.panel, "delight-card", className)}>{children}</div>;
 }
@@ -20,12 +23,12 @@ export function DisplayTitle({ children, className = "" }) {
 export function Tag({ children, color = COLORS.accent }) {
   return (
     <span
-      className="inline-block border px-2 py-1 text-[10px] uppercase tracking-[0.12em]"
+      className="inline-block border px-2 py-1 text-[11px] uppercase tracking-[0.12em]"
       style={{
         ...FONTS.mono,
         color,
-        backgroundColor: `${color}18`,
-        borderColor: `${color}30`,
+        backgroundColor: mixWithTransparent(color, 10),
+        borderColor: mixWithTransparent(color, 18),
       }}
     >
       {children}
@@ -65,7 +68,7 @@ export function StatCard({ label, value, change, up, accent, sub }) {
   return (
     <SurfaceCard className="relative overflow-hidden px-5 py-[18px]">
       <div className="absolute inset-x-0 top-0 h-0.5" style={{ backgroundColor: accent }} />
-      <div className="mb-2.5 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]">
+      <div className="mb-2.5 text-[11px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]">
         {label}
       </div>
       <div className="mb-2 text-[26px] font-bold tracking-[-0.01em]" style={{ color: accent }}>
@@ -73,11 +76,11 @@ export function StatCard({ label, value, change, up, accent, sub }) {
       </div>
       <div className="flex items-center gap-1 text-[11px]">
         {up ? (
-          <ArrowUpRight size={11} color={COLORS.accent} />
+          <ArrowUpRight size={11} color={COLORS.sage} />
         ) : (
           <ArrowDownRight size={11} color={COLORS.red} />
         )}
-        <span style={{ color: up ? COLORS.accent : COLORS.red }}>{change}</span>
+        <span style={{ color: up ? COLORS.sage : COLORS.red }}>{change}</span>
         <span className="text-[color:var(--dashboard-muted)]">{sub}</span>
       </div>
     </SurfaceCard>
@@ -92,11 +95,11 @@ export function TxnRow({ txn, onDelete }) {
     <div className="flex items-center justify-between border-b border-[color:var(--dashboard-border)] py-2.5 transition-colors hover:bg-[color:var(--dashboard-surface-2)]">
       <div className="flex items-center gap-3">
         <div className="delight-chip flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)]">
-          <Icon size={13} color={isPositive ? COLORS.accent : COLORS.muted} />
+          <Icon size={13} color={isPositive ? COLORS.sage : COLORS.accent} />
         </div>
         <div>
           <div className="mb-[2px] text-[11px] text-[color:var(--dashboard-text)]">{txn.name}</div>
-          <div className="text-[9px] tracking-[0.04em] text-[color:var(--dashboard-muted)]">
+          <div className="text-[11px] tracking-[0.04em] text-[color:var(--dashboard-muted)]">
             {txn.cat} · {txn.date}
           </div>
         </div>
@@ -105,7 +108,7 @@ export function TxnRow({ txn, onDelete }) {
       <div className="flex items-center gap-3">
         <div
           className="text-[13px] font-semibold"
-          style={{ color: isPositive ? COLORS.accent : COLORS.red }}
+          style={{ color: isPositive ? COLORS.sage : COLORS.red }}
         >
           {isPositive ? "+" : "-"}${Math.abs(txn.amount).toFixed(2)}
         </div>
@@ -113,7 +116,7 @@ export function TxnRow({ txn, onDelete }) {
           type="button"
           onClick={() => onDelete(txn.id)}
           aria-label={`Remove ${txn.name}`}
-          className="flex items-center gap-1 rounded-[3px] px-1.5 py-1 text-[10px] uppercase tracking-[0.08em] text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)]"
+          className="flex min-h-11 items-center gap-1 rounded-[3px] px-1.5 py-1 text-[11px] uppercase tracking-[0.08em] text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)]"
         >
           <X size={11} />
           <span>Remove</span>

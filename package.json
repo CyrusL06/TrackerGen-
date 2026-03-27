@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "concurrency": "^0.1.4"
+  },  "scripts": {
+    "start": "npx concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm start",
+    "client": "cd client && npm run dev"
+  }
+}

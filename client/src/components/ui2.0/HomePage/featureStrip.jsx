@@ -3,7 +3,7 @@ import { FONTS } from "@/components/ui2.0/brand";
 function StripItem({ children }) {
   return (
     <div
-      className={`delight-chip flex items-center gap-2 whitespace-nowrap rounded-full border border-transparent px-2 py-1 text-[0.72rem] uppercase tracking-[0.05em] text-[color:var(--brand-muted)] hover:border-[color:var(--brand-border)] hover:bg-[color:var(--brand-surface)] hover:text-[color:var(--brand-text)] ${FONTS.mono}`}
+      className={`flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full border border-[color:var(--brand-border)] bg-[color:var(--brand-surface)] px-3 py-2 text-[0.72rem] uppercase tracking-[0.05em] text-[color:var(--brand-muted)] ${FONTS.mono}`}
     >
       <span className="inline-block h-1.5 w-1.5 rounded-full bg-[color:var(--brand-accent)]" />
       {children}

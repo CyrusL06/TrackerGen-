@@ -9,7 +9,6 @@ import {
   COLORS,
   DASHBOARD_TEXTURE,
   FONTS,
-  PAGE_VARS,
   TW,
 } from "../components/ui2.0/dashboard/shared.js";
 
@@ -85,7 +84,7 @@ function applyAmountToCashFlow(snapshot, txn, direction) {
   });
 }
 
-export default function Dashboard() {
+export default function Dashboard({ theme, onToggleTheme }) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning." : hour < 18 ? "Good afternoon." : "Good evening.";
   const [txns, setTxns] = useState(initialTxns);
@@ -124,7 +123,7 @@ export default function Dashboard() {
       value: formatCurrencyDelta(netChange),
       change: `${txns.length} entries`,
       up: netChange >= 0,
-      accent: netChange >= 0 ? COLORS.text : COLORS.red,
+      accent: netChange >= 0 ? COLORS.sage : COLORS.red,
       sub: "current snapshot",
     },
     {
@@ -132,7 +131,7 @@ export default function Dashboard() {
       value: formatWholeDollars(totalIncome),
       change: `${incomeEntries} entries`,
       up: true,
-      accent: COLORS.accent,
+      accent: COLORS.sage,
       sub: "tracked income",
     },
     {
@@ -244,13 +243,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={TW.page} style={{ ...FONTS.mono, ...PAGE_VARS }}>
+    <div className={TW.page} style={FONTS.mono}>
       <div className={TW.pageTexture} style={{ backgroundImage: DASHBOARD_TEXTURE }} />
       <TopNav
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onAddTransaction={openForm}
-        contextNote={contextNote}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
       />
 
       <div className={TW.pageShell}>
@@ -258,8 +258,8 @@ export default function Dashboard() {
           <div
             className={`delight-rise mb-4 flex flex-col gap-3 border px-4 py-3 text-[12px] leading-6 sm:flex-row sm:items-center sm:justify-between ${
               statusMessage.tone === "warning"
-                ? "border-[color:var(--dashboard-amber)]/40 bg-[color:var(--dashboard-amber)]/10"
-                : "border-[color:var(--dashboard-accent)]/40 bg-[color:var(--dashboard-accent)]/10"
+                ? "border-[color:var(--dashboard-amber)]/28 bg-[color:var(--dashboard-amber)]/7"
+                : "border-[color:var(--dashboard-accent)]/28 bg-[color:var(--dashboard-accent)]/7"
             }`}
             role="status"
           >
@@ -274,7 +274,7 @@ export default function Dashboard() {
 
         <div className="delight-rise mb-4 flex flex-col gap-3 border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-3 text-[12px] leading-6 text-[color:var(--dashboard-muted)] sm:flex-row sm:items-center sm:justify-between">
           <span>{contextNote}</span>
-          <span className="rounded-full border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-3 py-1 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-text)]">
+          <span className="rounded-full border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-3 py-1.5 text-[11px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
             {activeTab === "overview" ? "Review mode" : "Activity mode"}
           </span>
         </div>

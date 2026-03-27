@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, MoonStar, SunMedium, X } from "lucide-react";
 import NavCta from "./ui2.0/HomePage/navcta";
 import { FONTS, LAYOUT } from "./ui2.0/brand";
 
@@ -18,7 +18,7 @@ const mobilePanelShellClass = "mx-auto w-full max-w-[1400px] px-4 pb-4";
 function Logo() {
   return (
     <a href="#home" className="flex items-center gap-2.5 no-underline">
-      <div className="delight-orbit flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[color:var(--brand-accent)] shadow-[0_8px_18px_rgba(0,0,0,0.14)]">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[color:var(--brand-accent)] shadow-[0_4px_10px_rgba(0,0,0,0.08)]">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M2 10 L5 6 L8 8 L12 3" stroke="var(--brand-bg)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -42,7 +42,23 @@ function NavLink({ children, href = "#", className = "", onClick }) {
   );
 }
 
-export default function Nav() {
+function ThemeToggle({ theme, onToggleTheme, className = "" }) {
+  const isDark = theme === "dark";
+
+  return (
+    <button
+      type="button"
+      onClick={onToggleTheme}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className={`delight-chip inline-flex min-h-11 items-center gap-2 border border-[color:var(--brand-border)] bg-[color:var(--brand-surface)] px-3 py-2 text-[0.72rem] uppercase tracking-[0.14em] text-[color:var(--brand-text)] transition-colors hover:border-[color:var(--brand-accent)] hover:text-[color:var(--brand-accent)] ${FONTS.mono} ${className}`.trim()}
+    >
+      {isDark ? <SunMedium size={14} /> : <MoonStar size={14} />}
+      <span>{isDark ? "Light mode" : "Dark mode"}</span>
+    </button>
+  );
+}
+
+export default function Nav({ theme, onToggleTheme }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const mobileMenuId = useId();
 
@@ -73,7 +89,10 @@ export default function Nav() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[color:var(--brand-border)] bg-[rgba(18,16,13,0.94)]">
+    <nav
+      className="sticky top-0 z-50 border-b border-[color:var(--brand-border)] backdrop-blur-sm"
+      style={{ backgroundColor: "color-mix(in srgb, var(--brand-bg) 92%, transparent)" }}
+    >
       <div className={`${LAYOUT.nav} flex-wrap md:flex-nowrap`}>
         <div className="delight-rise flex w-full items-center justify-between gap-4 md:w-auto md:flex-none md:justify-start">
           <Logo />
@@ -83,7 +102,7 @@ export default function Nav() {
             aria-controls={mobileMenuId}
             aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             onClick={() => setIsMenuOpen((prev) => !prev)}
-            className={`inline-flex items-center gap-2 border border-[color:var(--brand-border)] px-3 py-2 text-[0.72rem] uppercase tracking-[0.14em] text-[color:var(--brand-text)] transition-colors duration-200 hover:border-[color:var(--brand-accent)] hover:text-[color:var(--brand-accent)] md:hidden ${FONTS.mono}`}
+            className={`inline-flex min-h-11 items-center gap-2 border border-[color:var(--brand-border)] px-3 py-2 text-[0.72rem] uppercase tracking-[0.14em] text-[color:var(--brand-text)] transition-colors duration-200 hover:border-[color:var(--brand-accent)] hover:text-[color:var(--brand-accent)] md:hidden ${FONTS.mono}`}
           >
             {isMenuOpen ? <X size={14} /> : <Menu size={14} />}
             <span>{isMenuOpen ? "Close" : "Menu"}</span>
@@ -98,8 +117,9 @@ export default function Nav() {
           ))}
         </ul>
 
-        <div className="hidden shrink-0 md:block delight-rise delight-delay-2">
-          <NavCta href="/login">Log in</NavCta>
+        <div className="hidden shrink-0 items-center gap-3 md:flex delight-rise delight-delay-2">
+          <ThemeToggle theme={theme} onToggleTheme={onToggleTheme} />
+          <NavCta href="/login">Preview login</NavCta>
         </div>
       </div>
 
@@ -128,6 +148,17 @@ export default function Nav() {
               >
                 Preview login
               </a>
+
+              <div className="px-3 py-4">
+                <ThemeToggle
+                  theme={theme}
+                  onToggleTheme={() => {
+                    onToggleTheme();
+                    closeMenu();
+                  }}
+                  className="w-full justify-center"
+                />
+              </div>
             </div>
           </div>
         </div>

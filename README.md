@@ -4,6 +4,13 @@
 
 🔗 **Live Demo:** [trackergen2.pages.dev](https://trackergen2.pages.dev)
 
+
+to run pls do these steps:
+
+npm i (both client and server)
+npm run dev (client)
+node server.js (server)
+
 ---
 
 ## Overview

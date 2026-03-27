@@ -13,10 +13,11 @@ const index_html = path.join(DIST_DIR, "index.html")
 
 
 const app = express()
-const port = 3200;
+const port = process.env.PORT || 3200;
 
 //Path to front-end
 // const DIST_DIR = path.resolve()
+
 
 //Let express read form bodies like www-form-urlencoded
 app.use(express.urlencoded({extended:true}));
@@ -45,7 +46,7 @@ if (fs.existsSync(index_html)){
     })
 
 } else{
-    console.log("client/dist not found, run the frontend with vite in dev")
+    console.log("client/dist not found, starting backend in API-only mode")
 
 }
 

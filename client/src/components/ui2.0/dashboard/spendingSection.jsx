@@ -12,7 +12,7 @@ export default function SpendingSection({ totalExpenses }) {
 
         return (
           <div key={category} className="mb-3">
-            <div className="mb-[5px] flex items-center justify-between text-[10px]">
+            <div className="mb-[5px] flex items-center justify-between text-[11px]">
               <span className="tracking-[0.03em] text-[color:var(--dashboard-text)]">{category}</span>
               <span className="text-[color:var(--dashboard-muted)]">
                 ${amount} <span style={{ color }}>{percentage}%</span>

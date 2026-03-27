@@ -36,7 +36,7 @@ export default function CashFlowSection({ cashFlow }) {
           <DisplayTitle>8 Month Overview</DisplayTitle>
         </div>
 
-        <div className="flex gap-[14px] text-[9px] text-[color:var(--dashboard-muted)]">
+        <div className="flex gap-[14px] text-[11px] text-[color:var(--dashboard-muted)]">
           {[
             [COLORS.accent, "Income"],
             [COLORS.amber, "Expenses"],
@@ -65,7 +65,7 @@ export default function CashFlowSection({ cashFlow }) {
             </linearGradient>
           </defs>
 
-          <CartesianGrid strokeDasharray="3 3" stroke="#181816" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={COLORS.border} vertical={false} />
           <XAxis dataKey="month" tick={chartTick} axisLine={false} tickLine={false} />
           <YAxis tick={chartTick} axisLine={false} tickLine={false} />
           <Tooltip content={<ChartTooltip />} cursor={{ stroke: COLORS.border, strokeWidth: 1 }} />
