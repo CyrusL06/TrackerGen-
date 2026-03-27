@@ -7,6 +7,7 @@ const navItems = [
   { href: "#home", label: "Home" },
   { href: "#product", label: "Product" },
   { href: "#how-it-works", label: "How it Works" },
+  { href: "#access", label: "Preview" },
 ];
 
 const baseLinkClass =

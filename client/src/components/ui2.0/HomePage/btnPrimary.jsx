@@ -1,6 +1,6 @@
 import { FONTS } from "@/components/ui2.0/brand";
 
-export default function BtnPrimary({ children, href = "#"}) {
+export default function BtnPrimary({ children, href = "/login" }) {
   return (
     <a
       href={href}

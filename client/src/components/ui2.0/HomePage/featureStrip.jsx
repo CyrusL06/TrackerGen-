@@ -12,7 +12,14 @@ function StripItem({ children }) {
 }
 
 export default function FeatureStrip() {
-  const items = ["Real-time sync","Bank-level security","Portfolio tracking","Budget goals","Export to CSV","Multi-currency"];
+  const items = [
+    "Manual transaction entry",
+    "Income and expense split",
+    "Month-by-month cash flow",
+    "Category breakdown",
+    "Recent activity log",
+    "Early access preview",
+  ];
   return (
     <section
       id="product"

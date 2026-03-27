@@ -17,9 +17,21 @@ function Step({ num, title, desc }) {
 
 export default function HowItWorks() {
   const steps = [
-    { num:"01", title:"CONNECT YOUR ACCOUNTS", desc:"Link your bank, credit cards, and investment accounts in under 2 minutes. We support 10,000+ institutions." },
-    { num:"02", title:"SEE YOUR NUMBERS",       desc:"Every transaction categorized automatically. Spending patterns surfaced instantly. No manual entry, ever." },
-    { num:"03", title:"MAKE BETTER MOVES",      desc:"Set goals, track progress, get alerts when you overspend. Your money, finally working for you." },
+    {
+      num: "01",
+      title: "OPEN THE PREVIEW",
+      desc: "Use the preview route to enter the current dashboard experience on this device.",
+    },
+    {
+      num: "02",
+      title: "ADD WHAT CHANGED",
+      desc: "Log income and expenses with a date, amount, and category so the current month stays grounded in real entries.",
+    },
+    {
+      num: "03",
+      title: "REVIEW THE MONTH",
+      desc: "Check net change, cash flow, category mix, and recent activity before deciding what to update next.",
+    },
   ];
   return (
     <section id="how-it-works" className={`${LAYOUT.content} py-24`}>
@@ -29,9 +41,9 @@ export default function HowItWorks() {
       <h2
         className={`mb-16 text-[clamp(2.5rem,4vw,4rem)] leading-none tracking-[0.02em] text-[#f2ede6] ${FONTS.display}`}
       >
-        Simple by design.
+        Honest by design.
         <br />
-        <em className={`text-[#6b6860] ${FONTS.serif}`}>Powerful by default.</em>
+        <em className={`text-[#6b6860] ${FONTS.serif}`}>Focused on the current month.</em>
       </h2>
       <div className="grid gap-px border border-[#222220] bg-[#222220] md:grid-cols-3">
         {steps.map((step) => (
