@@ -42,34 +42,17 @@ export function FieldError({ children }) {
   return <div className={TW.fieldError}>{children}</div>;
 }
 
-export function NavTab({ active, onClick, children }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cx(
-        TW.tabButton,
-        active
-          ? "border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] text-[color:var(--dashboard-text)]"
-          : "border-transparent bg-transparent text-[color:var(--dashboard-muted)] hover:text-[color:var(--dashboard-text)]"
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
 export function StatCard({ label, value, change, up, accent, sub }) {
   return (
     <SurfaceCard className="relative overflow-hidden px-5 py-[18px]">
       <div className="absolute inset-x-0 top-0 h-0.5" style={{ backgroundColor: accent }} />
-      <div className="mb-2.5 text-[9px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
+      <div className="mb-2.5 text-[10px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
         {label}
       </div>
       <div className="mb-2 text-[26px] font-bold tracking-[-0.01em]" style={{ color: accent }}>
         {value}
       </div>
-      <div className="flex items-center gap-1 text-[10px]">
+      <div className="flex flex-wrap items-center gap-x-1 gap-y-1 text-[11px]">
         {up ? (
           <ArrowUpRight size={11} color={COLORS.accent} />
         ) : (
@@ -93,8 +76,8 @@ export function TxnRow({ txn, onDelete }) {
           <Icon size={13} color={isPositive ? COLORS.accent : COLORS.muted} />
         </div>
         <div>
-          <div className="mb-[2px] text-[11px] text-[color:var(--dashboard-text)]">{txn.name}</div>
-          <div className="text-[9px] tracking-[0.04em] text-[color:var(--dashboard-muted)]">
+          <div className="mb-[2px] text-[12px] text-[color:var(--dashboard-text)]">{txn.name}</div>
+          <div className="text-[10px] tracking-[0.04em] text-[color:var(--dashboard-muted)]">
             {txn.cat} · {txn.date}
           </div>
         </div>
@@ -110,9 +93,10 @@ export function TxnRow({ txn, onDelete }) {
         <button
           type="button"
           onClick={() => onDelete(txn.id)}
-          className="flex items-center p-0.5 text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)]"
+          className="flex min-h-11 items-center gap-1 px-1 py-1 text-[10px] uppercase tracking-[0.06em] text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)]"
         >
           <X size={11} />
+          <span>Remove</span>
         </button>
       </div>
     </div>

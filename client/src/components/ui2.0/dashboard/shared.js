@@ -45,24 +45,18 @@ export const TW = {
   pageShell: "relative mx-auto max-w-[1100px] px-4 py-8 sm:p-8",
   panel: "border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)]",
   panelPadding: "px-5 py-[18px]",
-  eyebrow: "mb-[3px] text-[9px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
+  eyebrow: "mb-[3px] text-[10px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
   displayTitle: "text-[1.3rem] tracking-[0.04em]",
   fieldLabel:
-    "mb-[5px] block text-[9px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
-  fieldError: "mt-1 text-[9px] text-[color:var(--dashboard-red)]",
+    "mb-[5px] block text-[10px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
+  fieldError: "mt-1 text-[10px] text-[color:var(--dashboard-red)]",
   inputBase:
-    "w-full border bg-[color:var(--dashboard-surface-2)] px-3 py-[9px] text-[11px] tracking-[0.03em] text-[color:var(--dashboard-text)] outline-none transition-colors placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)]",
+    "w-full border bg-[color:var(--dashboard-surface-2)] px-3 py-[10px] text-[12px] tracking-[0.03em] text-[color:var(--dashboard-text)] outline-none transition-colors placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)]",
   primaryButton:
-    "inline-flex items-center gap-1.5 bg-[color:var(--dashboard-accent)] px-[14px] py-[7px] text-[11px] font-semibold uppercase tracking-[0.06em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.85]",
+    "inline-flex min-h-11 items-center gap-1.5 bg-[color:var(--dashboard-accent)] px-[14px] py-[7px] text-[11px] font-semibold uppercase tracking-[0.06em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.85]",
   secondaryButton:
-    "inline-flex items-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-[10px] py-[5px] text-[10px] tracking-[0.05em] text-[color:var(--dashboard-muted)] transition-colors hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)]",
-  tabGroup:
-    "flex flex-wrap gap-[2px] rounded-[4px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] p-[3px]",
-  tabButton:
-    "rounded-[3px] border px-[13px] py-[5px] text-[10px] capitalize tracking-[0.05em] transition-all",
+    "inline-flex min-h-11 items-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-[10px] py-[5px] text-[10px] tracking-[0.05em] text-[color:var(--dashboard-muted)] transition-colors hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)]",
 };
-
-export const NAV_TABS = ["overview", "transactions", "goals"];
 
 export const CATEGORY_ICONS = {
   Housing: Home,
@@ -87,7 +81,7 @@ export const SPENDING_BREAKDOWN = [
 
 export const chartTick = {
   fill: COLORS.muted,
-  fontSize: 9,
+  fontSize: 10,
   fontFamily: FONTS.mono.fontFamily,
 };
 

@@ -13,6 +13,9 @@ export default function TransactionsSection({
         <div>
           <Eyebrow>Activity</Eyebrow>
           <DisplayTitle>Recent Transactions</DisplayTitle>
+          <p className="mt-2 max-w-md text-[12px] leading-6 text-[color:var(--dashboard-muted)]">
+            Manual entries update the current month review and recent activity list.
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
