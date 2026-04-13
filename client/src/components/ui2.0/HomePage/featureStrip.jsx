@@ -23,10 +23,12 @@ export default function FeatureStrip() {
   return (
     <section
       id="product"
-      className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 overflow-hidden border-y border-[#222220] px-4 py-5 md:px-10"
+      className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 overflow-hidden border-y border-[#222220] px-4 py-4 md:gap-x-12 md:gap-y-4 md:px-10 md:py-5"
     >
-      {items.map((item) => (
-        <StripItem key={item}>{item}</StripItem>
+      {items.map((item, index) => (
+        <div key={item} className={index > 2 ? "hidden md:block" : ""}>
+          <StripItem>{item}</StripItem>
+        </div>
       ))}
     </section>
   );

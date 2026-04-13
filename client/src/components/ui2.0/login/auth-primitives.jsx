@@ -49,26 +49,58 @@ export function AuthField({
   autoComplete,
   auxiliary,
   helpText,
+  value,
+  onChange,
+  inputMode,
+  min,
+  step,
+  required,
+  disabled,
+  prefix,
+  className = "",
+  inputClassName = "",
 }) {
+  const input = (
+    <input
+      type={type}
+      name={name}
+      autoComplete={autoComplete}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      inputMode={inputMode}
+      min={min}
+      step={step}
+      required={required}
+      disabled={disabled}
+      className={`min-h-[3rem] rounded-[12px] border border-[color:var(--auth-border)] bg-[rgba(24,24,22,0.7)] px-3.5 text-[0.84rem] text-[color:var(--auth-text)] outline-none transition-colors placeholder:text-[color:var(--auth-muted)] focus:border-[color:var(--auth-border-strong)] focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 ${prefix ? "pl-10" : ""} ${FONTS.mono} ${inputClassName}`}
+    />
+  );
+
   return (
-    <label className="grid gap-2.5" style={vars}>
+    <label className={`grid gap-2 ${className}`} style={vars}>
       <div className="flex items-center justify-between gap-4">
         <span
-          className={`text-[0.74rem] tracking-[0.02em] text-[color:var(--auth-muted)] ${FONTS.mono}`}
+          className={`text-[0.7rem] tracking-[0.02em] text-[color:var(--auth-muted)] ${FONTS.mono}`}
         >
           {label}
         </span>
         {auxiliary}
       </div>
-      <input
-        type={type}
-        name={name}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-        className={`min-h-[3.35rem] rounded-[14px] border border-[color:var(--auth-border)] bg-[rgba(24,24,22,0.7)] px-4 text-[0.92rem] text-[color:var(--auth-text)] outline-none transition-colors placeholder:text-[color:var(--auth-muted)] focus:border-[color:var(--auth-border-strong)] focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] motion-reduce:transition-none ${FONTS.mono}`}
-      />
+      {prefix ? (
+        <div className="relative">
+          <span
+            className={`pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[0.8rem] text-[color:var(--auth-muted)] ${FONTS.mono}`}
+          >
+            {prefix}
+          </span>
+          {input}
+        </div>
+      ) : (
+        input
+      )}
       {helpText ? (
-        <span className={`text-[0.72rem] leading-6 text-[color:var(--auth-muted)] ${FONTS.mono}`}>
+        <span className={`text-[0.68rem] leading-5 text-[color:var(--auth-muted)] ${FONTS.mono}`}>
           {helpText}
         </span>
       ) : null}
@@ -78,14 +110,15 @@ export function AuthField({
 
 export function AuthSocialButtons({ providers }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2" style={vars}>
+    <div className="grid gap-2.5 sm:grid-cols-2" style={vars}>
       {providers.map((provider) => {
         const Icon = provider.icon === "github" ? GithubIcon : GoogleIcon;
         return (
           <button
             key={provider.label}
             type="button"
-            className={`inline-flex min-h-[3.2rem] items-center justify-center gap-3 rounded-[14px] border border-[color:var(--auth-border)] bg-[rgba(24,24,22,0.72)] px-4 text-[0.86rem] text-[color:var(--auth-text)] transition-colors hover:border-[color:var(--auth-border-strong)] hover:bg-[rgba(28,28,26,0.78)] focus-visible:border-[color:var(--auth-border-strong)] focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] motion-reduce:transition-none ${FONTS.mono}`}
+            onClick={provider.onClick}
+            className={`inline-flex min-h-[2.95rem] items-center justify-center gap-2.5 rounded-[12px] border border-[color:var(--auth-border)] bg-[rgba(24,24,22,0.72)] px-3.5 text-[0.8rem] text-[color:var(--auth-text)] transition-colors hover:border-[color:var(--auth-border-strong)] hover:bg-[rgba(28,28,26,0.78)] focus-visible:border-[color:var(--auth-border-strong)] focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] motion-reduce:transition-none ${FONTS.mono}`}
           >
             <Icon />
             <span>{provider.label}</span>
@@ -98,20 +131,32 @@ export function AuthSocialButtons({ providers }) {
 
 export function AuthDivider() {
   return (
-    <div className="flex items-center gap-5" style={vars}>
+    <div className="flex items-center gap-4" style={vars}>
       <div className="h-px flex-1 bg-[color:var(--auth-border)]" />
-      <span className={`text-[0.78rem] text-[color:var(--auth-muted)] ${FONTS.mono}`}>or</span>
+      <span className={`text-[0.72rem] text-[color:var(--auth-muted)] ${FONTS.mono}`}>or</span>
       <div className="h-px flex-1 bg-[color:var(--auth-border)]" />
     </div>
   );
 }
 
-export function AuthPrimaryButton({ children }) {
+export function AuthPrimaryButton({
+  children,
+  type = "submit",
+  disabled = false,
+  className = "",
+  ...props
+}) {
   return (
     <button
-      type="submit"
+      type={type}
+      disabled={disabled}
       style={vars}
-      className={`inline-flex min-h-[3.35rem] items-center justify-center rounded-[14px] border border-[color:var(--auth-border)] bg-[rgba(24,24,22,0.74)] px-4 text-[0.88rem] text-[rgba(242,237,230,0.46)] transition-colors hover:border-[color:var(--auth-border-strong)] hover:text-[color:var(--auth-text)] focus-visible:border-[color:var(--auth-border-strong)] focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] motion-reduce:transition-none ${FONTS.mono}`}
+      className={`inline-flex min-h-[3rem] items-center justify-center rounded-[12px] border border-[color:var(--auth-border)] bg-[rgba(24,24,22,0.74)] px-4 text-[0.82rem] transition-colors focus-visible:border-[color:var(--auth-border-strong)] focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] motion-reduce:transition-none ${
+        disabled
+          ? "cursor-not-allowed text-[rgba(242,237,230,0.35)]"
+          : "text-[rgba(242,237,230,0.6)] hover:border-[color:var(--auth-border-strong)] hover:text-[color:var(--auth-text)]"
+      } ${FONTS.mono} ${className}`}
+      {...props}
     >
       {children}
     </button>
@@ -120,7 +165,7 @@ export function AuthPrimaryButton({ children }) {
 
 export function AuthAltLink({ prompt, cta, to }) {
   return (
-    <p className={`text-center text-[0.84rem] leading-6 text-[color:var(--auth-muted)] ${FONTS.mono}`} style={vars}>
+    <p className={`text-center text-[0.78rem] leading-5 text-[color:var(--auth-muted)] ${FONTS.mono}`} style={vars}>
       {prompt}{" "}
       <Link to={to} className="text-[color:var(--auth-text)] transition-opacity hover:opacity-75">
         {cta}
@@ -131,7 +176,7 @@ export function AuthAltLink({ prompt, cta, to }) {
 
 export function AuthFinePrint({ children }) {
   return (
-    <p className={`mx-auto max-w-[24rem] text-center text-[0.72rem] leading-6 text-[color:var(--auth-muted)] ${FONTS.mono}`} style={vars}>
+    <p className={`mx-auto max-w-[22rem] text-center text-[0.68rem] leading-5 text-[color:var(--auth-muted)] ${FONTS.mono}`} style={vars}>
       {children}
     </p>
   );

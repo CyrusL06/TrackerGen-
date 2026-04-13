@@ -9,27 +9,27 @@ export default function TransactionsSection({
 }) {
   return (
     <SurfaceCard className={TW.panelPadding}>
-      <div className="mb-1 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div>
           <Eyebrow>Activity</Eyebrow>
           <DisplayTitle>Recent Transactions</DisplayTitle>
-          <p className="mt-2 max-w-md text-[12px] leading-6 text-[color:var(--dashboard-muted)]">
+          <p className="mt-2 max-w-md text-[14px] leading-6 text-[color:var(--dashboard-muted)] sm:text-[12px]">
             Manual entries update the current month review and recent activity list.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
           <Tag color={COLORS.accent}>{txns.length} total</Tag>
           <button type="button" onClick={onAddTransaction} className={TW.secondaryButton}>
-            <Plus size={10} />
+            <Plus size={12} />
             Add
           </button>
         </div>
       </div>
 
-      <div className="max-h-[280px] overflow-y-auto">
+      <div className="max-h-[320px] overflow-y-auto">
         {txns.length === 0 ? (
-          <div className="py-8 text-center text-[11px] text-[color:var(--dashboard-muted)]">
+          <div className="py-8 text-center text-[14px] text-[color:var(--dashboard-muted)] sm:text-[11px]">
             No transactions yet. Add one above.
           </div>
         ) : (

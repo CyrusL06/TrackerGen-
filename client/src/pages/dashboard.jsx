@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import CashFlowSection from "@/components/ui2.0/dashboard/cashFlowSection";
+import { logout } from "@/lib/auth";
 import SpendingSection from "../components/ui2.0/dashboard/spendingSection";
 import StatsSection from "../components/ui2.0/dashboard/statsSection";
 import TopNav from "../components/ui2.0/dashboard/topNav";
@@ -86,6 +88,8 @@ function applyAmountToCashFlow(snapshot, txn, direction) {
 }
 
 export default function Dashboard() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [txns, setTxns] = useState(initialTxns);
   const [cashFlow, setCashFlow] = useState(initialCashFlow);
   const [showForm, setShowForm] = useState(false);
@@ -99,6 +103,7 @@ export default function Dashboard() {
   const [errors, setErrors] = useState({});
   const [statusMessage, setStatusMessage] = useState(null);
   const [lastRemoved, setLastRemoved] = useState(null);
+  const onboardingSummary = location.state?.onboardingSummary ?? null;
 
   const totalIncome = txns.filter((txn) => txn.amount > 0).reduce((sum, txn) => sum + txn.amount, 0);
   const totalExpenses = txns
@@ -211,6 +216,11 @@ export default function Dashboard() {
     setStatusMessage(null);
   }
 
+  async function handleLogout() {
+    await logout();
+    navigate("/login", { replace: true });
+  }
+
   function updateFormField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => {
@@ -241,12 +251,12 @@ export default function Dashboard() {
         className={TW.pageTexture}
         style={{ backgroundImage: DASHBOARD_TEXTURE }}
       />
-      <TopNav onAddTransaction={openForm} />
+      <TopNav onAddTransaction={openForm} onLogout={handleLogout} />
 
       <div className={TW.pageShell}>
         {statusMessage ? (
           <div
-            className={`mb-4 flex flex-col gap-3 border px-4 py-3 text-[12px] leading-6 sm:flex-row sm:items-center sm:justify-between ${
+            className={`mb-4 flex flex-col gap-3 border px-4 py-3 text-[14px] leading-6 sm:flex-row sm:items-center sm:justify-between sm:text-[12px] ${
               statusMessage.tone === "warning"
                 ? "border-[color:color-mix(in_srgb,var(--dashboard-amber)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-amber)_8%,transparent)]"
                 : "border-[color:color-mix(in_srgb,var(--dashboard-accent)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_8%,transparent)]"
@@ -262,13 +272,19 @@ export default function Dashboard() {
           </div>
         ) : null}
 
-        <div className="mb-4 border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-3 text-[12px] leading-6 text-[color:var(--dashboard-muted)]">
+        {onboardingSummary ? (
+          <div className="mb-4 border border-[color:color-mix(in_srgb,var(--dashboard-accent)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_7%,transparent)] px-4 py-3 text-[14px] leading-6 text-[color:var(--dashboard-text)] sm:text-[12px]">
+            {onboardingSummary.text}
+          </div>
+        ) : null}
+
+        <div className="mb-4 border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-3 text-[14px] leading-6 text-[color:var(--dashboard-muted)] sm:text-[12px]">
           Preview build: manual entries update the current month snapshot on this screen.
         </div>
 
         <StatsSection cards={statCards} />
 
-        <div className="mb-2.5 grid gap-2.5 lg:grid-cols-[1.4fr_1fr]">
+        <div className="mb-3 grid gap-3 lg:grid-cols-[1.4fr_1fr]">
           <CashFlowSection cashFlow={cashFlow} />
           <SpendingSection totalExpenses={totalExpenses} />
         </div>

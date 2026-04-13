@@ -36,7 +36,7 @@ export default function CashFlowSection({ cashFlow }) {
           <DisplayTitle>8 Month Overview</DisplayTitle>
         </div>
 
-        <div className="flex gap-[14px] text-[9px] text-[color:var(--dashboard-muted)]">
+        <div className="flex gap-[14px] text-[11px] text-[color:var(--dashboard-muted)] sm:text-[9px]">
           {[
             [COLORS.accent, "Income"],
             [COLORS.amber, "Expenses"],
@@ -52,8 +52,8 @@ export default function CashFlowSection({ cashFlow }) {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={160}>
-        <AreaChart data={cashFlow} margin={{ top: 4, right: 0, left: -28, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={184}>
+        <AreaChart data={cashFlow} margin={{ top: 4, right: 0, left: -18, bottom: 0 }}>
           <defs>
             <linearGradient id="gI" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={COLORS.accent} stopOpacity={0.15} />

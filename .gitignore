@@ -1,0 +1,12 @@
+# Private docs and local notes
+.impeccable.md
+impecable.md
+docs/
+
+# Local env files and secrets
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example

@@ -15,7 +15,7 @@ export default function Home() {
       <div className="pointer-events-none absolute right-[-8rem] top-[28rem] h-80 w-80 rounded-full bg-[#f1a935]/4 blur-3xl" />
 
       <main className="relative z-10">
-        <Hero className="flex justify-center w-full items-center" />
+        <Hero />
         <FeatureStrip />
         <HowItWorks />
         <CtaSection />

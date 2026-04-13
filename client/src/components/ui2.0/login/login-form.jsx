@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { PREVIEW_ACCESS_KEY, FONTS } from "@/components/ui2.0/brand";
+import { goToLogin, goToSocialLogin } from "@/lib/auth";
+import { FONTS } from "@/components/ui2.0/brand";
 import {
   AuthDivider,
   AuthField,
@@ -9,24 +9,27 @@ import {
 } from "./auth-primitives.jsx";
 
 export function LoginForm({ className = "", ...props }) {
-  const navigate = useNavigate();
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    window.sessionStorage.setItem(PREVIEW_ACCESS_KEY, "granted");
-    navigate("/dashboard");
-  };
-
   return (
     <form
       className={`flex flex-col gap-6 ${className}`}
       {...props}
-      onSubmit={handleSubmit}
+      onSubmit={(event) => {
+        event.preventDefault();
+        goToLogin("/dashboard");
+      }}
     >
       <AuthSocialButtons
         providers={[
-          { label: "Continue with Google", icon: "google" },
-          { label: "Continue with GitHub", icon: "github" },
+          {
+            label: "Continue with Google",
+            icon: "google",
+            onClick: () => goToSocialLogin("google", "/dashboard"),
+          },
+          {
+            label: "Continue with GitHub",
+            icon: "github",
+            onClick: () => goToSocialLogin("github", "/dashboard"),
+          },
         ]}
       />
 
@@ -58,7 +61,7 @@ export function LoginForm({ className = "", ...props }) {
       </div>
 
       <div className="grid gap-4">
-        <AuthPrimaryButton>Log in</AuthPrimaryButton>
+        <AuthPrimaryButton type="submit">Log in</AuthPrimaryButton>
       </div>
 
       <AuthFinePrint>

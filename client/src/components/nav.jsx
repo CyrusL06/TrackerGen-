@@ -25,7 +25,7 @@ function Logo() {
         </svg>
       </div>
       <span className={`text-[1.3rem] tracking-[0.05em] text-[#f2ede6] ${FONTS.display}`}>
-        TRACKERGEN
+        TRACKI
       </span>
     </a>
   );

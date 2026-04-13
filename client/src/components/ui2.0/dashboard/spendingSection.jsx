@@ -11,8 +11,8 @@ export default function SpendingSection({ totalExpenses }) {
         const percentage = Math.round((amount / totalExpenses) * 100) || 0;
 
         return (
-          <div key={category} className="mb-3">
-            <div className="mb-[5px] flex items-center justify-between text-[10px]">
+          <div key={category} className="mb-4 sm:mb-3">
+            <div className="mb-[6px] flex items-center justify-between text-[12px] sm:mb-[5px] sm:text-[10px]">
               <span className="tracking-[0.03em] text-[color:var(--dashboard-text)]">{category}</span>
               <span className="text-[color:var(--dashboard-muted)]">
                 ${amount} <span style={{ color }}>{percentage}%</span>
