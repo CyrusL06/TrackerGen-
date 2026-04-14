@@ -11,7 +11,8 @@ import { WorkOS } from "@workos-inc/node";
 import { fileURLToPath } from "url";
 
 //Database
-import router from "./routes/route.js";
+import { buildRouter } from "./routes/route.js";
+import { createAuthHelpers } from "./config/auth.js";
 import {connectDB} from "./config/db.js"
 
 // Recreates __dirname in ES module mode
@@ -69,9 +70,21 @@ if (WORKOS_COOKIE_PASSWORD.length < 32) {
   );
 }
 
+//----------
+// Databse
+//-----------
 const workos = new WorkOS(WORKOS_API_KEY, {
   clientId: WORKOS_CLIENT_ID,
 });
+
+const { getAuthenticatedUser } = createAuthHelpers({
+    workos,
+    cookieName: COOKIE_NAME,
+    cookiePassword: WORKOS_COOKIE_PASSWORD,
+})
+
+const router = buildRouter({getAuthenticatedUser});
+
 
 const startServerDB = async ()=> {
     console.log("Connection to MongoDB...")
@@ -83,6 +96,13 @@ const startServerDB = async ()=> {
 });
 
 }
+
+
+
+//---------------
+// WorkOS Authentication...
+//-------------
+
 
 
 // CORS setup
@@ -99,7 +119,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors())
+// app.use(cors())
 
 app.use("/", router);
 
