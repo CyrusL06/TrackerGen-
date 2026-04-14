@@ -2,11 +2,17 @@ import dotenv from "dotenv";
 import express from "express";
 import path from "path";
 import fs from "fs";
+
+
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { doubleCsrf } from "csrf-csrf";
 import { WorkOS } from "@workos-inc/node";
 import { fileURLToPath } from "url";
+
+//Database
+import router from "./routes/route.js";
+import {connectDB} from "./config/db.js"
 
 // Recreates __dirname in ES module mode
 const __filename = fileURLToPath(import.meta.url);
@@ -15,8 +21,11 @@ const envPath = path.join(__dirname, ".env.local");
 
 dotenv.config({ path: envPath });
 
+
 const app = express();
 const port = process.env.PORT || 3200;
+
+
 
 const COOKIE_NAME = "wos-session";
 // This is the frontend URL in dev or your deployed frontend later
@@ -50,6 +59,9 @@ const WORKOS_CLIENT_ID = requireEnv("WORKOS_CLIENT_ID");
 const WORKOS_COOKIE_PASSWORD = requireEnv("WORKOS_COOKIE_PASSWORD");
 const WORKOS_REDIRECT_URI = requireEnv("WORKOS_REDIRECT_URI");
 const CSRF_SECRET = process.env.CSRF_SECRET || WORKOS_COOKIE_PASSWORD;
+const URI = requireEnv("MONGODB_URI")
+
+
 
 if (WORKOS_COOKIE_PASSWORD.length < 32) {
   throw new Error(
@@ -60,6 +72,18 @@ if (WORKOS_COOKIE_PASSWORD.length < 32) {
 const workos = new WorkOS(WORKOS_API_KEY, {
   clientId: WORKOS_CLIENT_ID,
 });
+
+const startServerDB = async ()=> {
+    console.log("Connection to MongoDB...")
+    await connectDB(URI);
+    console.log("2nd Check Connected")
+
+    app.listen(port, () => {
+  console.log(`API server running at ${port}`);
+});
+
+}
+
 
 // CORS setup
 // 1. Allow the frontend domain to call this API
@@ -75,6 +99,9 @@ app.use(
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors())
+
+app.use("/", router);
 
 // CSRF setup
 // Cross-Site Request Forgery means another site tricks the browser into
@@ -332,6 +359,4 @@ if (fs.existsSync(indexHtml)) {
 }
 
 // Start the server
-app.listen(port, () => {
-  console.log(`API server running at ${port}`);
-});
+startServerDB()

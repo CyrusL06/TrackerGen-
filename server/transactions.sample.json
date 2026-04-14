@@ -1,0 +1,23 @@
+[
+  {
+    "workosUserId": "user_01KTRACKERGENDEMO",
+    "name": "Blue Bottle Coffee",
+    "category": "Food & Drink",
+    "amount": -6.5,
+    "date": "2026-04-10"
+  },
+  {
+    "workosUserId": "user_01KTRACKERGENDEMO",
+    "name": "Freelance Payment",
+    "category": "Income",
+    "amount": 1200,
+    "date": "2026-04-09"
+  },
+  {
+    "workosUserId": "user_01KTRACKERGENDEMO",
+    "name": "Compass Transit Pass",
+    "category": "Transport",
+    "amount": -108,
+    "date": "2026-04-05"
+  }
+]
