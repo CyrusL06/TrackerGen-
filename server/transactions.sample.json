@@ -1,23 +1,177 @@
 [
   {
-    "workosUserId": "user_01KTRACKERGENDEMO",
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
     "name": "Blue Bottle Coffee",
     "category": "Food & Drink",
     "amount": -6.5,
-    "date": "2026-04-10"
+    "date": "2026-04-14"
   },
   {
-    "workosUserId": "user_01KTRACKERGENDEMO",
-    "name": "Freelance Payment",
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Freelance Payout",
     "category": "Income",
-    "amount": 1200,
-    "date": "2026-04-09"
+    "amount": 1450,
+    "date": "2026-04-13"
   },
   {
-    "workosUserId": "user_01KTRACKERGENDEMO",
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
     "name": "Compass Transit Pass",
     "category": "Transport",
     "amount": -108,
+    "date": "2026-04-12"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Rent Payment",
+    "category": "Housing",
+    "amount": -1450,
+    "date": "2026-04-01"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "BC Hydro Bill",
+    "category": "Utilities",
+    "amount": -94.22,
+    "date": "2026-04-03"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "T&T Grocery Run",
+    "category": "Food & Drink",
+    "amount": -82.47,
+    "date": "2026-04-04"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Spotify Subscription",
+    "category": "Subscriptions",
+    "amount": -12.99,
     "date": "2026-04-05"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Client Deposit",
+    "category": "Income",
+    "amount": 800,
+    "date": "2026-04-06"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Coffee Beans Refill",
+    "category": "Food & Drink",
+    "amount": -24.18,
+    "date": "2026-04-06"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Aritzia Hoodie",
+    "category": "Shopping",
+    "amount": -96.5,
+    "date": "2026-04-07"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Dinner at Ramen Danbo",
+    "category": "Dining",
+    "amount": -21.4,
+    "date": "2026-04-08"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Mobile Phone Bill",
+    "category": "Utilities",
+    "amount": -58,
+    "date": "2026-04-08"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Uber Ride",
+    "category": "Transport",
+    "amount": -17.85,
+    "date": "2026-04-09"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Desk Organizer",
+    "category": "Shopping",
+    "amount": -43.75,
+    "date": "2026-04-10"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Interest Credit",
+    "category": "Income",
+    "amount": 18.62,
+    "date": "2026-04-10"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Whole Foods Lunch Items",
+    "category": "Food & Drink",
+    "amount": -56.31,
+    "date": "2026-04-11"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Netflix",
+    "category": "Subscriptions",
+    "amount": -18.99,
+    "date": "2026-04-11"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Side Project Payment",
+    "category": "Income",
+    "amount": 425,
+    "date": "2026-04-12"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Dinner with Friends",
+    "category": "Dining",
+    "amount": -39.99,
+    "date": "2026-04-12"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Sushi Lunch",
+    "category": "Dining",
+    "amount": -18.2,
+    "date": "2026-04-13"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Amazon Order",
+    "category": "Shopping",
+    "amount": -67.44,
+    "date": "2026-04-13"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Water Bill",
+    "category": "Utilities",
+    "amount": -31.15,
+    "date": "2026-04-14"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Freelance Bonus",
+    "category": "Income",
+    "amount": 250,
+    "date": "2026-04-15"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Uniqlo Socks Pack",
+    "category": "Shopping",
+    "amount": -19.8,
+    "date": "2026-04-15"
+  },
+  {
+    "workosUserId": "user_01KNWHWG5QQR5JJNMHGD64WE39",
+    "name": "Late Night Bubble Tea",
+    "category": "Food & Drink",
+    "amount": -7.95,
+    "date": "2026-04-16"
   }
 ]

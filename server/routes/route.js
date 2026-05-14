@@ -26,10 +26,48 @@ router.get("/api/profile", async (req,res) => {
 
 })
 
+router.post("/api/profile/onboarding-complete", async (req, res) => {
+    const user = await getAuthenticatedUser(req);
+
+    if (!user) {
+        return res.status(401).json({ message: "Unauthorized User" });
+    }
+
+    try {
+        const profile = await UserProfile.findOneAndUpdate(
+            { workosUserId: user.id },
+            {
+                $set: {
+                    email: user.email,
+                    monthlyGoal: Number(req.body.monthlyGoal),
+                    wantsReminders: req.body.wantsReminders,
+                    preferredChannel: req.body.preferredChannel ?? null,
+                    hasCompletedOnboarding: true,
+                    completedOnboardingAt: new Date(),
+                },
+            },
+            {
+                new: true,
+                upsert: true,
+                setDefaultsOnInsert: true,
+            },
+        );
+
+        return res.status(200).json({ ok: true, profile });
+    } catch (error) {
+        console.log(`ERROR ${error}`);
+        return res.status(500).json({ message: "Failed to save onboarding profile" });
+    }
+})
+
 //Fetch transaction of each user
 router.get("/api/transactions", async (req,res) => {
 
     const user = await getAuthenticatedUser(req,res);
+
+    if (!user) {
+        return res.status(401).json({message:"Unauthorized User"})
+    }
 
     try {
         
@@ -52,9 +90,12 @@ router.get("/api/transactions", async (req,res) => {
 })
 
 //AdD Transaction
-
 router.post("/api/transactions", async(req,res) => {
     const user = await getAuthenticatedUser(req,res);
+
+    if (!user) {
+        return res.status(401).json({message:"Unauthorized User"})
+    }
 
     try {
         const transaction = await Transaction.create({
@@ -75,6 +116,68 @@ router.post("/api/transactions", async(req,res) => {
 
 })
 
+router.put("/api/transactions/:id", async (req, res) => {
+    const user = await getAuthenticatedUser(req);
+
+    if (!user) {
+        return res.status(401).json({ message: "Unauthorized User" });
+    }
+
+    try {
+        const updatedTransaction = await Transaction.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                workosUserId: user.id,
+            },
+            {
+                $set: {
+                    name: req.body.name,
+                    category: req.body.category,
+                    amount: req.body.amount,
+                    date: req.body.date,
+                },
+            },
+            { new: true, runValidators: true },
+        );
+
+        if (!updatedTransaction) {
+            return res.status(404).json({ message: "Transaction not found" });
+        }
+
+        return res.status(200).json({ transaction: updatedTransaction });
+    } catch (error) {
+        console.log(`ERROR ${error}`);
+        return res.status(500).json({ message: "Failed to update transaction" });
+    }
+})
+
+
+router.delete("/api/transactions/:id", async (req,res) => {
+    const user = await getAuthenticatedUser(req);
+
+    try {
+
+        if (!user) {
+            return res.status(401).json({ message: "Unauthorized User" });
+        }
+
+        const deleted = await Transaction.findOneAndDelete({
+            _id: req.params.id,
+            workosUserId: user.id,
+        })
+
+        if (!deleted) {
+            return res.status(404).json({ message: "Transaction not found" });
+         }
+
+        return res.json({ok:true})
+
+    } catch (error) {
+         console.log(`ERROR ${error}`);
+         return res.status(500).json({ message: "Failed to delete transaction" });
+    }
+
+})
+
     return router
 }
-
