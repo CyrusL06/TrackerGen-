@@ -72,6 +72,35 @@ export async function deleteTransactionById(id) {
   return data;
 }
 
+export async function fetchTelegramProfile() {
+  const res = await fetch(`${API_BASE_URL}/api/profile/telegram`, {
+    credentials: "include",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to load Telegram setup");
+  }
+
+  return data;
+}
+
+export async function createTelegramLinkCode() {
+  const res = await fetch(`${API_BASE_URL}/api/profile/telegram-link-code`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to create Telegram link code");
+  }
+
+  return data;
+}
+
 export function goToSocialLogin(provider, returnTo = "/dashboard") {
   window.location.assign(
     `${API_BASE_URL}/auth/login/${provider}?returnTo=${encodeURIComponent(returnTo)}`,

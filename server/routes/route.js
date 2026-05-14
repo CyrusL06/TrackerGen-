@@ -1,11 +1,20 @@
-
 import express from "express";
+import crypto from "crypto";
 import { Transaction } from "../model/data.js"
 import {UserProfile}  from "../model/userProfile.js"
 
 //Debug the database collection name
 console.log("Transaction collection:", Transaction.collection.name);
 console.log("UserProfile collection:", UserProfile.collection.name);
+
+function createTelegramLinkCode() {
+    return `TG-${crypto.randomInt(100000, 999999)}`;
+}
+
+function maskChatId(chatId) {
+    if (!chatId) return null;
+    return `...${String(chatId).slice(-4)}`;
+}
 
 export function buildRouter({getAuthenticatedUser}){
     const router = express.Router()
@@ -57,6 +66,71 @@ router.post("/api/profile/onboarding-complete", async (req, res) => {
     } catch (error) {
         console.log(`ERROR ${error}`);
         return res.status(500).json({ message: "Failed to save onboarding profile" });
+    }
+})
+
+router.get("/api/profile/telegram", async (req, res) => {
+    const user = await getAuthenticatedUser(req);
+
+    if (!user) {
+        return res.status(401).json({ message: "Unauthorized User" });
+    }
+
+    const profile = await UserProfile.findOne({ workosUserId: user.id });
+    const now = new Date();
+    const hasActiveCode =
+        Boolean(profile?.telegramLinkCode) &&
+        profile.telegramLinkCodeExpiresAt &&
+        profile.telegramLinkCodeExpiresAt > now;
+
+    return res.json({
+        linked: Boolean(profile?.telegramChatId),
+        chatIdPreview: maskChatId(profile?.telegramChatId),
+        linkedAt: profile?.telegramLinkedAt ?? null,
+        linkCode: hasActiveCode ? profile.telegramLinkCode : null,
+        linkCommand: hasActiveCode ? `/link ${profile.telegramLinkCode}` : null,
+        botUsername: process.env.TELEGRAM_BOT_USERNAME ?? null,
+    });
+})
+
+router.post("/api/profile/telegram-link-code", async (req, res) => {
+    const user = await getAuthenticatedUser(req);
+
+    if (!user) {
+        return res.status(401).json({ message: "Unauthorized User" });
+    }
+
+    try {
+        const linkCode = createTelegramLinkCode();
+        const expiresAt = new Date(Date.now() + 1000 * 60 * 15);
+
+        const profile = await UserProfile.findOneAndUpdate(
+            { workosUserId: user.id },
+            {
+                $set: {
+                    email: user.email,
+                    telegramLinkCode: linkCode,
+                    telegramLinkCodeExpiresAt: expiresAt,
+                },
+            },
+            {
+                new: true,
+                upsert: true,
+                setDefaultsOnInsert: true,
+            },
+        );
+
+        return res.status(200).json({
+            linked: Boolean(profile.telegramChatId),
+            chatIdPreview: maskChatId(profile.telegramChatId),
+            linkCode,
+            linkCommand: `/link ${linkCode}`,
+            expiresAt,
+            botUsername: process.env.TELEGRAM_BOT_USERNAME ?? null,
+        });
+    } catch (error) {
+        console.log(`ERROR ${error}`);
+        return res.status(500).json({ message: "Failed to create Telegram link code" });
     }
 })
 

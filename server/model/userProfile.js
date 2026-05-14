@@ -33,6 +33,25 @@ const userProfileSchema = new mongoose.Schema(
         completedOnboardingAt: {
             type: Date,
             default: null,
+        },
+        telegramChatId: {
+            type: String,
+            default: null,
+            index: true,
+            sparse: true,
+        },
+        telegramLinkCode: {
+            type: String,
+            default: null,
+            index: true,
+        },
+        telegramLinkCodeExpiresAt: {
+            type: Date,
+            default: null,
+        },
+        telegramLinkedAt: {
+            type: Date,
+            default: null,
         }
     }
 )

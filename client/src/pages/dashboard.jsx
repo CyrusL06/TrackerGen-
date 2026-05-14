@@ -3,7 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import CashFlowSection from "@/components/ui/dashboard/cashFlowSection";
 import {
   createTransaction,
+  createTelegramLinkCode,
   deleteTransactionById,
+  fetchTelegramProfile,
   fetchTransactions,
   logout,
   updateTransactionById,
@@ -11,6 +13,7 @@ import {
 
 import SpendingSection from "../components/ui/dashboard/spendingSection";
 import StatsSection from "../components/ui/dashboard/statsSection";
+import TelegramConnect from "../components/ui/dashboard/telegramConnect";
 import TopNav from "../components/ui/dashboard/topNav";
 import TransactionModal from "../components/ui/dashboard/transactionModal";
 import TransactionsSection from "../components/ui/dashboard/transactionsSection";
@@ -177,6 +180,9 @@ export default function Dashboard() {
   const [errors, setErrors] = useState({});
   const [statusMessage, setStatusMessage] = useState(null);
   const [lastRemoved, setLastRemoved] = useState(null);
+  const [telegram, setTelegram] = useState(null);
+  const [telegramLoading, setTelegramLoading] = useState(false);
+  const [telegramError, setTelegramError] = useState("");
   const onboardingSummary = location.state?.onboardingSummary ?? null;
   const cashFlowData = buildCashFlowFromTransactions(txns, selectedRange);
   const categoryBreakdown = buildCategoryBreakdown(txns);
@@ -184,15 +190,17 @@ export default function Dashboard() {
   useEffect(() => {
     let cancelled = false;
 
-    fetchTransactions()
-      .then((items) => {
+    Promise.all([fetchTransactions(), fetchTelegramProfile()])
+      .then(([items, telegramProfile]) => {
         if (cancelled) return;
         setTxns(normalizeFetchedTransactions(items));
+        setTelegram(telegramProfile);
       })
       .catch((error) => {
-        console.log("Failed to fetch transactions:", error);
+        console.log("Failed to load dashboard data:", error);
         if (!cancelled) {
           setTxns([]);
+          setTelegramError("Telegram setup could not be loaded.");
         }
       });
 
@@ -200,6 +208,78 @@ export default function Dashboard() {
       cancelled = true;
     };
   }, []);
+
+  async function refreshTransactions() {
+    try {
+      const items = await fetchTransactions();
+      setTxns(normalizeFetchedTransactions(items));
+    } catch (error) {
+      console.log("Failed to refresh transactions:", error);
+    }
+  }
+
+  async function handleCreateTelegramCode() {
+    setTelegramLoading(true);
+    setTelegramError("");
+
+    try {
+      const nextTelegram = await createTelegramLinkCode();
+      setTelegram(nextTelegram);
+    } catch (error) {
+      console.log("Failed to create Telegram code:", error);
+      setTelegramError("Could not create a Telegram link code yet.");
+    } finally {
+      setTelegramLoading(false);
+    }
+  }
+
+  async function handleCopyTelegramCommand() {
+    if (!telegram?.linkCommand) return;
+
+    try {
+      await navigator.clipboard.writeText(telegram.linkCommand);
+      setStatusMessage({
+        tone: "success",
+        text: "Telegram link command copied.",
+      });
+    } catch {
+      setTelegramError("Copy failed. Select the command and copy it manually.");
+    }
+  }
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      refreshTransactions();
+    }, 10000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (telegram?.linked) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      fetchTelegramProfile()
+      .then((items) => {
+        setTelegram(items);
+        if (items.linked) {
+          setStatusMessage({
+            tone: "success",
+            text: "Telegram is connected. Bot entries will appear in the dashboard.",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log("Failed to refresh Telegram setup:", error);
+      });
+    }, 5000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [telegram?.linked]);
 
   const totalIncome = txns
     .filter((txn) => txn.amount > 0)
@@ -442,6 +522,16 @@ export default function Dashboard() {
           <SpendingSection
             totalExpenses={totalExpenses}
             categoryBreakdown={categoryBreakdown}
+          />
+        </div>
+
+        <div className="mb-3">
+          <TelegramConnect
+            telegram={telegram}
+            loading={telegramLoading}
+            error={telegramError}
+            onCreateCode={handleCreateTelegramCode}
+            onCopyCommand={handleCopyTelegramCommand}
           />
         </div>
 

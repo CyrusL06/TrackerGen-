@@ -15,6 +15,7 @@ import { buildRouter } from "./routes/route.js";
 import { createAuthHelpers } from "./config/auth.js";
 import {connectDB} from "./config/db.js"
 import { UserProfile } from "./model/userProfile.js";
+import { startTelegramBot } from "./bot/bot.js";
 
 // Recreates __dirname in ES module mode
 const __filename = fileURLToPath(import.meta.url);
@@ -116,6 +117,7 @@ const startServerDB = async ()=> {
     await connectDB(URI);
     console.log("2nd Check Connected")
     console.log(`Auth mode: ${AUTH_MODE}`);
+    startTelegramBot();
 
     app.listen(port, () => {
   console.log(`API server running at ${port}`);
