@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { COLORS, FONTS } from "@/components/ui2.0/brand";
-import { AuthPrimaryButton } from "@/components/ui2.0/login/auth-primitives.jsx";
+import { COLORS, FONTS } from "@/components/ui/brand";
+import { AuthPrimaryButton } from "@/components/ui/login/auth-primitives.jsx";
 
 const vars = {
   "--auth-border": "rgba(242,237,230,0.06)",

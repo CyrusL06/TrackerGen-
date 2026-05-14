@@ -1,4 +1,4 @@
-import { FONTS, LAYOUT } from "@/components/ui2.0/brand";
+import { FONTS, LAYOUT } from "@/components/ui/brand";
 
 function Step({ num, title, desc }) {
   return (

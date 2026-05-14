@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { COLORS, FONTS } from "@/components/ui2.0/brand";
+import { COLORS, FONTS } from "@/components/ui/brand";
 
 const vars = {
   "--auth-bg": COLORS.bg,

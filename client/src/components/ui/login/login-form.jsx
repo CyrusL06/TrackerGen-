@@ -1,5 +1,5 @@
 import { goToLogin, goToSocialLogin } from "@/lib/auth";
-import { FONTS } from "@/components/ui2.0/brand";
+import { FONTS } from "@/components/ui/brand";
 import {
   AuthDivider,
   AuthField,
@@ -65,7 +65,7 @@ export function LoginForm({ className = "", ...props }) {
       </div>
 
       <AuthFinePrint>
-        By continuing, you agree to the preview terms and privacy policy for this build.
+        By continuing, you agree to the preview terms and privacy policy for this app.
       </AuthFinePrint>
     </form>
   );

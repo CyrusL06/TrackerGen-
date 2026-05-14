@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight, X, Coffee } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, X, Coffee, Pencil } from "lucide-react";
 import { CATEGORY_ICONS, COLORS, FONTS, TW, cx } from "./shared.js";
 
 export function SurfaceCard({ className = "", children }) {
@@ -65,7 +65,7 @@ export function StatCard({ label, value, change, up, accent, sub }) {
   );
 }
 
-export function TxnRow({ txn, onDelete }) {
+export function TxnRow({ txn, onEdit, onDelete }) {
   const Icon = CATEGORY_ICONS[txn.cat] || Coffee;
   const isPositive = txn.amount > 0;
 
@@ -90,14 +90,24 @@ export function TxnRow({ txn, onDelete }) {
         >
           {isPositive ? "+" : "-"}${Math.abs(txn.amount).toFixed(2)}
         </div>
-        <button
-          type="button"
-          onClick={() => onDelete(txn.id)}
-          className="flex min-h-11 items-center gap-1 px-1 py-1 text-[11px] uppercase tracking-[0.06em] text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)] sm:min-h-9 sm:text-[9px]"
-        >
-          <X size={12} />
-          <span>Remove</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onEdit(txn)}
+            className="flex min-h-11 items-center gap-1 px-1 py-1 text-[11px] uppercase tracking-[0.06em] text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-accent)] sm:min-h-9 sm:text-[9px]"
+          >
+            <Pencil size={12} />
+            <span>Edit</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete(txn.id)}
+            className="flex min-h-11 items-center gap-1 px-1 py-1 text-[11px] uppercase tracking-[0.06em] text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-red)] sm:min-h-9 sm:text-[9px]"
+          >
+            <X size={12} />
+            <span>Remove</span>
+          </button>
+        </div>
       </div>
     </div>
   );

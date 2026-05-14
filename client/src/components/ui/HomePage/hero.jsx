@@ -49,7 +49,7 @@ export default function Hero() {
           manually, then review cash flow, category mix, and recent activity in one place. */}
 
           Add what came in. Add what went out. See exactly where you stand — 
-          in under 2 minutes. No bank connections. No overwhelm. Just clarity.
+          in under 2 minutes. No bank connections.
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">

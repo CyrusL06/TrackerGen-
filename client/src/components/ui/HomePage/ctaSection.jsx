@@ -1,5 +1,5 @@
 import BtnPrimary from "./btnPrimary";
-import { FONTS, LAYOUT } from "@/components/ui2.0/brand";
+import { FONTS, LAYOUT } from "@/components/ui/brand";
 
 export default function CtaSection() {
   return (

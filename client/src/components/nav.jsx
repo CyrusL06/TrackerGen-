@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { Menu, X } from "lucide-react";
-import NavCta from "./ui2.0/HomePage/navcta";
-import { FONTS, LAYOUT } from "./ui2.0/brand";
+import NavCta from "./ui/HomePage/navcta";
+import { FONTS, LAYOUT } from "./ui/brand";
 
 const navItems = [
   { href: "#home", label: "Home" },

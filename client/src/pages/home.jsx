@@ -1,8 +1,8 @@
-import CtaSection from "@/components/ui2.0/HomePage/ctaSection";
-import FeatureStrip from "@/components/ui2.0/HomePage/featureStrip";
-import Hero from "@/components/ui2.0/HomePage/hero";
-import HowItWorks from "@/components/ui2.0/HomePage/howItWorks";
-import { FONTS, NOISE_BACKGROUND } from "@/components/ui2.0/brand";
+import CtaSection from "@/components/ui/HomePage/ctaSection";
+import FeatureStrip from "@/components/ui/HomePage/featureStrip";
+import Hero from "@/components/ui/HomePage/hero";
+import HowItWorks from "@/components/ui/HomePage/howItWorks";
+import { FONTS, NOISE_BACKGROUND } from "@/components/ui/brand";
 
 export default function Home() {
   return (

@@ -1,5 +1,5 @@
-import { AuthShell } from "@/components/ui2.0/login/auth-shell";
-import { SignupForm } from "@/components/ui2.0/login/signup-form";
+import { AuthShell } from "@/components/ui/login/auth-shell";
+import { SignupForm } from "@/components/ui/login/signup-form";
 
 export default function SignupPage() {
   return (

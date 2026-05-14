@@ -1,7 +1,8 @@
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Suspense, useEffect, useState } from "react";
-import { FONT_HREF } from "./components/ui2.0/brand";
+import { FONT_HREF } from "./components/ui/brand";
 import { fetchCurrentUser } from "./lib/auth";
+
 
 // Pages
 import Nav from "./components/nav";
@@ -17,6 +18,49 @@ import OnboardingFlow, {
   OnboardingRemindersPage,
 } from "./pages/onboardingFlow";
 
+function ProtectedRoute({ children, skeleton }) {
+  const [authState, setAuthState] = useState({
+    loading: true,
+    authenticated: false,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchCurrentUser()
+      .then((data) => {
+        if (!cancelled) {
+          setAuthState({
+            loading: false,
+            authenticated: data.authenticated,
+          });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAuthState({
+            loading: false,
+            authenticated: false,
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (authState.loading) {
+    return skeleton;
+  }
+
+  if (!authState.authenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
 const App = () => {
   const location = useLocation();
   const skeleton = <div className="h-28 rounded-lg bg-muted/40 animate-pulse" />;
@@ -24,49 +68,6 @@ const App = () => {
     location.pathname === "/";
     // location.pathname === "/login" ||
     // location.pathname === "/signup";
-
-  function ProtectedRoute({ children }) {
-    const [authState, setAuthState] = useState({
-      loading: true,
-      authenticated: false,
-    });
-
-    useEffect(() => {
-      let cancelled = false;
-
-      fetchCurrentUser()
-        .then((data) => {
-          if (!cancelled) {
-            setAuthState({
-              loading: false,
-              authenticated: data.authenticated,
-            });
-          }
-        })
-        .catch(() => {
-          if (!cancelled) {
-            setAuthState({
-              loading: false,
-              authenticated: false,
-            });
-          }
-        });
-
-      return () => {
-        cancelled = true;
-      };
-    }, []);
-
-    if (authState.loading) {
-      return skeleton;
-    }
-
-    if (!authState.authenticated) {
-      return <Navigate to="/login" replace />;
-    }
-
-    return children;
-  }
 
   return (
     <>
@@ -79,7 +80,7 @@ const App = () => {
         <Route
           path="/onboarding"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute skeleton={skeleton}>
               <OnboardingFlow />
             </ProtectedRoute>
           }
@@ -93,7 +94,7 @@ const App = () => {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute skeleton={skeleton}>
               <Suspense fallback={skeleton}>
                 <Dashboard />
               </Suspense>

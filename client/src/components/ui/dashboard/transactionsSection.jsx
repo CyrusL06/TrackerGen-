@@ -5,6 +5,7 @@ import { DisplayTitle, Eyebrow, SurfaceCard, Tag, TxnRow } from "./primitives.js
 export default function TransactionsSection({
   txns,
   onAddTransaction,
+  onEditTransaction,
   onDeleteTransaction,
 }) {
   return (
@@ -34,7 +35,12 @@ export default function TransactionsSection({
           </div>
         ) : (
           txns.map((txn) => (
-            <TxnRow key={txn.id} txn={txn} onDelete={onDeleteTransaction} />
+            <TxnRow
+              key={txn.id}
+              txn={txn}
+              onEdit={onEditTransaction}
+              onDelete={onDeleteTransaction}
+            />
           ))
         )}
       </div>

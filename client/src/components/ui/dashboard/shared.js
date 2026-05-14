@@ -71,13 +71,19 @@ export const CATEGORY_ICONS = {
 
 export const CATEGORIES = Object.keys(CATEGORY_ICONS);
 
-export const SPENDING_BREAKDOWN = [
-  ["Housing", 1400, COLORS.amber],
-  ["Food & Drink", 380, COLORS.accent],
-  ["Utilities", 142, COLORS.text],
-  ["Shopping", 89, COLORS.muted],
-  ["Transport", 37, COLORS.muted],
-];
+export const EXPENSE_CATEGORIES = CATEGORIES.filter((category) => category !== "Income");
+
+export const SPENDING_CATEGORY_COLORS = {
+  Housing: COLORS.amber,
+  "Food & Drink": COLORS.accent,
+  Utilities: COLORS.text,
+  Shopping: COLORS.muted,
+  Transport: COLORS.amber,
+  Dining: COLORS.accent,
+  Subscriptions: COLORS.text,
+};
+
+export const SPENDING_FALLBACK_COLOR = COLORS.muted;
 
 export const chartTick = {
   fill: COLORS.muted,

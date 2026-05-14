@@ -1,4 +1,4 @@
-import { FONTS } from "@/components/ui2.0/brand";
+import { FONTS } from "@/components/ui/brand";
 
 export default function BtnPrimary({ children, href = "/login" }) {
   return (

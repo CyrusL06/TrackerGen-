@@ -1,4 +1,4 @@
-import { AuthShell } from "@/components/ui2.0/login/auth-shell";
+import { AuthShell } from "@/components/ui/login/auth-shell";
 
 export function OnboardingShell({
   step,

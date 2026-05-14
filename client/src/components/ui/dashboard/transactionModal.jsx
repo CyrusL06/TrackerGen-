@@ -7,12 +7,15 @@ export default function TransactionModal({
   show,
   form,
   errors,
+  editingTransaction,
   onClose,
   onSubmit,
   onFieldChange,
   onTypeChange,
 }) {
   if (!show) return null;
+
+  const isEditing = Boolean(editingTransaction);
 
   const inputClassName = (hasError) =>
     cx(
@@ -55,7 +58,7 @@ export default function TransactionModal({
           <div className="flex items-center gap-2">
             <div className="h-4 w-1 bg-[color:var(--dashboard-accent)]" />
             <span className="text-[1.1rem] tracking-[0.06em]" style={FONTS.display}>
-              New Transaction
+              {isEditing ? "Edit Transaction" : "New Transaction"}
             </span>
           </div>
 
@@ -76,7 +79,9 @@ export default function TransactionModal({
           }}
         >
           <p className="mb-5 text-[12px] leading-6 text-[color:var(--dashboard-muted)]">
-            Add one entry to keep the current month review accurate.
+            {isEditing
+              ? "Update the details below to correct the saved amount or transaction info."
+              : "Add one entry to keep the current month review accurate."}
           </p>
           <div className="mb-[18px]">
             <FieldLabel>Type</FieldLabel>
@@ -182,7 +187,7 @@ export default function TransactionModal({
               type="submit"
               className="w-full bg-[color:var(--dashboard-accent)] px-3 py-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.88] sm:w-auto sm:min-w-[11rem]"
             >
-              Add Transaction
+              {isEditing ? "Save Changes" : "Add Transaction"}
             </button>
           </div>
         </form>
