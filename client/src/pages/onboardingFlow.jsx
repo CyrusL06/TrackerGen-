@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {Navigate,Outlet,useLocation,useNavigate,useOutletContext} from "react-router-dom";
-import { FONTS } from "@/components/ui2.0/brand";
-import { AuthField } from "@/components/ui2.0/login/auth-primitives.jsx";
-import { OnboardingShell } from "@/components/ui2.0/onboarding/onboarding-shell.jsx";
-import {ChoiceCardGroup,QuestionStep,StepFooter,SummaryRow,} from "@/components/ui2.0/onboarding/primitives.jsx";
+import { FONTS } from "@/components/ui/brand";
+import { AuthField } from "@/components/ui/login/auth-primitives.jsx";
+import { OnboardingShell } from "@/components/ui/onboarding/onboarding-shell.jsx";
+import {ChoiceCardGroup,QuestionStep,StepFooter,SummaryRow,} from "@/components/ui/onboarding/onboarding-components.jsx";
+import { completeOnboarding } from "@/lib/auth";
 
 const initialAnswers = {
   monthlyGoal: "",
   wantsReminders: "",
   preferredChannel: "",
 };
+
+const ONBOARDING_STORAGE_KEY = "trackergen-onboarding-answers";
 
 const channelLabels = {
   discord: "Discord",
@@ -19,6 +22,21 @@ const channelLabels = {
 
 function hasGoal(goal) {
   return Number(goal) > 0;
+}
+
+function hasChoice(value) {
+  return Boolean(value);
+}
+
+function sanitizeGoalInput(rawValue) {
+  const digitsAndDotsOnly = rawValue.replace(/[^\d.]/g, "");
+  const [whole = "", ...decimalParts] = digitsAndDotsOnly.split(".");
+
+  if (decimalParts.length === 0) {
+    return whole;
+  }
+
+  return `${whole}.${decimalParts.join("")}`;
 }
 
 function formatGoal(goal) {
@@ -37,36 +55,60 @@ function createDashboardSummary(answers) {
     text: `Setup complete. Monthly goal: ${formatGoal(answers.monthlyGoal)}. ${reminderText}`,
     goal: formatGoal(answers.monthlyGoal),
     reminders: answers.wantsReminders === "yes" ? "Yes" : "Not now",
-    channel: channelLabels[answers.preferredChannel],
+    channel: answers.wantsReminders === "yes" ? channelLabels[answers.preferredChannel] : "Not selected",
   };
 }
 
 function getOnboardingRedirect(pathname, answers) {
+  const isRemindersPath = pathname.endsWith("/reminders");
+  const isChannelPath = pathname.endsWith("/channel");
+  const isCompletePath = pathname.endsWith("/complete");
 
-
-  //end wth reminders and has no goal to
-  if (pathname.endsWith("/reminders") && !hasGoal(answers.monthlyGoal)) {
+  // Step 2 requires a completed goal from step 1.
+  if (isRemindersPath && !hasGoal(answers.monthlyGoal)) {
     return "/onboarding/goal";
   }
 
-  if (
-    (pathname.endsWith("/channel") || pathname.endsWith("/complete")) &&
-    !answers.wantsReminders
-  ) {
+  // Step 3 and completion both require the reminder choice from step 2.
+  if ((isChannelPath || isCompletePath) && !answers.wantsReminders) {
     return "/onboarding/reminders";
   }
 
-  if (pathname.endsWith("/complete") && !answers.preferredChannel) {
+  // Only the final review page requires a selected channel.
+  // The channel page itself should stay accessible while the user is still choosing.
+  if (answers.wantsReminders === "yes" && isCompletePath && !answers.preferredChannel) {
     return "/onboarding/channel";
+  }
+
+  // If reminders are skipped, sending the user to channel should jump to completion instead.
+  if (answers.wantsReminders === "not-now" && isChannelPath) {
+    return "/onboarding/complete";
   }
 
   return null;
 }
 
 export default function OnboardingFlow() {
-  const [answers, setAnswers] = useState(initialAnswers);
+  const [answers, setAnswers] = useState(() => {
+    const savedAnswers = window.sessionStorage.getItem(ONBOARDING_STORAGE_KEY);
+
+    if (!savedAnswers) {
+      return initialAnswers;
+    }
+
+    try {
+      return { ...initialAnswers, ...JSON.parse(savedAnswers) };
+    } catch {
+      return initialAnswers;
+    }
+  });
   const location = useLocation();
   const redirectTo = getOnboardingRedirect(location.pathname, answers);
+
+  useEffect(() => {
+    // Keep onboarding answers alive across nested route changes and brief remounts.
+    window.sessionStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(answers));
+  }, [answers]);
 
   if (redirectTo) {
     return <Navigate to={redirectTo} replace />;
@@ -78,7 +120,10 @@ export default function OnboardingFlow() {
         answers,
         setAnswer: (field, value) =>
         setAnswers((current) => ({...current, [field]: value,})),
-        resetAnswers: () => setAnswers(initialAnswers),
+        resetAnswers: () => {
+          window.sessionStorage.removeItem(ONBOARDING_STORAGE_KEY);
+          setAnswers(initialAnswers);
+        },
       }}
     />
   );
@@ -94,7 +139,7 @@ export function OnboardingGoalPage() {
   const [error, setError] = useState("");
 
   function handleChange(event) {
-    const cleaned = event.target.value.replace(/[^\d.]/g, "");
+    const cleaned = sanitizeGoalInput(event.target.value);
     setAnswer("monthlyGoal", cleaned);
     if (error) setError("");
   }
@@ -125,7 +170,7 @@ export function OnboardingGoalPage() {
           <StepFooter
             backTo="/signup"
             primaryLabel="Continue"
-            primaryDisabled={!answers.monthlyGoal}
+            primaryDisabled={!hasGoal(answers.monthlyGoal)}
           />
         }
       >
@@ -161,7 +206,7 @@ export function OnboardingRemindersPage() {
       return;
     }
 
-    navigate("/onboarding/channel");
+    navigate(answers.wantsReminders === "yes" ? "/onboarding/channel" : "/onboarding/complete");
   }
 
   return (
@@ -180,7 +225,7 @@ export function OnboardingRemindersPage() {
           <StepFooter
             backTo="/onboarding/goal"
             primaryLabel="Continue"
-            primaryDisabled={!answers.wantsReminders}
+            primaryDisabled={!hasChoice(answers.wantsReminders)}
           />
         }
       >
@@ -241,7 +286,7 @@ export function OnboardingChannelPage() {
           <StepFooter
             backTo="/onboarding/reminders"
             primaryLabel="Continue"
-            primaryDisabled={!answers.preferredChannel}
+            primaryDisabled={!hasChoice(answers.preferredChannel)}
           />
         }
       >
@@ -273,17 +318,36 @@ export function OnboardingChannelPage() {
 
 export function OnboardingCompletePage() {
   const navigate = useNavigate();
-  const { answers, resetAnswers } = useOnboarding();
+  const { answers } = useOnboarding();
+  const backTo = answers.wantsReminders === "yes" ? "/onboarding/channel" : "/onboarding/reminders";
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    setError("");
+    setIsSaving(true);
     const summary = createDashboardSummary(answers);
-    resetAnswers();
-    navigate("/dashboard", {
-      state: {
-        onboardingSummary: summary,
-      },
-    });
+
+    try {
+      await completeOnboarding({
+        monthlyGoal: Number(answers.monthlyGoal),
+        wantsReminders: answers.wantsReminders,
+        preferredChannel: answers.wantsReminders === "yes" ? answers.preferredChannel : null,
+      });
+
+      window.sessionStorage.removeItem(ONBOARDING_STORAGE_KEY);
+      navigate("/dashboard", {
+        replace: true,
+        state: {
+          onboardingSummary: summary,
+        },
+      });
+    } catch (saveError) {
+      setError("We couldn't save your onboarding details yet. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -293,7 +357,7 @@ export function OnboardingCompletePage() {
       totalSteps={3}
       title="You are ready to review the month"
       subtitle="Here is the setup you chose for this preview before you enter the dashboard."
-      backTo="/onboarding/channel"
+      backTo={backTo}
       backLabel="Back"
     >
       <form className="grid gap-6" onSubmit={handleSubmit}>
@@ -303,15 +367,28 @@ export function OnboardingCompletePage() {
             label="Future reminders"
             value={answers.wantsReminders === "yes" ? "Yes" : "Not now"}
           />
-          <SummaryRow label="Preferred channel" value={channelLabels[answers.preferredChannel]} />
+          <SummaryRow
+            label="Preferred channel"
+            value={answers.wantsReminders === "yes" ? channelLabels[answers.preferredChannel] : "Not selected"}
+          />
         </div>
 
+        {error ? (
+          <p className={`rounded-[14px] border border-[rgba(242,237,230,0.1)] bg-[rgba(24,24,22,0.72)] px-4 py-3 text-[0.74rem] leading-6 text-[rgba(242,237,230,0.86)] ${FONTS.mono}`}>
+            {error}
+          </p>
+        ) : null}
+
         <p className={`text-center text-[0.74rem] leading-6 text-[rgba(242,237,230,0.58)] ${FONTS.mono}`}>
-          These answers shape the current onboarding experience only. You can adjust the real product
+          These answers shape the current onboarding experience only.  adjust the real product
           behavior later when those settings exist.
         </p>
 
-        <StepFooter backTo="/onboarding/channel" primaryLabel="Open dashboard" />
+        <StepFooter
+          backTo={backTo}
+          primaryLabel={isSaving ? "Saving..." : "Open dashboard"}
+          primaryDisabled={isSaving}
+        />
       </form>
     </OnboardingShell>
   );

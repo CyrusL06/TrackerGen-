@@ -1,9 +1,18 @@
 // This would help to get Auth User
 
-
-export function createAuthHelpers({ workos, cookieName, cookiePassword }) {
-    //Reads sealed session cookie
+export function createAuthHelpers({
+  authMode,
+  workos,
+  cookieName,
+  cookiePassword,
+  offlineUser,
+}) {
+  // Reads the current user from either WorkOS or the local offline mode.
   async function getAuthenticatedUser(req) {
+    if (authMode === "offline") {
+      return offlineUser;
+    }
+
     const sealedSession = req.cookies[cookieName];
     if (!sealedSession) return null;
 

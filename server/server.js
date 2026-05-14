@@ -14,6 +14,7 @@ import { fileURLToPath } from "url";
 import { buildRouter } from "./routes/route.js";
 import { createAuthHelpers } from "./config/auth.js";
 import {connectDB} from "./config/db.js"
+import { UserProfile } from "./model/userProfile.js";
 
 // Recreates __dirname in ES module mode
 const __filename = fileURLToPath(import.meta.url);
@@ -21,7 +22,6 @@ const __dirname = path.dirname(__filename);
 const envPath = path.join(__dirname, ".env.local");
 
 dotenv.config({ path: envPath });
-
 
 const app = express();
 const port = process.env.PORT || 3200;
@@ -55,12 +55,33 @@ function requireEnv(name) {
   return value;
 }
 
-const WORKOS_API_KEY = requireEnv("WORKOS_API_KEY");
-const WORKOS_CLIENT_ID = requireEnv("WORKOS_CLIENT_ID");
-const WORKOS_COOKIE_PASSWORD = requireEnv("WORKOS_COOKIE_PASSWORD");
-const WORKOS_REDIRECT_URI = requireEnv("WORKOS_REDIRECT_URI");
+const AUTH_MODE = process.env.AUTH_MODE || "workos";
+const IS_OFFLINE_AUTH = AUTH_MODE === "offline";
+const URI = requireEnv("MONGODB_URI");
+
+const OFFLINE_USER = {
+  id: process.env.OFFLINE_USER_ID || "local-dev-user",
+  email: process.env.OFFLINE_USER_EMAIL || "dev@local.test",
+};
+
+let WORKOS_API_KEY;
+let WORKOS_CLIENT_ID;
+let WORKOS_COOKIE_PASSWORD;
+let WORKOS_REDIRECT_URI;
+let workos = null;
+
+// If offline mode is enabled, skip WorkOS keys and use the local dev user.
+if (IS_OFFLINE_AUTH) {
+  WORKOS_COOKIE_PASSWORD =
+    process.env.WORKOS_COOKIE_PASSWORD || "offline-mode-cookie-password-32chars";
+} else {
+  WORKOS_API_KEY = requireEnv("WORKOS_API_KEY");
+  WORKOS_CLIENT_ID = requireEnv("WORKOS_CLIENT_ID");
+  WORKOS_COOKIE_PASSWORD = requireEnv("WORKOS_COOKIE_PASSWORD");
+  WORKOS_REDIRECT_URI = requireEnv("WORKOS_REDIRECT_URI");
+}
+
 const CSRF_SECRET = process.env.CSRF_SECRET || WORKOS_COOKIE_PASSWORD;
-const URI = requireEnv("MONGODB_URI")
 
 
 
@@ -73,23 +94,28 @@ if (WORKOS_COOKIE_PASSWORD.length < 32) {
 //----------
 // Databse
 //-----------
-const workos = new WorkOS(WORKOS_API_KEY, {
-  clientId: WORKOS_CLIENT_ID,
-});
+if (!IS_OFFLINE_AUTH) {
+  workos = new WorkOS(WORKOS_API_KEY, {
+    clientId: WORKOS_CLIENT_ID,
+  });
+}
 
 const { getAuthenticatedUser } = createAuthHelpers({
-    workos,
-    cookieName: COOKIE_NAME,
-    cookiePassword: WORKOS_COOKIE_PASSWORD,
-})
+  authMode: AUTH_MODE,
+  workos,
+  cookieName: COOKIE_NAME,
+  cookiePassword: WORKOS_COOKIE_PASSWORD,
+  offlineUser: OFFLINE_USER,
+});
 
 const router = buildRouter({getAuthenticatedUser});
 
 
 const startServerDB = async ()=> {
-    console.log("Connection to MongoDB...")
+    console.log("Connecting to MongoDB...")
     await connectDB(URI);
     console.log("2nd Check Connected")
+    console.log(`Auth mode: ${AUTH_MODE}`);
 
     app.listen(port, () => {
   console.log(`API server running at ${port}`);
@@ -180,6 +206,10 @@ function safeReturnTo(returnTo) {
   return returnTo;
 }
 
+function isOnboardingIntent(returnTo) {
+  return typeof returnTo === "string" && returnTo.startsWith("/onboarding");
+}
+
 // Shared helper so login, signup, and social login all build the same
 // correct WorkOS authorization URL.
 function buildAuthorizationUrl({
@@ -203,6 +233,11 @@ app.get("/api/health", (req, res) => {
 // LOGIN
 // Gets the hosted login page from WorkOS
 app.get("/auth/login", (req, res) => {
+  if (IS_OFFLINE_AUTH) {
+    const returnTo = safeReturnTo(req.query.returnTo || "/dashboard");
+    return res.redirect(`${FRONTEND_ORIGIN}${returnTo}`);
+  }
+
     //Builds a WORKos auth URL and redirect user to it. 
     // https://workos.com/docs/reference/authkit/authentication/get-authorization-url
   const authorizationUrl = buildAuthorizationUrl({
@@ -216,6 +251,10 @@ app.get("/auth/login", (req, res) => {
 // SIGNUP
 // Sends the user to the hosted sign-up screen
 app.get("/auth/signup", (req, res) => {
+  if (IS_OFFLINE_AUTH) {
+    return res.redirect(`${FRONTEND_ORIGIN}/onboarding/goal`);
+  }
+
      //Builds a WORKos auth URL and redirect user to it. 
   const authorizationUrl = buildAuthorizationUrl({
     screenHint: "sign-up",
@@ -229,6 +268,11 @@ app.get("/auth/signup", (req, res) => {
 // Converts a route like /auth/login/google into the exact provider name
 // WorkOS expects.
 app.get("/auth/login/:provider", (req, res) => {
+  if (IS_OFFLINE_AUTH) {
+    const returnTo = safeReturnTo(req.query.returnTo || "/dashboard");
+    return res.redirect(`${FRONTEND_ORIGIN}${returnTo}`);
+  }
+
   const providerMap = {
     google: "GoogleOAuth",
     github: "GitHubOAuth",
@@ -252,6 +296,9 @@ app.get("/auth/login/:provider", (req, res) => {
 // WorkOS sends the browser here after login/signup.
     // The query string includes a temporary "code".
 app.get("/auth/callback", async (req, res) => {
+  if (IS_OFFLINE_AUTH) {
+    return res.redirect(`${FRONTEND_ORIGIN}/dashboard`);
+  }
 
 //When callback it attaches a temporary code in URL 
   const code = typeof req.query.code === "string" ? req.query.code : ""; //prevents crashing
@@ -275,12 +322,37 @@ app.get("/auth/callback", async (req, res) => {
       },
     });
 
+    const session = workos.userManagement.loadSealedSession({
+      sessionData: sealedSession,
+      cookiePassword: WORKOS_COOKIE_PASSWORD,
+    });
+
+    const authResult = await session.authenticate();
+
+    if (!authResult.authenticated || !authResult.user) {
+      clearSessionCookie(res);
+      return res.redirect(`${FRONTEND_ORIGIN}/login`);
+    }
+
+    const requestedReturnTo = safeReturnTo(state.returnTo);
+    const onboardingRequested = isOnboardingIntent(requestedReturnTo);
+    const existingProfile = await UserProfile.findOne({
+      workosUserId: authResult.user.id,
+    });
+
+    const shouldSkipOnboarding =
+      !onboardingRequested ||
+      Boolean(existingProfile?.hasCompletedOnboarding) ||
+      Boolean(existingProfile);
+
+    const finalReturnTo = shouldSkipOnboarding ? "/dashboard" : requestedReturnTo;
+
     // Save the session into a secure cookie
     //Ensures every request include that cookie.
     setSessionCookie(res, sealedSession);
 
     // Send the user back to the frontend
-    return res.redirect(`${FRONTEND_ORIGIN}${safeReturnTo(state.returnTo)}`);
+    return res.redirect(`${FRONTEND_ORIGIN}${finalReturnTo}`);
   } catch (error) {
     console.error("WorkOS callback error:", error);
     return res.redirect(`${FRONTEND_ORIGIN}/login`);
@@ -290,6 +362,13 @@ app.get("/auth/callback", async (req, res) => {
 // "WHO AM I?" ROUTE
 // The frontend calls this to find out if the current browser is authenticated.
 app.get("/api/auth/me", async (req, res) => {
+  if (IS_OFFLINE_AUTH) {
+    return res.json({
+      authenticated: true,
+      user: OFFLINE_USER,
+    });
+  }
+
   const sealedSession = req.cookies[COOKIE_NAME];
 
   // No cookie means no logged-in session
@@ -333,6 +412,11 @@ app.get("/api/auth/csrf-token", (req, res) => {
 // LOGOUT ROUTE
 // POST is used because logout changes state.
 app.post("/api/auth/logout", async (req, res) => {
+  if (IS_OFFLINE_AUTH) {
+    clearSessionCookie(res);
+    return res.json({ ok: true });
+  }
+
   const sealedSession = req.cookies[COOKIE_NAME];
 
   // No session: just make sure the cookie is gone

@@ -17,6 +17,22 @@ const userProfileSchema = new mongoose.Schema(
         monthlyGoal: {
             type: Number,
             default:null,
+        },
+        wantsReminders: {
+            type: String,
+            default: null,
+        },
+        preferredChannel: {
+            type: String,
+            default: null,
+        },
+        hasCompletedOnboarding: {
+            type: Boolean,
+            default: false,
+        },
+        completedOnboardingAt: {
+            type: Date,
+            default: null,
         }
     }
 )
