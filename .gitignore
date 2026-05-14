@@ -10,3 +10,19 @@ docs/
 **/.env.*
 !.env.example
 !**/.env.example
+
+# Explicit app env files
+client/.env.local
+server/.env.local
+
+# Common secret and local export files
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.transactions.json
+
+# macOS noise
+.DS_Store
+**/.DS_Store
