@@ -367,6 +367,10 @@ export function startTelegramBot() {
 
     const bot = new TelegramBot(token, { polling: true });
 
+    bot.on("polling_error", (error) => {
+        console.log("Telegram polling error:", error.message || error);
+    });
+
     bot.on("callback_query", async (query) => {
         const chatId = query.message?.chat?.id ? String(query.message.chat.id) : null;
         const data = query.data ?? "";
@@ -404,13 +408,13 @@ export function startTelegramBot() {
     bot.on("message", async (msg) => {
         const chatId = String(msg.chat.id);
         const text = msg.text?.trim() ?? "";
+        const isOldMessage = Boolean(msg.date && msg.date < botStartedAt);
 
         try {
-            if (msg.date && msg.date < botStartedAt) {
+            if (isOldMessage) {
                 console.log(
-                    `Ignored old Telegram message ${msg.message_id} from chat ${chatId}`,
+                    `Received old Telegram message ${msg.message_id} from chat ${chatId}: ${text}`,
                 );
-                return;
             }
 
             scheduleMessageDelete(bot, chatId, msg.message_id);
@@ -439,6 +443,11 @@ export function startTelegramBot() {
             }
 
             if (/^expense\s+/i.test(text)) {
+                if (isOldMessage) {
+                    await sendAutoDeletingMessage(bot, chatId, "That expense arrived while I was restarting. Send it again so I do not save an old transaction by accident.");
+                    return;
+                }
+
                 const saved = await handleTransactionCommand(bot, msg, text, "expense");
 
                 if (saved) {
@@ -449,6 +458,11 @@ export function startTelegramBot() {
             }
 
             if (/^income\s+/i.test(text)) {
+                if (isOldMessage) {
+                    await sendAutoDeletingMessage(bot, chatId, "That income arrived while I was restarting. Send it again so I do not save an old transaction by accident.");
+                    return;
+                }
+
                 const saved = await handleTransactionCommand(bot, msg, text, "income");
 
                 if (saved) {
@@ -485,6 +499,11 @@ export function startTelegramBot() {
             const pendingType = pendingTransactionTypes.get(chatId);
 
             if (pendingType && !text.startsWith("/")) {
+                if (isOldMessage) {
+                    await sendAutoDeletingMessage(bot, chatId, "That entry arrived while I was restarting. Send it again so I do not save an old transaction by accident.");
+                    return;
+                }
+
                 const saved = await handleTransactionCommand(
                     bot,
                     msg,

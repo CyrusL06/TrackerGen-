@@ -151,3 +151,29 @@ Example:
 - wrong: sendAutoDeletingMessage(chatId, "message")
 
 This fixes the button callback flow and the save-confirmation flow after the user enters the amount/details.
+
+Problem: Telegram looked blank after sending /start during deployment
+
+What happened:
+The user sent "/start" several times, but no bot message appeared in Telegram.
+
+Root cause:
+The bot had a startup guard that ignored every Telegram message older than the current server process. That protected against stale expense/income messages creating surprise transactions, but it also ignored safe commands like:
+- /start
+- /help
+- /add
+- /summary
+- /recent
+
+If Render was restarting or redeploying, Telegram could queue those safe commands. When the bot came back online, the old-message guard silently dropped them.
+
+Solution:
+The bot now still logs old Telegram messages, but it only blocks old messages that could create a transaction:
+- expense ...
+- income ...
+- pending button-entry details
+
+Safe commands like "/start" and "/add" can still reply after a restart.
+
+Extra debugging:
+The bot now logs Telegram polling errors. If production has a token conflict, Render logs should show the polling error instead of failing silently.
