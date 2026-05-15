@@ -40,6 +40,17 @@ const userProfileSchema = new mongoose.Schema(
             index: true,
             sparse: true,
         },
+        telegramUserId: {
+            type: String,
+            default: null,
+            index: true,
+            sparse: true,
+        },
+        telegramUsername: {
+            type: String,
+            default: null,
+            trim: true,
+        },
         telegramLinkCode: {
             type: String,
             default: null,

@@ -16,6 +16,11 @@ function maskChatId(chatId) {
     return `...${String(chatId).slice(-4)}`;
 }
 
+function maskTelegramId(telegramId) {
+    if (!telegramId) return null;
+    return `...${String(telegramId).slice(-4)}`;
+}
+
 export function buildRouter({getAuthenticatedUser}){
     const router = express.Router()
 router.use(express.urlencoded({extended:true}))
@@ -85,7 +90,11 @@ router.get("/api/profile/telegram", async (req, res) => {
 
     return res.json({
         linked: Boolean(profile?.telegramChatId),
+        chatId: profile?.telegramChatId ?? null,
         chatIdPreview: maskChatId(profile?.telegramChatId),
+        userId: profile?.telegramUserId ?? null,
+        userIdPreview: maskTelegramId(profile?.telegramUserId),
+        telegramUsername: profile?.telegramUsername ?? null,
         linkedAt: profile?.telegramLinkedAt ?? null,
         linkCode: hasActiveCode ? profile.telegramLinkCode : null,
         linkCommand: hasActiveCode ? `/link ${profile.telegramLinkCode}` : null,
@@ -122,7 +131,11 @@ router.post("/api/profile/telegram-link-code", async (req, res) => {
 
         return res.status(200).json({
             linked: Boolean(profile.telegramChatId),
+            chatId: profile.telegramChatId ?? null,
             chatIdPreview: maskChatId(profile.telegramChatId),
+            userId: profile.telegramUserId ?? null,
+            userIdPreview: maskTelegramId(profile.telegramUserId),
+            telegramUsername: profile.telegramUsername ?? null,
             linkCode,
             linkCommand: `/link ${linkCode}`,
             expiresAt,

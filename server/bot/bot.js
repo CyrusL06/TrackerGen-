@@ -4,7 +4,6 @@ import { UserProfile } from "../model/userProfile.js";
 
 const HELP_TEXT = [
     "TrackerGen bot commands:",
-    "Hey Boss whats our transaction rn.",
     "/link TG-123456 - connect Telegram to your TrackerGen account",
     "expense coffee 6.50 food - add an expense",
     "income paycheck 1200 work - add income",
@@ -102,6 +101,13 @@ async function findLinkedProfile(chatId) {
     return UserProfile.findOne({ telegramChatId: String(chatId) });
 }
 
+function getTelegramUser(msg) {
+    return {
+        userId: msg.from?.id ? String(msg.from.id) : null,
+        username: msg.from?.username ?? null,
+    };
+}
+
 async function sendMonthlySummary(bot, chatId, workosUserId) {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -169,7 +175,11 @@ async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
 
 async function handleLinkCommand(bot, msg, text) {
     const chatId = String(msg.chat.id);
-    const linkCode = text.replace(/^\/link(?:@\w+)?\s+/i, "").trim().toUpperCase();
+    const { userId, username } = getTelegramUser(msg);
+    const linkCode = text
+        .replace(/^\/(?:link|start)(?:@\w+)?\s+/i, "")
+        .trim()
+        .toUpperCase();
 
     if (!linkCode) {
         await bot.sendMessage(chatId, "Send your code like this: /link TG-123456");
@@ -184,6 +194,8 @@ async function handleLinkCommand(bot, msg, text) {
         {
             $set: {
                 telegramChatId: chatId,
+                telegramUserId: userId,
+                telegramUsername: username,
                 telegramLinkedAt: new Date(),
             },
             $unset: {
@@ -200,8 +212,10 @@ async function handleLinkCommand(bot, msg, text) {
         return;
     }
 
-    console.log(`Telegram linked chat ${chatId} to TrackerGen user ${profile.workosUserId}`);
-    await bot.sendMessage(chatId, "Telegram is connected to TrackerGen. Try: expense 6.50 Food coffee");
+    console.log(
+        `Telegram linked chat ${chatId} and user ${userId} to TrackerGen user ${profile.workosUserId}`,
+    );
+    await bot.sendMessage(chatId, "Telegram is connected to TrackerGen. Try: expense coffee 6.50 food");
 }
 
 async function handleTransactionCommand(bot, msg, text, type) {
@@ -268,7 +282,7 @@ export function startTelegramBot() {
 
             console.log(`Telegram message from chat ${chatId}: ${text}`);
 
-            if (/^\/link(?:@\w+)?\s+/i.test(text)) {
+            if (/^\/(?:link|start)(?:@\w+)?\s+/i.test(text)) {
                 await handleLinkCommand(bot, msg, text);
                 return;
             }

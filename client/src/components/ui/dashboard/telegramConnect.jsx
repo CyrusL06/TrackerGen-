@@ -1,4 +1,4 @@
-import { CheckCircle2, Copy, RefreshCcw, Send } from "lucide-react";
+import { CheckCircle2, Copy, ExternalLink, RefreshCcw, Send } from "lucide-react";
 import { COLORS, TW } from "./shared.js";
 import { DisplayTitle, Eyebrow, SurfaceCard, Tag } from "./primitives.jsx";
 
@@ -11,6 +11,10 @@ export default function TelegramConnect({
 }) {
   const linkCommand = telegram?.linkCommand;
   const botLabel = telegram?.botUsername ? `@${telegram.botUsername}` : "your Telegram bot";
+  const telegramStartUrl =
+    telegram?.botUsername && telegram?.linkCode
+      ? `https://t.me/${telegram.botUsername}?start=${encodeURIComponent(telegram.linkCode)}`
+      : null;
 
   return (
     <SurfaceCard className={TW.panelPadding}>
@@ -19,7 +23,7 @@ export default function TelegramConnect({
           <Eyebrow>Telegram</Eyebrow>
           <DisplayTitle>Bot Connection</DisplayTitle>
           <p className="mt-2 max-w-xl text-[14px] leading-6 text-[color:var(--dashboard-muted)] sm:text-[12px]">
-            Link your Telegram chat, then message the bot to add income, expenses, or ask for a summary.
+            Connect by pasting the generated link command into Telegram. Your numeric ID is saved automatically after the bot receives it.
           </p>
         </div>
 
@@ -36,9 +40,17 @@ export default function TelegramConnect({
           </div>
 
           {telegram?.linked ? (
-            <div className="flex items-start gap-2 text-[13px] leading-6 text-[color:var(--dashboard-muted)] sm:text-[11px]">
-              <CheckCircle2 size={14} color={COLORS.accent} className="mt-1 shrink-0" />
-              <span>Linked to chat {telegram.chatIdPreview}. You can send bot commands now.</span>
+            <div className="grid gap-3 text-[13px] leading-6 text-[color:var(--dashboard-muted)] sm:text-[11px]">
+              <div className="flex items-start gap-2">
+                <CheckCircle2 size={14} color={COLORS.accent} className="mt-1 shrink-0" />
+                <span>
+                  Connected{telegram.telegramUsername ? ` as @${telegram.telegramUsername}` : ""}. The bot can now save transactions from this Telegram account.
+                </span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <TelegramIdValue label="Telegram user ID" value={telegram.userId} />
+                <TelegramIdValue label="Telegram chat ID" value={telegram.chatId} />
+              </div>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -54,15 +66,31 @@ export default function TelegramConnect({
 
               {linkCommand ? (
                 <div className="grid gap-2">
-                  <div className="border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] px-3 py-3 text-[14px] text-[color:var(--dashboard-text)] sm:text-[12px]">
+                  <div className="text-[11px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
+                    Paste this command in Telegram
+                  </div>
+                  <div className="select-all break-all border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] px-3 py-3 text-[14px] text-[color:var(--dashboard-text)] sm:text-[12px]">
                     {linkCommand}
                   </div>
-                  <button type="button" onClick={onCopyCommand} className={TW.secondaryButton}>
-                    <Copy size={12} />
-                    Copy command
-                  </button>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <button type="button" onClick={onCopyCommand} className={TW.secondaryButton}>
+                      <Copy size={12} />
+                      Copy for Telegram
+                    </button>
+                    {telegramStartUrl ? (
+                      <a
+                        href={telegramStartUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={TW.secondaryButton}
+                      >
+                        <ExternalLink size={12} />
+                        Open Telegram
+                      </a>
+                    ) : null}
+                  </div>
                   <p className="text-[12px] leading-5 text-[color:var(--dashboard-muted)] sm:text-[10px]">
-                    Open {botLabel} and send this command. Codes expire after 15 minutes.
+                    Open {botLabel} and send this exact command. You do not need to type your Telegram ID manually.
                   </p>
                 </div>
               ) : null}
@@ -93,6 +121,31 @@ function CommandExample({ command }) {
   return (
     <div className="border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] px-3 py-2 text-[13px] text-[color:var(--dashboard-muted)] sm:text-[11px]">
       {command}
+    </div>
+  );
+}
+
+function TelegramIdValue({ label, value }) {
+  async function copyValue() {
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+  }
+
+  return (
+    <div className="border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] p-3">
+      <div className="mb-1 text-[10px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
+        {label}
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <span className="min-w-0 break-all text-[13px] text-[color:var(--dashboard-text)] sm:text-[11px]">
+          {value ?? "Not saved yet"}
+        </span>
+        {value ? (
+          <button type="button" onClick={copyValue} className="shrink-0 text-[color:var(--dashboard-muted)] hover:text-[color:var(--dashboard-accent)]">
+            <Copy size={12} />
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }
