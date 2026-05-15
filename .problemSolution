@@ -124,3 +124,30 @@ It does this for:
 
 Important Telegram limitation:
 This is not the same as clearing the full chat history. The bot deletes individual messages that it can access. In private chat this should work for both bot replies and incoming user messages. In group chats, Telegram may require the bot to have delete-message permission.
+
+Problem: Telegram Income and Expense button flow crashed after adding auto-delete
+
+What happened:
+After the user sent "/add", tapped "Income" or "Expense", and then entered the transaction details, the bot failed instead of saving the transaction.
+
+Root cause:
+The auto-delete helper expects this argument order:
+- bot
+- chatId
+- text
+- options
+
+Some multi-line calls were accidentally changed to:
+- chatId
+- text
+
+That meant the helper tried to call sendMessage on the chat id instead of on the Telegram bot instance.
+
+Solution:
+Every sendAutoDeletingMessage call now passes the Telegram bot instance first.
+
+Example:
+- correct: sendAutoDeletingMessage(bot, chatId, "message")
+- wrong: sendAutoDeletingMessage(chatId, "message")
+
+This fixes the button callback flow and the save-confirmation flow after the user enters the amount/details.

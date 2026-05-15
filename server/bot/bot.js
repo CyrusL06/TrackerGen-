@@ -193,6 +193,7 @@ async function sendMonthlySummary(bot, chatId, workosUserId) {
     const net = income - expenses;
 
     await sendAutoDeletingMessage(
+        bot,
         chatId,
         [
             "This month in TrackerGen:",
@@ -227,6 +228,7 @@ async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
     });
 
     await sendAutoDeletingMessage(
+        bot,
         chatId,
         [
             `Recent ${transactions.length} transactions:`,
@@ -307,6 +309,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
                 `Skipped duplicate Telegram message ${messageId} from chat ${chatId}`,
             );
             await sendAutoDeletingMessage(
+                bot,
                 chatId,
                 `That Telegram message was already saved as ${existingTransaction.name}.`,
             );
@@ -319,6 +322,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
 
     if (!parsed) {
         await sendAutoDeletingMessage(
+            bot,
             chatId,
             `Use: ${type} description amount category\nExample: ${type} coffee 6.50 food`,
         );
@@ -339,6 +343,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
     );
 
     await sendAutoDeletingMessage(
+        bot,
         chatId,
         [
             `Saved to TrackerGen: ${parsed.name}`,
@@ -384,6 +389,7 @@ export function startTelegramBot() {
                 text: `${type === "income" ? "Income" : "Expense"} selected`,
             });
             await sendAutoDeletingMessage(
+                bot,
                 chatId,
                 `Send the details like this:\n${getTransactionDetailExample(type)}`,
             );
