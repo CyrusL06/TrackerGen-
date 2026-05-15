@@ -24,3 +24,47 @@ That prevents duplicate Telegram messages from creating duplicate records even i
 
 Operational note:
 Only one polling bot instance should run with a BOT_TOKEN. In production, keep the Render bot running and stop any local server using the same token.
+
+Problem: Old Telegram update created an unexpected transaction
+
+What happened:
+After the bot started or reconnected, Telegram could deliver an older pending update that was sent before the current bot process started. If that old update was an expense or income command, the bot could save it even though the user was expecting only their new query to run.
+
+Root cause:
+Telegram polling works like a mailbox. Messages that were not consumed while the bot was offline or restarting can still be waiting. The bot did not check whether a message was older than the current process startup time.
+
+Solution:
+The bot now records a startup timestamp:
+- botStartedAt
+
+Before handling any Telegram message, it checks:
+- if msg.date is older than botStartedAt, ignore it
+
+This prevents old queued Telegram commands from creating surprise transactions after a Render restart or local bot restart.
+
+Problem: Telegram recent and summary commands did not work as slash commands
+
+What happened:
+Users expected Telegram commands like "/summary" and "/recent" to work from the Telegram command menu, but the bot only recognized plain text messages like "summary" and "recent".
+
+Root cause:
+The bot command matching only accepted the exact words:
+- summary
+- recent
+
+Telegram slash commands include a leading slash, and in some contexts Telegram can include the bot username too, such as:
+- /summary
+- /summary@TrackerBot
+- /recent
+- /recent@TrackerBot
+
+Solution:
+The bot now accepts both plain text and Telegram slash command versions:
+- summary
+- /summary
+- /summary@BotName
+- recent
+- /recent
+- /recent@BotName
+
+The help text now also shows "/summary" and "/recent" so users know these are real Telegram commands.

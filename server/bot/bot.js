@@ -3,15 +3,17 @@ import { Transaction } from "../model/data.js";
 import { UserProfile } from "../model/userProfile.js";
 
 const HELP_TEXT = [
-    "TrackerGen bot commands:",
+    "Hey Boss here are the commands:",
     "/link TG-123456 - connect Telegram to your TrackerGen account",
-    "expense coffee 6.50 food - add an expense",
-    "income paycheck 1200 work - add income",
-    "summary - show this month's totals",
-    "recent - show recent transaction totals",
+    "expense coffee 6.50 food  -> add an expense",
+    "income paycheck 1200 work -> add income",
+    "/summary - show this month's totals",
+    "/recent - show recent transaction totals",
 ].join("\n");
 
 const RECENT_TRANSACTION_LIMIT = 5;
+
+const botStartedAt = Math.floor(Date.now() / 1000);
 
 const CATEGORY_ALIASES = {
     food: "Food & Drink",
@@ -285,7 +287,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
             `Saved to TrackerGen: ${parsed.name}`,
             `${type === "expense" ? "Expense" : "Income"}: ${type === "expense" ? "-" : "+"}${formatMoney(parsed.amount)}`,
             `Category: ${parsed.category}`,
-            `Database id: ${transaction._id}`,
+            // `Database id: ${transaction._id}`,
         ].join("\n"),
     );
 
@@ -307,7 +309,14 @@ export function startTelegramBot() {
         const text = msg.text?.trim() ?? "";
 
         try {
-            if (!text || text === "/start" || text === "help") {
+            if (msg.date && msg.date < botStartedAt) {
+                console.log(
+                    `Ignored old Telegram message ${msg.message_id} from chat ${chatId}`,
+                );
+                return;
+            }
+
+            if (!text || /^\/?help(?:@\w+)?$/i.test(text) || /^\/start(?:@\w+)?$/i.test(text)) {
                 await bot.sendMessage(chatId, HELP_TEXT);
                 return;
             }
@@ -329,7 +338,7 @@ export function startTelegramBot() {
                 return;
             }
 
-            if (/^summary$/i.test(text)) {
+            if (/^\/?summary(?:@\w+)?$/i.test(text)) {
                 const profile = await findLinkedProfile(chatId);
 
                 if (!profile) {
@@ -341,7 +350,7 @@ export function startTelegramBot() {
                 return;
             }
 
-            if (/^recent$/i.test(text)) {
+            if (/^\/?recent(?:@\w+)?$/i.test(text)) {
                 const profile = await findLinkedProfile(chatId);
 
                 if (!profile) {
