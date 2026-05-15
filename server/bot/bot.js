@@ -101,6 +101,14 @@ async function findLinkedProfile(chatId) {
     return UserProfile.findOne({ telegramChatId: String(chatId) });
 }
 
+function getTelegramMessageIdentity(msg) {
+    return {
+        chatId: String(msg.chat.id),
+        messageId: msg.message_id ? String(msg.message_id) : null,
+        userId: msg.from?.id ? String(msg.from.id) : null,
+    };
+}
+
 function getTelegramUser(msg) {
     return {
         userId: msg.from?.id ? String(msg.from.id) : null,
@@ -219,13 +227,33 @@ async function handleLinkCommand(bot, msg, text) {
 }
 
 async function handleTransactionCommand(bot, msg, text, type) {
-    const chatId = String(msg.chat.id);
+    const { chatId, messageId, userId } = getTelegramMessageIdentity(msg);
     const profile = await findLinkedProfile(chatId);
 
     if (!profile) {
         console.log(`Telegram ${type} rejected because chat ${chatId} is not linked`);
         await bot.sendMessage(chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
         return;
+    }
+
+    if (messageId) {
+        const existingTransaction = await Transaction.findOne({
+            source: "telegram",
+            telegramChatId: chatId,
+            telegramMessageId: messageId,
+        });
+
+        if (existingTransaction) {
+            console.log(
+                `Skipped duplicate Telegram message ${messageId} from chat ${chatId}`,
+            );
+            await bot.sendMessage(
+                chatId,
+                `That Telegram message was already saved as ${existingTransaction.name}.`,
+            );
+            await sendRecentTransactionSummary(bot, chatId, profile.workosUserId);
+            return;
+        }
     }
 
     const parsed = parseTransactionText(text, type);
@@ -240,6 +268,10 @@ async function handleTransactionCommand(bot, msg, text, type) {
 
     const transaction = await Transaction.create({
         workosUserId: profile.workosUserId,
+        source: "telegram",
+        telegramChatId: chatId,
+        telegramUserId: userId,
+        telegramMessageId: messageId,
         ...parsed,
     });
 

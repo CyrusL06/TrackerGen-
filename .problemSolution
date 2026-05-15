@@ -1,0 +1,26 @@
+Problem: Duplicate Telegram transaction entries
+
+What happened:
+When a user sent a Telegram command like "expense coffee 6.50 food", the bot created a new MongoDB transaction every time it processed that message. If Telegram delivered the same update twice, Render restarted during processing, or two bot instances briefly ran with the same BOT_TOKEN, the same command could create duplicate entries.
+
+Root cause:
+The Transaction document did not store the Telegram message identity. The bot had no way to know whether a specific Telegram chat/message pair had already been processed.
+
+Solution:
+Each Telegram-created transaction now stores:
+- source: "telegram"
+- telegramChatId
+- telegramUserId
+- telegramMessageId
+
+Before creating a transaction, the bot checks for an existing Transaction with the same telegramChatId and telegramMessageId. If one exists, the bot skips creation and replies that the message was already saved.
+
+Extra database protection:
+The Transaction schema now has a unique partial index on:
+- telegramChatId
+- telegramMessageId
+
+That prevents duplicate Telegram messages from creating duplicate records even if two bot processes try to save the same update at nearly the same time.
+
+Operational note:
+Only one polling bot instance should run with a BOT_TOKEN. In production, keep the Render bot running and stop any local server using the same token.
