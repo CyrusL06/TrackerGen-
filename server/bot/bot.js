@@ -19,6 +19,7 @@ const HELP_TEXT = [
 
 const RECENT_TRANSACTION_LIMIT = 5;
 const TRANSACTION_TYPE_CALLBACK_PREFIX = "transaction_type:";
+const MESSAGE_DELETE_DELAY_MS = 5 * 60 * 1000;
 
 const botStartedAt = Math.floor(Date.now() / 1000);
 const pendingTransactionTypes = new Map();
@@ -140,13 +141,36 @@ function getAddTransactionKeyboard() {
 }
 
 async function sendAddTransactionButtons(bot, chatId) {
-    await bot.sendMessage(chatId, "What do you want to add?", getAddTransactionKeyboard());
+    await sendAutoDeletingMessage(bot, chatId, "What do you want to add?", getAddTransactionKeyboard());
 }
 
 function getTransactionDetailExample(type) {
     return type === "income"
         ? "paycheck 1200 work"
         : "coffee 6.50 food";
+}
+
+function scheduleMessageDelete(bot, chatId, messageId) {
+    if (!messageId) {
+        return;
+    }
+
+    setTimeout(async () => {
+        try {
+            await bot.deleteMessage(chatId, messageId);
+        } catch (error) {
+            console.log(
+                `Could not delete Telegram message ${messageId} from chat ${chatId}:`,
+                error.message,
+            );
+        }
+    }, MESSAGE_DELETE_DELAY_MS);
+}
+
+async function sendAutoDeletingMessage(bot, chatId, text, options) {
+    const sentMessage = await bot.sendMessage(chatId, text, options);
+    scheduleMessageDelete(bot, chatId, sentMessage.message_id);
+    return sentMessage;
 }
 
 async function sendMonthlySummary(bot, chatId, workosUserId) {
@@ -168,7 +192,7 @@ async function sendMonthlySummary(bot, chatId, workosUserId) {
         .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
     const net = income - expenses;
 
-    await bot.sendMessage(
+    await sendAutoDeletingMessage(
         chatId,
         [
             "This month in TrackerGen:",
@@ -187,7 +211,7 @@ async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
         .limit(RECENT_TRANSACTION_LIMIT);
 
     if (transactions.length === 0) {
-        await bot.sendMessage(chatId, "No recent TrackerGen transactions yet.");
+        await sendAutoDeletingMessage(bot, chatId, "No recent TrackerGen transactions yet.");
         return;
     }
 
@@ -202,7 +226,7 @@ async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
         return `${index + 1}. ${transaction.name} (${transaction.category}) ${formatSignedMoney(transaction.amount)}`;
     });
 
-    await bot.sendMessage(
+    await sendAutoDeletingMessage(
         chatId,
         [
             `Recent ${transactions.length} transactions:`,
@@ -225,7 +249,7 @@ async function handleLinkCommand(bot, msg, text) {
         .toUpperCase();
 
     if (!linkCode) {
-        await bot.sendMessage(chatId, "Send your code like this: /link TG-123456");
+        await sendAutoDeletingMessage(bot, chatId, "Send your code like this: /link TG-123456");
         return;
     }
 
@@ -251,14 +275,14 @@ async function handleLinkCommand(bot, msg, text) {
 
     if (!profile) {
         console.log(`Telegram link failed for chat ${chatId} with code ${linkCode}`);
-        await bot.sendMessage(chatId, "That link code is invalid or expired. Generate a new code in TrackerGen.");
+        await sendAutoDeletingMessage(bot, chatId, "That link code is invalid or expired. Generate a new code in TrackerGen.");
         return;
     }
 
     console.log(
         `Telegram linked chat ${chatId} and user ${userId} to TrackerGen user ${profile.workosUserId}`,
     );
-    await bot.sendMessage(chatId, "Telegram is connected to TrackerGen. Try: expense coffee 6.50 food");
+    await sendAutoDeletingMessage(bot, chatId, "Telegram is connected to TrackerGen. Try: expense coffee 6.50 food");
 }
 
 async function handleTransactionCommand(bot, msg, text, type) {
@@ -267,7 +291,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
 
     if (!profile) {
         console.log(`Telegram ${type} rejected because chat ${chatId} is not linked`);
-        await bot.sendMessage(chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
+        await sendAutoDeletingMessage(bot, chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
         return false;
     }
 
@@ -282,7 +306,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
             console.log(
                 `Skipped duplicate Telegram message ${messageId} from chat ${chatId}`,
             );
-            await bot.sendMessage(
+            await sendAutoDeletingMessage(
                 chatId,
                 `That Telegram message was already saved as ${existingTransaction.name}.`,
             );
@@ -294,7 +318,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
     const parsed = parseTransactionText(text, type);
 
     if (!parsed) {
-        await bot.sendMessage(
+        await sendAutoDeletingMessage(
             chatId,
             `Use: ${type} description amount category\nExample: ${type} coffee 6.50 food`,
         );
@@ -314,7 +338,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
         `Telegram created transaction ${transaction._id} for user ${profile.workosUserId}`,
     );
 
-    await bot.sendMessage(
+    await sendAutoDeletingMessage(
         chatId,
         [
             `Saved to TrackerGen: ${parsed.name}`,
@@ -359,7 +383,7 @@ export function startTelegramBot() {
             await bot.answerCallbackQuery(query.id, {
                 text: `${type === "income" ? "Income" : "Expense"} selected`,
             });
-            await bot.sendMessage(
+            await sendAutoDeletingMessage(
                 chatId,
                 `Send the details like this:\n${getTransactionDetailExample(type)}`,
             );
@@ -383,8 +407,10 @@ export function startTelegramBot() {
                 return;
             }
 
+            scheduleMessageDelete(bot, chatId, msg.message_id);
+
             if (!text || /^\/?help(?:@\w+)?$/i.test(text) || /^\/start(?:@\w+)?$/i.test(text)) {
-                await bot.sendMessage(chatId, HELP_TEXT);
+                await sendAutoDeletingMessage(bot, chatId, HELP_TEXT);
                 return;
             }
 
@@ -397,7 +423,7 @@ export function startTelegramBot() {
 
             if (/^\/?cancel(?:@\w+)?$/i.test(text)) {
                 pendingTransactionTypes.delete(chatId);
-                await bot.sendMessage(chatId, "Canceled the current button entry.");
+                await sendAutoDeletingMessage(bot, chatId, "Canceled the current button entry.");
                 return;
             }
 
@@ -430,7 +456,7 @@ export function startTelegramBot() {
                 const profile = await findLinkedProfile(chatId);
 
                 if (!profile) {
-                    await bot.sendMessage(chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
+                    await sendAutoDeletingMessage(bot, chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
                     return;
                 }
 
@@ -442,7 +468,7 @@ export function startTelegramBot() {
                 const profile = await findLinkedProfile(chatId);
 
                 if (!profile) {
-                    await bot.sendMessage(chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
+                    await sendAutoDeletingMessage(bot, chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
                     return;
                 }
 
@@ -467,10 +493,10 @@ export function startTelegramBot() {
                 return;
             }
 
-            await bot.sendMessage(chatId, HELP_TEXT);
+            await sendAutoDeletingMessage(bot, chatId, HELP_TEXT);
         } catch (error) {
             console.log("Telegram bot error:", error);
-            await bot.sendMessage(chatId, "Something went wrong while updating TrackerGen.");
+            await sendAutoDeletingMessage(bot, chatId, "Something went wrong while updating TrackerGen.");
         }
     });
 

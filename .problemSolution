@@ -96,3 +96,31 @@ Example:
 5. Bot saves it as "expense coffee 6.50 food"
 
 The bot also supports "/cancel" to clear the current button entry if the user changes their mind.
+
+Problem: Telegram transaction chats stayed cluttered after commands
+
+What happened:
+The Telegram chat kept every command and bot reply, including:
+- /add
+- the Income and Expense button prompt
+- the detail instruction message
+- the user's transaction details
+- the saved transaction confirmation
+- the recent transaction summary
+
+Root cause:
+Telegram bots do not have a "clear history" API. They can only delete specific messages by chat id and message id. The bot was sending and receiving messages without scheduling those individual messages for cleanup.
+
+Solution:
+The bot now schedules Telegram messages for deletion after 5 minutes.
+
+It does this for:
+- incoming user messages after the bot confirms they are current messages
+- bot replies sent through the auto-deleting message helper
+- button prompt messages
+- instruction messages
+- confirmation and summary messages
+- error/help messages
+
+Important Telegram limitation:
+This is not the same as clearing the full chat history. The bot deletes individual messages that it can access. In private chat this should work for both bot replies and incoming user messages. In group chats, Telegram may require the bot to have delete-message permission.
