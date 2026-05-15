@@ -173,6 +173,14 @@ async function sendAutoDeletingMessage(bot, chatId, text, options) {
     return sentMessage;
 }
 
+function getWebhookPath(webhookUrl) {
+    try {
+        return new URL(webhookUrl).pathname;
+    } catch {
+        return null;
+    }
+}
+
 async function sendMonthlySummary(bot, chatId, workosUserId) {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -357,15 +365,18 @@ async function handleTransactionCommand(bot, msg, text, type) {
     return true;
 }
 
-export function startTelegramBot() {
+export function startTelegramBot(app) {
     const token = process.env.BOT_TOKEN;
+    const webhookUrl = process.env.TELEGRAM_WEBHOOK_URL;
+    const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
 
     if (!token) {
         console.log("Telegram bot is disabled because BOT_TOKEN is not set.");
         return null;
     }
 
-    const bot = new TelegramBot(token, { polling: true });
+    const useWebhook = Boolean(webhookUrl && app);
+    const bot = new TelegramBot(token, { polling: !useWebhook });
 
     bot.on("polling_error", (error) => {
         console.log("Telegram polling error:", error.message || error);
@@ -525,6 +536,40 @@ export function startTelegramBot() {
         }
     });
 
-    console.log("Telegram bot polling started.");
+    if (useWebhook) {
+        const webhookPath = getWebhookPath(webhookUrl);
+
+        if (!webhookPath) {
+            console.log("Telegram webhook is disabled because TELEGRAM_WEBHOOK_URL is invalid.");
+            return bot;
+        }
+
+        app.post(webhookPath, (req, res) => {
+            if (
+                webhookSecret
+                && req.get("X-Telegram-Bot-Api-Secret-Token") !== webhookSecret
+            ) {
+                return res.sendStatus(401);
+            }
+
+            bot.processUpdate(req.body);
+            return res.sendStatus(200);
+        });
+
+        const webhookOptions = webhookSecret
+            ? { secret_token: webhookSecret }
+            : {};
+
+        bot.setWebHook(webhookUrl, webhookOptions)
+            .then(() => {
+                console.log(`Telegram webhook set at ${webhookPath}`);
+            })
+            .catch((error) => {
+                console.log("Telegram webhook setup error:", error.message || error);
+            });
+    } else {
+        console.log("Telegram bot polling started.");
+    }
+
     return bot;
 }

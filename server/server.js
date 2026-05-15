@@ -117,7 +117,7 @@ const startServerDB = async ()=> {
     await connectDB(URI);
     console.log("2nd Check Connected")
     console.log(`Auth mode: ${AUTH_MODE}`);
-    startTelegramBot();
+    startTelegramBot(app);
 
     app.listen(port, () => {
   console.log(`API server running at ${port}`);

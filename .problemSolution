@@ -177,3 +177,60 @@ Safe commands like "/start" and "/add" can still reply after a restart.
 
 Extra debugging:
 The bot now logs Telegram polling errors. If production has a token conflict, Render logs should show the polling error instead of failing silently.
+
+Problem: Render polling bot sleeps and Telegram messages do not wake it up
+
+What happened:
+Telegram messages like "/start" did not get a response when the Render service was asleep. The bot was using polling, which means the server had to stay awake and constantly ask Telegram for new messages.
+
+Root cause:
+Render free web services can sleep when inactive. Polling does not create an incoming HTTP request to wake the service. If the service is asleep, the bot cannot ask Telegram for updates.
+
+Solution:
+The bot now supports Telegram webhooks.
+
+Production behavior:
+If TELEGRAM_WEBHOOK_URL is set, the bot does not use polling. Instead:
+1. Express registers a POST route for the webhook path.
+2. Telegram sends updates to that URL.
+3. The server passes the update into node-telegram-bot-api with bot.processUpdate(req.body).
+4. Telegram messages can wake the Render web service because they arrive as HTTP requests.
+
+Local development behavior:
+If TELEGRAM_WEBHOOK_URL is not set, the bot still uses polling so local testing can keep working.
+
+Environment variables needed in Render:
+- TELEGRAM_WEBHOOK_URL=https://trackergen.onrender.com/telegram/webhook
+- TELEGRAM_WEBHOOK_SECRET=use-a-long-random-secret
+
+Webhook route code:
+```js
+app.post(webhookPath, (req, res) => {
+    if (
+        webhookSecret
+        && req.get("X-Telegram-Bot-Api-Secret-Token") !== webhookSecret
+    ) {
+        return res.sendStatus(401);
+    }
+
+    bot.processUpdate(req.body);
+    return res.sendStatus(200);
+});
+```
+
+Webhook setup code:
+```js
+const webhookOptions = webhookSecret
+    ? { secret_token: webhookSecret }
+    : {};
+
+bot.setWebHook(webhookUrl, webhookOptions);
+```
+
+Server connection code:
+```js
+startTelegramBot(app);
+```
+
+Important:
+Do not run local polling with the same BOT_TOKEN while production webhook is active. Local polling can remove or conflict with the production webhook.
