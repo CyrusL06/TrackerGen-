@@ -68,3 +68,31 @@ The bot now accepts both plain text and Telegram slash command versions:
 - /recent@BotName
 
 The help text now also shows "/summary" and "/recent" so users know these are real Telegram commands.
+
+Problem: Telegram users had to type the transaction type manually
+
+What happened:
+To add a transaction from Telegram, users had to remember the full text format:
+- expense coffee 6.50 food
+- income paycheck 1200 work
+
+That works, but it is easy to mistype and does not feel like a Telegram-native flow.
+
+Root cause:
+The bot only handled text commands. It did not offer a button-based choice for the first decision: whether the transaction is income or expense.
+
+Solution:
+The bot now supports an "/add" command that sends two Telegram inline buttons:
+- Income
+- Expense
+
+When a user taps one of those buttons, the bot stores the selected transaction type for that chat. The next plain message from that chat is treated as the transaction details.
+
+Example:
+1. User sends "/add"
+2. User taps "Expense"
+3. Bot asks for details
+4. User sends "coffee 6.50 food"
+5. Bot saves it as "expense coffee 6.50 food"
+
+The bot also supports "/cancel" to clear the current button entry if the user changes their mind.

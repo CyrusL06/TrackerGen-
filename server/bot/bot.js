@@ -3,17 +3,25 @@ import { Transaction } from "../model/data.js";
 import { UserProfile } from "../model/userProfile.js";
 
 const HELP_TEXT = [
-    "Hey Boss here are the commands:",
+    "What's up boss",
+    "Here are the commands:",
+    "________________________",
+    "/add - choose Income or Expense with buttons",
     "/link TG-123456 - connect Telegram to your TrackerGen account",
-    "expense coffee 6.50 food  -> add an expense",
-    "income paycheck 1200 work -> add income",
     "/summary - show this month's totals",
     "/recent - show recent transaction totals",
+    "/cancel - cancel the current button entry",
+    "______________________________",
+    "As example if needed:",
+    "expense coffee 6.50 food  -> add an expense",
+    "income paycheck 1200 work -> add income",
 ].join("\n");
 
 const RECENT_TRANSACTION_LIMIT = 5;
+const TRANSACTION_TYPE_CALLBACK_PREFIX = "transaction_type:";
 
 const botStartedAt = Math.floor(Date.now() / 1000);
+const pendingTransactionTypes = new Map();
 
 const CATEGORY_ALIASES = {
     food: "Food & Drink",
@@ -118,6 +126,29 @@ function getTelegramUser(msg) {
     };
 }
 
+function getAddTransactionKeyboard() {
+    return {
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: "Income", callback_data: `${TRANSACTION_TYPE_CALLBACK_PREFIX}income` },
+                    { text: "Expense", callback_data: `${TRANSACTION_TYPE_CALLBACK_PREFIX}expense` },
+                ],
+            ],
+        },
+    };
+}
+
+async function sendAddTransactionButtons(bot, chatId) {
+    await bot.sendMessage(chatId, "What do you want to add?", getAddTransactionKeyboard());
+}
+
+function getTransactionDetailExample(type) {
+    return type === "income"
+        ? "paycheck 1200 work"
+        : "coffee 6.50 food";
+}
+
 async function sendMonthlySummary(bot, chatId, workosUserId) {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -141,6 +172,7 @@ async function sendMonthlySummary(bot, chatId, workosUserId) {
         chatId,
         [
             "This month in TrackerGen:",
+            "_____________________________",
             `Income: ${formatMoney(income)}`,
             `Expenses: ${formatMoney(expenses)}`,
             `Net: ${net >= 0 ? "+" : "-"}${formatMoney(net)}`,
@@ -174,6 +206,7 @@ async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
         chatId,
         [
             `Recent ${transactions.length} transactions:`,
+            "_____________________________",
             ...recentLines,
             "",
             `Recent income: ${formatMoney(income)}`,
@@ -235,7 +268,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
     if (!profile) {
         console.log(`Telegram ${type} rejected because chat ${chatId} is not linked`);
         await bot.sendMessage(chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
-        return;
+        return false;
     }
 
     if (messageId) {
@@ -254,7 +287,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
                 `That Telegram message was already saved as ${existingTransaction.name}.`,
             );
             await sendRecentTransactionSummary(bot, chatId, profile.workosUserId);
-            return;
+            return true;
         }
     }
 
@@ -265,7 +298,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
             chatId,
             `Use: ${type} description amount category\nExample: ${type} coffee 6.50 food`,
         );
-        return;
+        return false;
     }
 
     const transaction = await Transaction.create({
@@ -292,6 +325,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
     );
 
     await sendRecentTransactionSummary(bot, chatId, profile.workosUserId);
+    return true;
 }
 
 export function startTelegramBot() {
@@ -303,6 +337,39 @@ export function startTelegramBot() {
     }
 
     const bot = new TelegramBot(token, { polling: true });
+
+    bot.on("callback_query", async (query) => {
+        const chatId = query.message?.chat?.id ? String(query.message.chat.id) : null;
+        const data = query.data ?? "";
+
+        if (!chatId || !data.startsWith(TRANSACTION_TYPE_CALLBACK_PREFIX)) {
+            await bot.answerCallbackQuery(query.id);
+            return;
+        }
+
+        const type = data.replace(TRANSACTION_TYPE_CALLBACK_PREFIX, "");
+
+        if (!["income", "expense"].includes(type)) {
+            await bot.answerCallbackQuery(query.id);
+            return;
+        }
+
+        try {
+            pendingTransactionTypes.set(chatId, type);
+            await bot.answerCallbackQuery(query.id, {
+                text: `${type === "income" ? "Income" : "Expense"} selected`,
+            });
+            await bot.sendMessage(
+                chatId,
+                `Send the details like this:\n${getTransactionDetailExample(type)}`,
+            );
+        } catch (error) {
+            console.log("Telegram button error:", error);
+            await bot.answerCallbackQuery(query.id, {
+                text: "Something went wrong.",
+            });
+        }
+    });
 
     bot.on("message", async (msg) => {
         const chatId = String(msg.chat.id);
@@ -323,18 +390,39 @@ export function startTelegramBot() {
 
             console.log(`Telegram message from chat ${chatId}: ${text}`);
 
+            if (/^\/?add(?:@\w+)?$/i.test(text)) {
+                await sendAddTransactionButtons(bot, chatId);
+                return;
+            }
+
+            if (/^\/?cancel(?:@\w+)?$/i.test(text)) {
+                pendingTransactionTypes.delete(chatId);
+                await bot.sendMessage(chatId, "Canceled the current button entry.");
+                return;
+            }
+
             if (/^\/(?:link|start)(?:@\w+)?\s+/i.test(text)) {
                 await handleLinkCommand(bot, msg, text);
                 return;
             }
 
             if (/^expense\s+/i.test(text)) {
-                await handleTransactionCommand(bot, msg, text, "expense");
+                const saved = await handleTransactionCommand(bot, msg, text, "expense");
+
+                if (saved) {
+                    pendingTransactionTypes.delete(chatId);
+                }
+
                 return;
             }
 
             if (/^income\s+/i.test(text)) {
-                await handleTransactionCommand(bot, msg, text, "income");
+                const saved = await handleTransactionCommand(bot, msg, text, "income");
+
+                if (saved) {
+                    pendingTransactionTypes.delete(chatId);
+                }
+
                 return;
             }
 
@@ -359,6 +447,23 @@ export function startTelegramBot() {
                 }
 
                 await sendRecentTransactionSummary(bot, chatId, profile.workosUserId);
+                return;
+            }
+
+            const pendingType = pendingTransactionTypes.get(chatId);
+
+            if (pendingType && !text.startsWith("/")) {
+                const saved = await handleTransactionCommand(
+                    bot,
+                    msg,
+                    `${pendingType} ${text}`,
+                    pendingType,
+                );
+
+                if (saved) {
+                    pendingTransactionTypes.delete(chatId);
+                }
+
                 return;
             }
 
