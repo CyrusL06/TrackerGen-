@@ -21,7 +21,6 @@ import {
   COLORS,
   DASHBOARD_TEXTURE,
   EXPENSE_CATEGORIES,
-  FONTS,
   PAGE_VARS,
   SPENDING_CATEGORY_COLORS,
   SPENDING_FALLBACK_COLOR,
@@ -475,7 +474,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={TW.page} style={{ ...FONTS.mono, ...PAGE_VARS }}>
+    <div className={TW.page} style={{ fontFamily: "'Geist Variable', sans-serif", ...PAGE_VARS }}>
       <div
         className={TW.pageTexture}
         style={{ backgroundImage: DASHBOARD_TEXTURE }}
@@ -485,14 +484,21 @@ export default function Dashboard() {
       <div className={TW.pageShell}>
         {statusMessage ? (
           <div
-            className={`mb-4 flex flex-col gap-3 border px-4 py-3 text-[14px] leading-6 sm:flex-row sm:items-center sm:justify-between sm:text-[12px] ${
+            className={`mb-4 flex flex-col gap-3 rounded-[8px] border px-4 py-3.5 text-[14px] leading-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:text-[12px] ${
               statusMessage.tone === "warning"
-                ? "border-[color:color-mix(in_srgb,var(--dashboard-amber)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-amber)_8%,transparent)]"
-                : "border-[color:color-mix(in_srgb,var(--dashboard-accent)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_8%,transparent)]"
+                ? "border-[color:color-mix(in_srgb,var(--dashboard-amber)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-amber)_6%,transparent)]"
+                : "border-[color:color-mix(in_srgb,var(--dashboard-accent)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_6%,transparent)]"
             }`}
             role="status"
           >
-            <span>{statusMessage.text}</span>
+            <span className="flex items-center gap-2">
+              <span
+                className={`inline-block h-1.5 w-1.5 rounded-full ${
+                  statusMessage.tone === "warning" ? "bg-[color:var(--dashboard-amber)]" : "bg-[color:var(--dashboard-accent)]"
+                }`}
+              />
+              {statusMessage.text}
+            </span>
             {statusMessage.action === "Undo" ? (
               <button type="button" onClick={undoRemove} className={TW.secondaryButton}>
                 Undo remove
@@ -502,18 +508,18 @@ export default function Dashboard() {
         ) : null}
 
         {onboardingSummary ? (
-          <div className="mb-4 border border-[color:color-mix(in_srgb,var(--dashboard-accent)_30%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_7%,transparent)] px-4 py-3 text-[14px] leading-6 text-[color:var(--dashboard-text)] sm:text-[12px]">
+          <div className="mb-4 rounded-[8px] border border-[color:color-mix(in_srgb,var(--dashboard-accent)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_6%,transparent)] px-4 py-3.5 text-[14px] leading-6 text-[color:var(--dashboard-text)] shadow-sm sm:text-[12px]">
             {onboardingSummary.text}
           </div>
         ) : null}
 
-        <div className="mb-4 border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-3 text-[14px] leading-6 text-[color:var(--dashboard-muted)] sm:text-[12px]">
-          Preview build: the chart reflects your saved transactions and updates as entries change.
+        <div className="mb-5 rounded-[8px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-4 py-3 text-[13px] leading-6 text-[color:var(--dashboard-muted)] shadow-sm sm:text-[11px]">
+          Preview build — chart reflects your saved transactions and updates as entries change.
         </div>
 
         <StatsSection cards={statCards} />
 
-        <div className="mb-3 grid gap-3 lg:grid-cols-[1.4fr_1fr]">
+        <div className="mb-3 grid min-w-0 items-stretch gap-3 2xl:grid-cols-[minmax(0,1fr)_minmax(260px,300px)]">
           <CashFlowSection
             cashFlow={cashFlowData}
             selectedRange={selectedRange}

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Receipt } from "lucide-react";
 import { COLORS, TW } from "./shared.js";
 import { DisplayTitle, Eyebrow, SurfaceCard, Tag, TxnRow } from "./primitives.jsx";
 
@@ -10,7 +10,7 @@ export default function TransactionsSection({
 }) {
   return (
     <SurfaceCard className={TW.panelPadding}>
-      <div className="mb-2 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div>
           <Eyebrow>Activity</Eyebrow>
           <DisplayTitle>Recent Transactions</DisplayTitle>
@@ -28,10 +28,18 @@ export default function TransactionsSection({
         </div>
       </div>
 
-      <div className="max-h-[320px] overflow-y-auto">
+      <div className="max-h-[360px] overflow-y-auto">
         {txns.length === 0 ? (
-          <div className="py-8 text-center text-[14px] text-[color:var(--dashboard-muted)] sm:text-[11px]">
-            No transactions yet. Add one above.
+          <div className="flex flex-col items-center gap-3 py-12">
+            <div className="flex h-12 w-12 items-center justify-center rounded-[10px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)]">
+              <Receipt size={20} className="text-[color:var(--dashboard-muted)]" />
+            </div>
+            <p className="text-[14px] font-medium text-[color:var(--dashboard-muted)] sm:text-[12px]">
+              No transactions yet
+            </p>
+            <p className="text-[12px] text-[color:var(--dashboard-muted)] sm:text-[10px]">
+              Add your first transaction to start tracking.
+            </p>
           </div>
         ) : (
           txns.map((txn) => (

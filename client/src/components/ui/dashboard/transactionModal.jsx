@@ -20,6 +20,7 @@ export default function TransactionModal({
   const inputClassName = (hasError) =>
     cx(
       TW.inputBase,
+      "rounded-[8px]",
       hasError
         ? "border-[color:var(--dashboard-red)]"
         : "border-[color:var(--dashboard-border)]"
@@ -42,7 +43,7 @@ export default function TransactionModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[4px]"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[6px]"
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -52,12 +53,15 @@ export default function TransactionModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-[420px] overflow-hidden border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)]"
+        className="w-full max-w-[420px] overflow-hidden rounded-[12px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.6)]"
       >
         <div className="flex items-center justify-between border-b border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-5 py-4">
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-1 bg-[color:var(--dashboard-accent)]" />
-            <span className="text-[1.1rem] tracking-[0.06em]" style={FONTS.display}>
+          <div className="flex items-center gap-3">
+            <div
+              className="h-[18px] w-[3px] rounded-full"
+              style={{ backgroundColor: COLORS.accent }}
+            />
+            <span className="text-[1.1rem] font-semibold tracking-[-0.01em]">
               {isEditing ? "Edit Transaction" : "New Transaction"}
             </span>
           </div>
@@ -65,27 +69,27 @@ export default function TransactionModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex p-1 text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-text)]"
+            className="flex h-8 w-8 items-center justify-center rounded-[6px] text-[color:var(--dashboard-muted)] transition-colors hover:bg-[color:var(--dashboard-surface)] hover:text-[color:var(--dashboard-text)]"
           >
             <X size={16} />
           </button>
         </div>
 
         <form
-          className="p-5"
+          className="p-6"
           onSubmit={(event) => {
             event.preventDefault();
             onSubmit();
           }}
         >
-          <p className="mb-5 text-[12px] leading-6 text-[color:var(--dashboard-muted)]">
+          <p className="mb-5 text-[13px] leading-6 text-[color:var(--dashboard-muted)]">
             {isEditing
               ? "Update the details below to correct the saved amount or transaction info."
               : "Add one entry to keep the current month review accurate."}
           </p>
-          <div className="mb-[18px]">
+          <div className="mb-5">
             <FieldLabel>Type</FieldLabel>
-            <div className="grid grid-cols-2 gap-[6px]">
+            <div className="grid grid-cols-2 gap-2">
               {["expense", "income"].map((type) => {
                 const isActive = form.type === type;
                 const activeColor = type === "income" ? COLORS.accent : COLORS.red;
@@ -96,17 +100,17 @@ export default function TransactionModal({
                     type="button"
                     onClick={() => onTypeChange(type)}
                     className={cx(
-                      "border px-[9px] py-[9px] text-[11px] capitalize tracking-[0.06em] transition-all",
+                      "rounded-[8px] border px-4 py-2.5 text-[12px] capitalize tracking-[0.06em] transition-all sm:text-[11px]",
                       isActive
-                        ? ""
-                        : "border-[color:var(--dashboard-border)] text-[color:var(--dashboard-muted)]"
+                        ? "font-semibold shadow-sm"
+                        : "border-[color:var(--dashboard-border)] text-[color:var(--dashboard-muted)] hover:border-[color:var(--dashboard-text)]"
                     )}
                     style={
                       isActive
                         ? {
                             color: activeColor,
                             borderColor: activeColor,
-                            backgroundColor: `${activeColor}20`,
+                            backgroundColor: `${activeColor}18`,
                           }
                         : undefined
                     }
@@ -118,7 +122,7 @@ export default function TransactionModal({
             </div>
           </div>
 
-          <div className="mb-[14px]">
+          <div className="mb-4">
             <FieldLabel>Description</FieldLabel>
             <input
               className={inputClassName(Boolean(errors.name))}
@@ -129,7 +133,7 @@ export default function TransactionModal({
             <FieldError>{errors.name}</FieldError>
           </div>
 
-          <div className="mb-[14px] grid gap-2.5 sm:grid-cols-2">
+          <div className="mb-4 grid gap-3 sm:grid-cols-2">
             <div>
               <FieldLabel>Amount ($)</FieldLabel>
               <input
@@ -157,12 +161,12 @@ export default function TransactionModal({
             </div>
           </div>
 
-          <div className="mb-5">
+          <div className="mb-6">
             <FieldLabel>Category</FieldLabel>
             <select
               className={cx(
                 TW.inputBase,
-                "cursor-pointer appearance-none border-[color:var(--dashboard-border)]"
+                "cursor-pointer appearance-none rounded-[8px] border-[color:var(--dashboard-border)]"
               )}
               value={form.cat}
               onChange={(event) => onFieldChange("cat", event.target.value)}
@@ -185,7 +189,7 @@ export default function TransactionModal({
             </button>
             <button
               type="submit"
-              className="w-full bg-[color:var(--dashboard-accent)] px-3 py-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.88] sm:w-auto sm:min-w-[11rem]"
+              className={cx(TW.primaryButton, "w-full sm:w-auto sm:min-w-[11rem]")}
             >
               {isEditing ? "Save Changes" : "Add Transaction"}
             </button>

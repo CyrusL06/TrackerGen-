@@ -1,11 +1,11 @@
 import { LogOut, Plus } from "lucide-react";
-import { COLORS, FONTS, TW } from "./shared.js";
+import { COLORS, TW } from "./shared.js";
 import { Tag } from "./primitives.jsx";
 
 export default function TopNav({ onAddTransaction, onLogout }) {
   return (
-    <nav className="sticky top-0 z-50 border-b border-[color:var(--dashboard-border)] bg-[rgba(10,10,8,0.95)] backdrop-blur-[12px]">
-      <div className="mx-auto flex max-w-[1180px] flex-col gap-3 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
+    <nav className="sticky top-0 z-50 border-b border-[color:var(--dashboard-border)] bg-black/95 backdrop-blur-[12px]">
+      <div className="mx-auto flex max-w-[1200px] flex-col gap-3 px-5 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--dashboard-accent)]">
             <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
@@ -18,8 +18,8 @@ export default function TopNav({ onAddTransaction, onLogout }) {
               />
             </svg>
           </div>
-          <span className="text-[1.05rem] tracking-[0.06em]" style={FONTS.display}>
-            TRACKERGEN
+          <span className="text-[1.05rem] font-semibold tracking-[-0.02em]">
+            TrackerGen
           </span>
           <Tag color={COLORS.accent}>Preview</Tag>
         </div>

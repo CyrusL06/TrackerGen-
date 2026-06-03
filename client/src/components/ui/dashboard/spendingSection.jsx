@@ -10,21 +10,26 @@ function formatCurrency(amount) {
 
 export default function SpendingSection({ totalExpenses, categoryBreakdown }) {
   return (
-    <SurfaceCard className={TW.panelPadding}>
+    <SurfaceCard className={`${TW.panelPadding} h-full min-w-0 overflow-hidden`}>
       <Eyebrow>Spending</Eyebrow>
-      <DisplayTitle className="mb-4">By Category</DisplayTitle>
+      <DisplayTitle className="mb-5">By Category</DisplayTitle>
 
       {categoryBreakdown.map(({ category, amount, percentage, color }) => (
-        <div key={category} className="mb-4 sm:mb-3">
-          <div className="mb-[6px] flex items-center justify-between text-[12px] sm:mb-[5px] sm:text-[10px]">
-            <span className="tracking-[0.03em] text-[color:var(--dashboard-text)]">{category}</span>
-            <span className="text-[color:var(--dashboard-muted)]">
-              {formatCurrency(amount)} <span style={{ color }}>{totalExpenses > 0 ? percentage : 0}%</span>
+        <div key={category} className="mb-4 sm:mb-3.5">
+          <div className="mb-[7px] flex min-w-0 items-center justify-between gap-3 text-[13px] sm:text-[11px]">
+            <span className="min-w-0 truncate font-medium tracking-[0.02em] text-[color:var(--dashboard-text)]">
+              {category}
+            </span>
+            <span className="shrink-0 text-[color:var(--dashboard-muted)]">
+              {formatCurrency(amount)}{" "}
+              <span className="font-medium" style={{ color }}>
+                {totalExpenses > 0 ? percentage : 0}%
+              </span>
             </span>
           </div>
-          <div className="h-[3px] overflow-hidden rounded-[2px] bg-[color:var(--dashboard-border)]">
+          <div className="h-[4px] overflow-hidden rounded-[3px] bg-[color:var(--dashboard-border)]">
             <div
-              className="h-full rounded-[2px] transition-[width] duration-300"
+              className="h-full rounded-[3px] transition-[width] duration-500 ease-out"
               style={{ width: `${totalExpenses > 0 ? percentage : 0}%`, backgroundColor: color }}
             />
           </div>
