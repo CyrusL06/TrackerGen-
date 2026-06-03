@@ -61,9 +61,15 @@ const IS_OFFLINE_AUTH = AUTH_MODE === "offline";
 const URI = requireEnv("MONGODB_URI");
 
 const OFFLINE_USER = {
-  id: process.env.OFFLINE_USER_ID || "local-dev-user",
-  email: process.env.OFFLINE_USER_EMAIL || "dev@local.test",
+  id: process.env.OFFLINE_USER_ID,
+  email: process.env.OFFLINE_USER_EMAIL,
 };
+
+if (IS_OFFLINE_AUTH && (!OFFLINE_USER.id || !OFFLINE_USER.email)) {
+  throw new Error(
+    `Offline auth mode requires OFFLINE_USER_ID and OFFLINE_USER_EMAIL in ${envPath}.`,
+  );
+}
 
 let WORKOS_API_KEY;
 let WORKOS_CLIENT_ID;
@@ -82,9 +88,13 @@ if (IS_OFFLINE_AUTH) {
   WORKOS_REDIRECT_URI = requireEnv("WORKOS_REDIRECT_URI");
 }
 
-const CSRF_SECRET = process.env.CSRF_SECRET || WORKOS_COOKIE_PASSWORD;
+const CSRF_SECRET = process.env.CSRF_SECRET;
 
-
+if (!CSRF_SECRET) {
+  throw new Error(
+    `Missing CSRF_SECRET in environment. Add a long random value to ${envPath}.`,
+  );
+}
 
 if (WORKOS_COOKIE_PASSWORD.length < 32) {
   throw new Error(
@@ -109,7 +119,15 @@ const { getAuthenticatedUser } = createAuthHelpers({
   offlineUser: OFFLINE_USER,
 });
 
-const router = buildRouter({getAuthenticatedUser});
+// CSRF setup
+// Cross-Site Request Forgery means another site tricks the browser into
+// sending requests with your logged-in cookies.
+const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
+  getSecret: () => CSRF_SECRET,
+  getSessionIdentifier: (req) => req.cookies[COOKIE_NAME] ?? "anonymous",
+});
+
+const router = buildRouter({getAuthenticatedUser, csrfProtection: doubleCsrfProtection});
 
 
 const startServerDB = async ()=> {
@@ -145,19 +163,10 @@ app.use(
 
 // Read cookies and request bodies from the browser
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 // app.use(cors())
 
 app.use("/", router);
-
-// CSRF setup
-// Cross-Site Request Forgery means another site tricks the browser into
-// sending requests with your logged-in cookies.
-const { generateCsrfToken } = doubleCsrf({
-  getSecret: () => CSRF_SECRET,
-  getSessionIdentifier: (req) => req.cookies[COOKIE_NAME] ?? "anonymous",
-});
 
 const sessionCookieOptions = {
   httpOnly: true,
@@ -413,7 +422,7 @@ app.get("/api/auth/csrf-token", (req, res) => {
 
 // LOGOUT ROUTE
 // POST is used because logout changes state.
-app.post("/api/auth/logout", async (req, res) => {
+app.post("/api/auth/logout", doubleCsrfProtection, async (req, res) => {
   if (IS_OFFLINE_AUTH) {
     clearSessionCookie(res);
     return res.json({ ok: true });

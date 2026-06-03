@@ -3,9 +3,70 @@ import crypto from "crypto";
 import { Transaction } from "../model/data.js"
 import {UserProfile}  from "../model/userProfile.js"
 
-//Debug the database collection name
-console.log("Transaction collection:", Transaction.collection.name);
-console.log("UserProfile collection:", UserProfile.collection.name);
+const VALID_CATEGORIES = new Set([
+    "Shopping",
+    "Utilities",
+    "Food & Drink",
+    "Income",
+    "Transport",
+    "Dining",
+    "Subscriptions",
+    "Other",
+]);
+
+const MAX_NAME_LENGTH = 200;
+const MAX_AMOUNT = 1_000_000_000;
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+function validateTransactionInput(body) {
+    const errors = [];
+
+    if (!body.name || typeof body.name !== "string" || !body.name.trim()) {
+        errors.push("name is required");
+    } else if (body.name.length > MAX_NAME_LENGTH) {
+        errors.push(`name must be at most ${MAX_NAME_LENGTH} characters`);
+    }
+
+    const amount = Number(body.amount);
+    if (!Number.isFinite(amount) || Number.isNaN(amount)) {
+        errors.push("amount must be a valid number");
+    } else if (Math.abs(amount) > MAX_AMOUNT) {
+        errors.push(`amount must not exceed ${MAX_AMOUNT}`);
+    }
+
+    if (!body.category || typeof body.category !== "string") {
+        errors.push("category is required");
+    } else if (!VALID_CATEGORIES.has(body.category)) {
+        errors.push(`category must be one of: ${[...VALID_CATEGORIES].join(", ")}`);
+    }
+
+    if (!body.date || typeof body.date !== "string" || !DATE_REGEX.test(body.date)) {
+        errors.push("date must be in YYYY-MM-DD format");
+    }
+
+    return errors;
+}
+
+function validateOnboardingInput(body) {
+    const errors = [];
+    const goal = Number(body.monthlyGoal);
+
+    if (body.monthlyGoal !== undefined && body.monthlyGoal !== null && body.monthlyGoal !== "") {
+        if (!Number.isFinite(goal) || goal < 0 || goal > MAX_AMOUNT) {
+            errors.push("monthlyGoal must be a non-negative number");
+        }
+    }
+
+    if (body.wantsReminders && !["yes", "not-now"].includes(body.wantsReminders)) {
+        errors.push('wantsReminders must be "yes" or "not-now"');
+    }
+
+    if (body.preferredChannel && !["discord", "telegram", "none"].includes(body.preferredChannel)) {
+        errors.push('preferredChannel must be "discord", "telegram", or "none"');
+    }
+
+    return errors;
+}
 
 function createTelegramLinkCode() {
     return `TG-${crypto.randomInt(100000, 999999)}`;
@@ -21,9 +82,9 @@ function maskTelegramId(telegramId) {
     return `...${String(telegramId).slice(-4)}`;
 }
 
-export function buildRouter({getAuthenticatedUser}){
+export function buildRouter({getAuthenticatedUser, csrfProtection}){
     const router = express.Router()
-router.use(express.urlencoded({extended:true}))
+    const stateChangingRoutes = csrfProtection ? [csrfProtection] : [];
 
 router.get("/api/profile", async (req,res) => {
     const user = await getAuthenticatedUser(req,res);
@@ -35,12 +96,11 @@ router.get("/api/profile", async (req,res) => {
     const profile = await UserProfile.findOne({
         workosUserId: user.id
     })
-
     return res.json({profile});
 
 })
 
-router.post("/api/profile/onboarding-complete", async (req, res) => {
+router.post("/api/profile/onboarding-complete", ...stateChangingRoutes, async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -48,18 +108,26 @@ router.post("/api/profile/onboarding-complete", async (req, res) => {
     }
 
     try {
+        const validationErrors = validateOnboardingInput(req.body);
+        if (validationErrors.length > 0) {
+            return res.status(400).json({ message: validationErrors.join("; ") });
+        }
+
+        const setFields = {
+            email: user.email,
+            wantsReminders: req.body.wantsReminders,
+            preferredChannel: req.body.preferredChannel ?? null,
+            hasCompletedOnboarding: true,
+            completedOnboardingAt: new Date(),
+        };
+
+        if (req.body.monthlyGoal !== undefined && req.body.monthlyGoal !== null && req.body.monthlyGoal !== "") {
+            setFields.monthlyGoal = Number(req.body.monthlyGoal);
+        }
+
         const profile = await UserProfile.findOneAndUpdate(
             { workosUserId: user.id },
-            {
-                $set: {
-                    email: user.email,
-                    monthlyGoal: Number(req.body.monthlyGoal),
-                    wantsReminders: req.body.wantsReminders,
-                    preferredChannel: req.body.preferredChannel ?? null,
-                    hasCompletedOnboarding: true,
-                    completedOnboardingAt: new Date(),
-                },
-            },
+            { $set: setFields },
             {
                 new: true,
                 upsert: true,
@@ -102,7 +170,7 @@ router.get("/api/profile/telegram", async (req, res) => {
     });
 })
 
-router.post("/api/profile/telegram-link-code", async (req, res) => {
+router.post("/api/profile/telegram-link-code", ...stateChangingRoutes, async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -177,7 +245,7 @@ router.get("/api/transactions", async (req,res) => {
 })
 
 //AdD Transaction
-router.post("/api/transactions", async(req,res) => {
+router.post("/api/transactions", ...stateChangingRoutes, async(req,res) => {
     const user = await getAuthenticatedUser(req,res);
 
     if (!user) {
@@ -185,11 +253,16 @@ router.post("/api/transactions", async(req,res) => {
     }
 
     try {
+        const validationErrors = validateTransactionInput(req.body);
+        if (validationErrors.length > 0) {
+            return res.status(400).json({ message: validationErrors.join("; ") });
+        }
+
         const transaction = await Transaction.create({
         workosUserId: user.id,
-        name: req.body.name,
+        name: req.body.name.trim(),
         category: req.body.category,
-        amount: req.body.amount,
+        amount: Number(req.body.amount),
         date: req.body.date
         
     })
@@ -203,7 +276,7 @@ router.post("/api/transactions", async(req,res) => {
 
 })
 
-router.put("/api/transactions/:id", async (req, res) => {
+router.put("/api/transactions/:id", ...stateChangingRoutes, async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -211,6 +284,11 @@ router.put("/api/transactions/:id", async (req, res) => {
     }
 
     try {
+        const validationErrors = validateTransactionInput(req.body);
+        if (validationErrors.length > 0) {
+            return res.status(400).json({ message: validationErrors.join("; ") });
+        }
+
         const updatedTransaction = await Transaction.findOneAndUpdate(
             {
                 _id: req.params.id,
@@ -218,9 +296,9 @@ router.put("/api/transactions/:id", async (req, res) => {
             },
             {
                 $set: {
-                    name: req.body.name,
+                    name: req.body.name.trim(),
                     category: req.body.category,
-                    amount: req.body.amount,
+                    amount: Number(req.body.amount),
                     date: req.body.date,
                 },
             },
@@ -239,7 +317,7 @@ router.put("/api/transactions/:id", async (req, res) => {
 })
 
 
-router.delete("/api/transactions/:id", async (req,res) => {
+router.delete("/api/transactions/:id", ...stateChangingRoutes, async (req,res) => {
     const user = await getAuthenticatedUser(req);
 
     try {

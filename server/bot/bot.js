@@ -20,9 +20,12 @@ const HELP_TEXT = [
 const RECENT_TRANSACTION_LIMIT = 5;
 const TRANSACTION_TYPE_CALLBACK_PREFIX = "transaction_type:";
 const MESSAGE_DELETE_DELAY_MS = 5 * 60 * 1000;
+const LINK_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const LINK_RATE_LIMIT_MAX_ATTEMPTS = 5;
 
 const botStartedAt = Math.floor(Date.now() / 1000);
 const pendingTransactionTypes = new Map();
+const linkAttempts = new Map();
 
 const CATEGORY_ALIASES = {
     food: "Food & Drink",
@@ -112,18 +115,35 @@ async function findLinkedProfile(chatId) {
     return UserProfile.findOne({ telegramChatId: String(chatId) });
 }
 
-function getTelegramMessageIdentity(msg) {
-    return {
-        chatId: String(msg.chat.id),
-        messageId: msg.message_id ? String(msg.message_id) : null,
-        userId: msg.from?.id ? String(msg.from.id) : null,
-    };
+function checkLinkRateLimit(chatId) {
+    const now = Date.now();
+    const attempt = linkAttempts.get(chatId);
+
+    if (!attempt || now - attempt.windowStart >= LINK_RATE_LIMIT_WINDOW_MS) {
+        linkAttempts.set(chatId, { count: 1, windowStart: now });
+        return true;
+    }
+
+    if (attempt.count >= LINK_RATE_LIMIT_MAX_ATTEMPTS) {
+        return false;
+    }
+
+    attempt.count += 1;
+    return true;
 }
 
 function getTelegramUser(msg) {
     return {
         userId: msg.from?.id ? String(msg.from.id) : null,
         username: msg.from?.username ?? null,
+    };
+}
+
+function getTelegramMessageIdentity(msg) {
+    return {
+        chatId: String(msg.chat.id),
+        messageId: msg.message_id ? String(msg.message_id) : null,
+        userId: msg.from?.id ? String(msg.from.id) : null,
     };
 }
 
@@ -141,7 +161,7 @@ function getAddTransactionKeyboard() {
 }
 
 async function sendAddTransactionButtons(bot, chatId) {
-    await sendAutoDeletingMessage(bot, chatId, "What do you want to add?", getAddTransactionKeyboard());
+    await sendAutoDeletingMessage(bot, chatId, "What are you looking to add?", getAddTransactionKeyboard());
 }
 
 function getTransactionDetailExample(type) {
@@ -260,6 +280,11 @@ async function handleLinkCommand(bot, msg, text) {
 
     if (!linkCode) {
         await sendAutoDeletingMessage(bot, chatId, "Send your code like this: /link TG-123456");
+        return;
+    }
+
+    if (!checkLinkRateLimit(chatId)) {
+        await sendAutoDeletingMessage(bot, chatId, "Too many link attempts. Try again in 15 minutes.");
         return;
     }
 
