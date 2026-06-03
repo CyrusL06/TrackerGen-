@@ -1,57 +1,123 @@
 # TrackerGen
 
-> A full-stack JavaScript application built with React and Node.js — featuring a RESTful API backend and deployed live on Cloudflare Pages.
+> A finance tracker that works from wherever you already are.
 
-🔗 **Live Demo:** [trackergen2.pages.dev](https://trackergen2.pages.dev)
+**Live Demo:** [trackergen30.pages.dev](https://trackergen30.pages.dev)
 
 ---
 
-## Overview
+## The Problem
 
-TrackerGen is a production-deployed web application that demonstrates end-to-end ownership of a modern full-stack system — from REST API design on the server, to a dynamic React frontend, to edge deployment via Cloudflare Pages.
+I kept losing track of where my money was going. Not because I didn't want to know — I just never found a system that stuck. The apps I tried either wanted full bank access, made me open a separate app every time I spent $5, or required me to maintain a spreadsheet like it was a part-time job.
 
-The project was designed with architecture first: the `architecture.drawio` diagram included in the repo reflects the deliberate system design decisions made before writing any code.
+I needed something simpler. I text all day, so why couldn't I just text my expenses? A quick message when I bought coffee, a glance at the dashboard at the end of the week. No added friction.
+
+So I built TrackerGen.
+
+---
+
+## What Makes This Different
+
+### Telegram-First Input
+
+No app install required. Link your account to the Telegram bot and log expenses in plain English:
+
+```
+expense coffee 6.50 food
+income paycheck 1200 work
+```
+
+The bot parses natural language on the fly — "coffee" maps to Food & Drink, "rent" to Housing, "salary" to Income. Inline buttons let you pick Income or Expense when you're not sure. A `/summary` command gives you your monthly totals from bed.
+
+Transactions hit the dashboard instantly. No refresh, no sync button — they just appear.
+
+### Dashboard That Shows You What Matters
+
+Four cards at the top tell you your Net Change, Income, Expenses, and Savings Rate without scrolling. An area chart breaks down cash flow across 6 or 12 months. A category breakdown visualizes where every dollar went.
+
+Add, edit, or delete entries with category tagging. Accidentally delete something? Undo is one click away. The dashboard polls every 10 seconds so you always see the latest.
+
+### Onboarding That Sets You Up
+
+New users walk through a quick wizard: set a monthly savings goal, decide if you want spending reminders, and pick your notification channel (Telegram, Discord, or none). It takes 30 seconds and you're in the dashboard.
+
+---
+
+## Screenshots
+
+*Dashboard, Telegram bot flow, and onboarding — I'll drop these in once I grab them.*
+
+![Landing Page Hero](screenshots/landing-hero.png)
+*Landing page — dark theme, CTA-driven hero*
+
+![Landing Page Features](screenshots/landing-features.png)
+*Feature overview — tracking, trading, security, and integrations*
+
+![Login Page](screenshots/login.png)
+*Login — email/password, Google, GitHub OAuth*
+
+![Pricing](screenshots/landing-pricing.png)
+*Pricing and plan tiers*
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                   Client (Browser)                  │
-│              React · JavaScript · TailwindCSS       │
-│              Deployed: Cloudflare Pages             │
-└────────────────────┬────────────────────────────────┘
-                     │  REST API (HTTP/JSON)
-┌────────────────────▼────────────────────────────────┐
-│                  Server (API Layer)                  │
-│                 Node.js · Express                    │
-└────────────────────┬────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────┐
-│                   Data Layer                         │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────┐     ┌──────────────────────┐
+│   React 19 Client     │     │   Telegram Bot        │
+│   (Cloudflare Pages)  │     │   (Node.js + Bot API) │
+│                       │     │                       │
+│   trackergen2.pages.  │     │   Natural language     │
+│   dev                 │     │   parsing, inline      │
+│                       │     │   buttons, /summary    │
+└─────────┬────────────┘     └───────────┬───────────┘
+          │ HTTP/JSON (REST)             │
+          │ (CSRF-protected)             │
+          ▼                              ▼
+┌──────────────────────────────────────────────┐
+│            Express 5 API Server               │
+│                                                │
+│  /api/transactions  CRUD                      │
+│  /api/auth/*        WorkOS auth + session     │
+│  /api/profile/*     Onboarding, Telegram link │
+│                                                │
+│  Middleware: CORS · Cookie Parser · CSRF       │
+└──────────────────────┬───────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────┐
+│              MongoDB (Mongoose)               │
+│                                                │
+│  Transactions collection (indexed by user,    │
+│  source, date)                                 │
+│  UserProfile collection (settings, Telegram   │
+│  link, onboarding state)                      │
+└──────────────────────────────────────────────┘
 ```
 
-The full architecture diagram is available in [`architecture.drawio`](./architecture.drawio) — open it with [draw.io](https://app.diagrams.net/) to explore component relationships.
-
-**Key design decisions:**
-- **Separation of concerns** — client and server live independently under `/client` and `/server`, with clearly defined REST API boundaries between them
-- **Stateless REST API** — the server exposes clean HTTP endpoints, making it independently testable and easy to scale
-- **Edge deployment** — the React client is deployed to Cloudflare Pages for low-latency global delivery
-- **Component-driven UI** — the frontend is built with reusable React components, keeping UI logic modular and maintainable
+**Key decisions:**
+- **React + Vite** — fast dev iteration, modern tooling, edge-deployable static output
+- **Express 5** — lightweight, well-understood, async error handling built in
+- **WorkOS** — production-grade auth without building a credentials system from scratch; supports Google/GitHub OAuth and email out of the box
+- **MongoDB** — flexible schema for evolving transaction data; fast indexed queries per user
+- **Cloudflare Pages** — global edge CDN for static assets; sub-100ms load times worldwide
+- **Telegram Bot API** — zero-install mobile interface; users already have Telegram, no second app needed
+- **CSRF protection** — double-submit cookie pattern on all state-changing endpoints; protects session cookies from cross-site attacks
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React, JavaScript, CSS |
-| Backend | Node.js, Express |
-| API Style | REST (JSON over HTTP) |
-| Deployment | Cloudflare Pages |
-| Architecture Diagram | draw.io (`.drawio`) |
+| Layer | Technology | Why |
+|-------|------------|-----|
+| Frontend | React 19, Vite 7, Tailwind CSS v4, Recharts | Modern, fast, component-driven UI with real-time charts |
+| Backend | Node.js, Express 5, Mongoose | Lean API layer with async-native error handling |
+| Database | MongoDB | Flexible document model, fast per-user queries |
+| Auth | WorkOS | Enterprise auth without building it; Google + GitHub + email |
+| Bot | Node Telegram Bot API | Zero-install mobile interface via existing chat app |
+| Security | CSRF double-submit cookie, httpOnly cookies | Protects session-based auth from cross-site attacks |
+| Deployment | Cloudflare Pages | Edge CDN for frontend; deploy from git |
 
 ---
 
@@ -59,9 +125,20 @@ The full architecture diagram is available in [`architecture.drawio`](./architec
 
 ```
 TrackerGen-/
-├── client/              # React frontend application
-├── server/              # Node.js REST API server
-├── architecture.drawio  # System architecture diagram
+├── client/                  # React 19 + Vite 7 frontend
+│   ├── src/
+│   │   ├── pages/           # home, login, signup, onboarding (4-step), dashboard
+│   │   ├── components/      # Nav, Footer, Dashboard widgets (stat cards, charts, etc.)
+│   │   └── lib/auth.js      # API client with CSRF token management
+│   └── package.json
+├── server/                  # Express 5 API
+│   ├── routes/route.js      # REST endpoints: transactions CRUD, profile, Telegram link
+│   ├── model/               # Mongoose schemas (Transaction, UserProfile)
+│   ├── bot/bot.js           # Telegram bot — NLP parsing, inline buttons, /summary
+│   ├── config/              # DB connection, auth helpers
+│   └── server.js            # Entry point, WorkOS auth routes, CSRF setup
+├── screenshots/             # App screenshots
+├── architecture.drawio      # Full system diagram (open with draw.io)
 └── README.md
 ```
 
@@ -69,61 +146,61 @@ TrackerGen-/
 
 ## Getting Started
 
-### Prerequisites
-- Node.js v18+
-- npm
-
-### Installation
-
 ```bash
-# Clone the repository
 git clone https://github.com/CyrusL06/TrackerGen-.git
 cd TrackerGen-
 
-# Install client dependencies
+# Install everything
 cd client && npm install
-
-# Install server dependencies
 cd ../server && npm install
+
+# Configure
+cp server/.env.local.example server/.env.local
+# Add your MongoDB URI, WorkOS keys, and Telegram bot token
 ```
 
-### Running Locally
+**Run in two terminals:**
 
 ```bash
-# Start the server (from /server)
-npm start
-
-# In a separate terminal, start the client (from /client)
-npm start
+cd server && npm run dev    # API → localhost:3200
+cd client && npm run dev    # Frontend → localhost:5173
 ```
 
-The React app will be available at `http://localhost:3000` and the Node.js API at `http://localhost:5000` (or as configured in your environment).
+**No WorkOS?** Set `AUTH_MODE=offline` in `.env.local`, provide `OFFLINE_USER_ID` and `OFFLINE_USER_EMAIL`, and the app authenticates as that user automatically — great for local development.
 
 ---
 
 ## Deployment
 
-The client is deployed on **Cloudflare Pages**, leveraging edge caching and global CDN distribution for fast load times regardless of location.
+- **Frontend:** Push `client/` to Cloudflare Pages — auto-deploys from git, global edge CDN
+- **Backend:** Deploy `server/` to Railway, Render, Fly.io, or any Node.js host with a MongoDB connection
 
-🔗 Live at: **[trackergen2.pages.dev](https://trackergen2.pages.dev)**
+🔗 **Live:** [trackergen30.pages.dev](https://trackergen30.pages.dev)
 
 ---
 
-## Design Highlights
+## Security
 
-- **Architecture-first approach** — designed the full system diagram before writing any code, mapping out client/server responsibilities and data flow up front
-- **Clean REST API design** — endpoints follow REST conventions with predictable routes and JSON responses, making the API easy to consume and extend
-- **Decoupled frontend and backend** — the React client and Node.js server are fully independent; either can be swapped or scaled without touching the other
-- **Edge-first deployment** — Cloudflare Pages ensures static assets are served from the nearest edge node globally
+- All state-changing endpoints protected by **double-submit CSRF tokens**
+- Session cookies are **httpOnly** and **sameSite**-restricted
+- WorkOS manages authentication server-side — no JWTs exposed to the client
+- Input validation on every endpoint: amount limits, character caps, date format enforcement
+
+---
+
+## About This Project
+
+I built TrackerGen because I wanted a finance tracker that met me where I was — not the other way around. I was tired of apps that required full bank integration or forced me into a rigid workflow. The Telegram integration came from a simple observation: I text more than I open apps, so why shouldn't I be able to text my expenses?
+
+Working on this meant I had to figure out the whole stack — laying out the architecture, wiring up a real auth provider, getting something shipped to a CDN, and building a Telegram bot that shares a database with the web app. Every choice, from WorkOS to Cloudflare, was about making something I'd actually run in production, not just something that passed a rubric.
 
 ---
 
 ## Author
 
-**Cyrus Lorenzo**
+**Cyrus Lorenzo** — Computing & Information Systems student at Douglas College.
+
+This is the kind of project I wanted to exist, so I made it. Live site, real users can sign up, Telegram bot works in production. It's not a template or a tutorial — it's something I designed, built, and put on the internet myself.
+
 - GitHub: [@CyrusL06](https://github.com/CyrusL06)
 - Portfolio: [cyruslorenzo.com](https://cyruslorenzo.com)
-
----
-
-*"Coding to create systems."*

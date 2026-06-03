@@ -25,6 +25,7 @@ That prevents duplicate Telegram messages from creating duplicate records even i
 Operational note:
 Only one polling bot instance should run with a BOT_TOKEN. In production, keep the Render bot running and stop any local server using the same token.
 
+--------------------------------------------
 Problem: Old Telegram update created an unexpected transaction
 
 What happened:
@@ -69,6 +70,7 @@ The bot now accepts both plain text and Telegram slash command versions:
 
 The help text now also shows "/summary" and "/recent" so users know these are real Telegram commands.
 
+------------------------------------------------------
 Problem: Telegram users had to type the transaction type manually
 
 What happened:
@@ -96,7 +98,7 @@ Example:
 5. Bot saves it as "expense coffee 6.50 food"
 
 The bot also supports "/cancel" to clear the current button entry if the user changes their mind.
-
+----------------------------------------------------
 Problem: Telegram transaction chats stayed cluttered after commands
 
 What happened:
