@@ -1,5 +1,5 @@
 export const FONT_HREF =
-  "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap";
+  "https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap";
 
 export const PREVIEW_ACCESS_KEY = "trackergen-preview-access";
 
@@ -8,30 +8,28 @@ export const NOISE_BACKGROUND =
 
 export const FONTS = {
   mono: "font-['DM_Mono']",
-  display: "font-['Bebas_Neue']",
-  serif: "font-['Instrument_Serif'] italic",
+  display: "font-['Geist_Variable'] font-['sans-serif']",
 };
 
 export const FONT_FAMILIES = {
   mono: "'DM Mono', monospace",
-  display: "'Bebas Neue', sans-serif",
-  serif: "'Instrument Serif', serif",
+  display: "'Geist Variable', sans-serif",
 };
 
 export const LAYOUT = {
-  content: "mx-auto w-full max-w-[1100px] px-4 md:px-10",
-  nav: "mx-auto flex w-full max-w-[1400px] items-center justify-between gap-6 px-4 py-5 md:px-10",
-  footer: "w-full px-4 py-8 md:px-10",
+  content: "mx-auto w-full max-w-[1200px] px-5 md:px-10",
+  nav: "mx-auto flex w-full max-w-[1200px] items-center justify-between gap-6 px-5 py-5 md:px-10",
 };
 
 export const COLORS = {
-  bg: "#0a0a08",
-  surface: "#111110",
-  surface2: "#161615",
-  border: "#222220",
-  text: "#f2ede6",
-  muted: "#6b6860",
-  accent: "#c8f135",
+  bg: "#000000",
+  surface: "#0a0a0a",
+  surface2: "#141414",
+  border: "rgba(255,255,255,0.08)",
+  text: "#ffffff",
+  muted: "#9ca3af",
+  accent: "#2779a7",
+  dim: "#6b7280",
   amber: "#f1a935",
   danger: "#ff6b6b",
 };

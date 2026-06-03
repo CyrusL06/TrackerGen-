@@ -12,11 +12,11 @@ import { COLORS as BRAND_COLORS, FONT_FAMILIES, NOISE_BACKGROUND } from "../bran
 
 export const COLORS = {
   bg: BRAND_COLORS.bg,
-  surface: "#0f0f0d",
-  surface2: "#141412",
-  border: "#1e1e1c",
+  surface: "#0a0a0a",
+  surface2: "#141414",
+  border: "rgba(255,255,255,0.08)",
   text: BRAND_COLORS.text,
-  muted: "#5a5854",
+  muted: "#9ca3af",
   accent: BRAND_COLORS.accent,
   amber: BRAND_COLORS.amber,
   red: BRAND_COLORS.danger,
@@ -42,20 +42,20 @@ export const FONTS = {
 export const TW = {
   page: "relative min-h-screen overflow-hidden bg-[color:var(--dashboard-bg)] text-[color:var(--dashboard-text)]",
   pageTexture: "pointer-events-none absolute inset-0 opacity-40",
-  pageShell: "relative mx-auto max-w-[1180px] px-4 py-5 sm:px-6 sm:py-7",
-  panel: "border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)]",
-  panelPadding: "px-4 py-4 sm:px-4 sm:py-[16px]",
-  eyebrow: "mb-1 text-[11px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
-  displayTitle: "text-[1.3rem] tracking-[0.04em] sm:text-[1.15rem]",
+  pageShell: "relative mx-auto max-w-[1200px] px-5 py-6 sm:px-6 sm:py-8",
+  panel: "border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[0_1px_3px_0_rgba(0,0,0,0.4)]",
+  panelPadding: "px-5 py-5 sm:px-6 sm:py-[18px]",
+  eyebrow: "mb-1.5 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
+  displayTitle: "text-[1.35rem] font-semibold tracking-[-0.01em] sm:text-[1.2rem]",
   fieldLabel:
-    "mb-[4px] block text-[11px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]",
+    "mb-[5px] block text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
   fieldError: "mt-1 text-[11px] text-[color:var(--dashboard-red)]",
   inputBase:
-    "w-full border bg-[color:var(--dashboard-surface-2)] px-3 py-[11px] text-[14px] tracking-[0.03em] text-[color:var(--dashboard-text)] outline-none transition-colors placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)] sm:text-[11px] sm:py-[9px]",
+    "w-full border bg-[color:var(--dashboard-surface-2)] px-3 py-[11px] text-[14px] text-[color:var(--dashboard-text)] outline-none transition-all placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)] focus:shadow-[0_0_0_1px_var(--dashboard-accent)] sm:text-[12px] sm:py-[9px]",
   primaryButton:
-    "inline-flex min-h-11 items-center justify-center gap-1.5 bg-[color:var(--dashboard-accent)] px-[14px] py-[7px] text-[12px] font-semibold uppercase tracking-[0.06em] text-[color:var(--dashboard-bg)] transition-opacity hover:opacity-[0.85] sm:min-h-10 sm:text-[10px]",
+    "inline-flex min-h-11 items-center justify-center gap-1.5 bg-[color:var(--dashboard-accent)] px-[16px] py-[8px] text-[12px] font-semibold uppercase tracking-[0.07em] text-[color:var(--dashboard-bg)] transition-all hover:opacity-[0.9] hover:shadow-[0_0_16px_-2px_var(--dashboard-accent)] active:scale-[0.97] sm:min-h-10 sm:text-[10px]",
   secondaryButton:
-    "inline-flex min-h-11 items-center justify-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-[12px] py-[6px] text-[11px] tracking-[0.05em] text-[color:var(--dashboard-muted)] transition-colors hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)] sm:min-h-10 sm:px-[10px] sm:py-[5px] sm:text-[9px]",
+    "inline-flex min-h-11 items-center justify-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-[14px] py-[7px] text-[11px] tracking-[0.06em] text-[color:var(--dashboard-muted)] transition-all hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)] hover:bg-[color:color-mix(in_srgb,var(--dashboard-accent)_6%,transparent)] active:scale-[0.97] sm:min-h-10 sm:px-[12px] sm:py-[6px] sm:text-[10px]",
 };
 
 export const CATEGORY_ICONS = {
