@@ -1,19 +1,13 @@
+import MarqueeStrip from "@/components/ui/HomePage/marqueeStrip";
 import CtaSection from "@/components/ui/HomePage/ctaSection";
 import FeatureStrip from "@/components/ui/HomePage/featureStrip";
 import Hero from "@/components/ui/HomePage/hero";
 import HowItWorks from "@/components/ui/HomePage/howItWorks";
-import { FONTS, NOISE_BACKGROUND } from "@/components/ui/brand";
 
 export default function Home() {
   return (
-    <div className={`relative min-h-screen overflow-x-hidden bg-[#0a0a08] text-[#f2ede6] ${FONTS.mono}`}>
-      <div
-        className="pointer-events-none fixed inset-0 z-[100] opacity-40"
-        style={{ backgroundImage: NOISE_BACKGROUND }}
-      />
-      <div className="pointer-events-none absolute left-[-10rem] top-16 h-72 w-72 rounded-full bg-[#c8f135]/5 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-8rem] top-[28rem] h-80 w-80 rounded-full bg-[#f1a935]/4 blur-3xl" />
-
+    <div className="relative min-h-screen overflow-x-hidden text-white" style={{ background: "#000" }}>
+      <MarqueeStrip />
       <main className="relative z-10">
         <Hero />
         <FeatureStrip />

@@ -1,12 +1,10 @@
-import { FONTS } from "@/components/ui/brand";
+import { FONTS } from "../pudgy-brand";
 
 export default function BtnPrimary({ children, href = "/login" }) {
   return (
     <a
       href={href}
-      className={`inline-flex items-center bg-[#c8f135] px-8 py-[0.85rem] 
-                  text-[0.82rem] font-medium uppercase tracking-[0.06em] text-[#000000] 
-                  no-underline transition-all duration-200 hover:-translate-y-px hover:opacity-[0.85] ${FONTS.mono}`}
+      className={`inline-flex items-center gap-2 rounded-lg bg-[#2779a7] px-7 py-3 text-[0.9rem] font-medium text-white no-underline transition-all duration-200 hover:bg-[#1d5f83] hover:-translate-y-0.5 ${FONTS.body}`}
     >
       {children}
     </a>
