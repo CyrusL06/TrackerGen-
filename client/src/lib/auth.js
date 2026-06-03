@@ -1,6 +1,24 @@
 // Backend API base URL, usually the deployed server or local Express server.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+let csrfTokenPromise = null;
+
+function getCsrfToken() {
+  if (!csrfTokenPromise) {
+    csrfTokenPromise = fetch(`${API_BASE_URL}/api/auth/csrf-token`, {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => data.csrfToken)
+      .catch(() => {
+        csrfTokenPromise = null;
+        return null;
+      });
+  }
+
+  return csrfTokenPromise;
+}
+
 export function goToLogin(returnTo = "/dashboard") {
   window.location.assign(
     `${API_BASE_URL}/auth/login?returnTo=${encodeURIComponent(returnTo)}`,
@@ -30,12 +48,19 @@ export async function fetchTransactions() {
 }
 
 export async function createTransaction(loadNew) {
+  const csrfToken = await getCsrfToken();
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (csrfToken) {
+    headers["x-csrf-token"] = csrfToken;
+  }
+
   const res = await fetch(`${API_BASE_URL}/api/transactions`, {
     method: "POST",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(loadNew),
   });
 
@@ -44,12 +69,19 @@ export async function createTransaction(loadNew) {
 }
 
 export async function updateTransactionById(id, payload) {
+  const csrfToken = await getCsrfToken();
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (csrfToken) {
+    headers["x-csrf-token"] = csrfToken;
+  }
+
   const res = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
     method: "PUT",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(payload),
   });
 
@@ -63,9 +95,17 @@ export async function updateTransactionById(id, payload) {
 }
 
 export async function deleteTransactionById(id) {
+  const csrfToken = await getCsrfToken();
+  const headers = {};
+
+  if (csrfToken) {
+    headers["x-csrf-token"] = csrfToken;
+  }
+
   const res = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
     method: "DELETE",
     credentials: "include",
+    headers,
   });
 
   const data = await res.json();
@@ -87,9 +127,17 @@ export async function fetchTelegramProfile() {
 }
 
 export async function createTelegramLinkCode() {
+  const csrfToken = await getCsrfToken();
+  const headers = {};
+
+  if (csrfToken) {
+    headers["x-csrf-token"] = csrfToken;
+  }
+
   const res = await fetch(`${API_BASE_URL}/api/profile/telegram-link-code`, {
     method: "POST",
     credentials: "include",
+    headers,
   });
 
   const data = await res.json();
@@ -108,12 +156,19 @@ export function goToSocialLogin(provider, returnTo = "/dashboard") {
 }
 
 export async function completeOnboarding(payload) {
+  const csrfToken = await getCsrfToken();
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (csrfToken) {
+    headers["x-csrf-token"] = csrfToken;
+  }
+
   const res = await fetch(`${API_BASE_URL}/api/profile/onboarding-complete`, {
     method: "POST",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(payload),
   });
 
@@ -136,9 +191,17 @@ export async function fetchCurrentUser() {
 
 
 export async function logout() {
+  const csrfToken = await getCsrfToken();
+  const headers = {};
+
+  if (csrfToken) {
+    headers["x-csrf-token"] = csrfToken;
+  }
+
   const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
     method: "POST",
     credentials: "include",
+    headers,
   });
 
   const data = await res.json();

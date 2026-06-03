@@ -1,5 +1,5 @@
 import { goToLogin, goToSocialLogin } from "@/lib/auth";
-import { FONTS } from "@/components/ui/brand";
+import { FONTS } from "@/components/ui/pudgy-brand";
 import {
   AuthDivider,
   AuthField,
@@ -52,7 +52,7 @@ export function LoginForm({ className = "", ...props }) {
           auxiliary={
             <button
               type="button"
-              className={`text-[0.72rem] text-[rgba(242,237,230,0.62)] transition-colors hover:text-[rgba(242,237,230,0.86)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(242,237,230,0.18)] ${FONTS.mono}`}
+              className={`text-[0.72rem] text-[rgba(255,255,255,0.5)] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(255,255,255,0.15)] ${FONTS.body}`}
             >
               Forgot password?
             </button>
