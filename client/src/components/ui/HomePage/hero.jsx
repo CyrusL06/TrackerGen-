@@ -38,15 +38,15 @@ function PenguinBack() {
         </g>
 
         <g className="animate-bob" style={{ transformOrigin: "512px 700px" }}>
-            <g className="animate-dangle" style={{ transformOrigin: "410px 850px", animationDuration: "0.9s", animationDelay: "0s" }}>
-              <path d="M364 850 C386 829 419 820 453 825 C473 828 494 837 509 850 C495 869 465 882 424 884 C388 886 355 876 342 860 C346 856 355 853 364 850Z" fill="url(#fg)" stroke="#A45300" strokeWidth="10" strokeLinejoin="round"/>
-              <path d="M393 859 C417 847 441 844 468 848" stroke="#E5891A" strokeWidth="8" strokeLinecap="round" opacity="0.75"/>
-            </g>
-            <g className="animate-dangle" style={{ transformOrigin: "614px 850px", animationDuration: "0.9s", animationDelay: "-0.45s" }}>
-              <path d="M660 850 C638 829 605 820 571 825 C551 828 530 837 515 850 C529 869 559 882 600 884 C636 886 669 876 682 860 C678 856 669 853 660 850Z" fill="url(#fg)" stroke="#A45300" strokeWidth="10" strokeLinejoin="round"/>
-              <path d="M631 859 C607 847 583 844 556 848" stroke="#E5891A" strokeWidth="8" strokeLinecap="round" opacity="0.75"/>
-            </g>
-            <path d="M512 118 C451 118 395 136 345 172 C281 218 240 292 240 380 L240 713 C240 785 292 849 364 880 C409 899 457 910 512 910 C567 910 615 899 660 880 C732 849 784 785 784 713 L784 380 C784 292 743 218 679 172 C629 136 573 118 512 118Z" fill="url(#nb)" stroke="#041127" strokeWidth="16" strokeLinejoin="round"/>
+          <g className="animate-dangle" style={{ transformOrigin: "410px 850px", animationDuration: "0.9s", animationDelay: "0s" }}>
+            <path d="M364 850 C386 829 419 820 453 825 C473 828 494 837 509 850 C495 869 465 882 424 884 C388 886 355 876 342 860 C346 856 355 853 364 850Z" fill="#FFD700" stroke="#B8860B" strokeWidth="10" strokeLinejoin="round"/>
+            <path d="M393 859 C417 847 441 844 468 848" stroke="#DAA520" strokeWidth="8" strokeLinecap="round" opacity="0.75"/>
+          </g>
+          <g className="animate-dangle" style={{ transformOrigin: "614px 850px", animationDuration: "0.9s", animationDelay: "-0.45s" }}>
+            <path d="M660 850 C638 829 605 820 571 825 C551 828 530 837 515 850 C529 869 559 882 600 884 C636 886 669 876 682 860 C678 856 669 853 660 850Z" fill="#FFD700" stroke="#B8860B" strokeWidth="10" strokeLinejoin="round"/>
+            <path d="M631 859 C607 847 583 844 556 848" stroke="#DAA520" strokeWidth="8" strokeLinecap="round" opacity="0.75"/>
+          </g>
+          <path d="M512 118 C451 118 395 136 345 172 C281 218 240 292 240 380 L240 713 C240 785 292 849 364 880 C409 899 457 910 512 910 C567 910 615 899 660 880 C732 849 784 785 784 713 L784 380 C784 292 743 218 679 172 C629 136 573 118 512 118Z" fill="url(#nb)" stroke="#041127" strokeWidth="16" strokeLinejoin="round"/>
             <g className="animate-peek" style={{ transformOrigin: "502px 157px" }}>
               <path d="M485 144 C492 112 509 90 531 73 C548 60 565 52 584 49 C572 67 564 86 563 110 C584 89 612 81 648 82 C636 95 621 110 599 122 C573 136 545 146 520 157Z" fill="url(#nb)" stroke="#041127" strokeWidth="16" strokeLinejoin="round"/>
             </g>
