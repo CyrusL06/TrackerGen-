@@ -174,6 +174,8 @@ cd client && npm run dev    # Frontend → localhost:5173
 
 - **Frontend:** Push `client/` to Cloudflare Pages — auto-deploys from git, global edge CDN
 - **Backend:** Deploy `server/` to Railway, Render, Fly.io, or any Node.js host with a MongoDB connection
+- **Auth/API proxy:** Set Cloudflare Pages env var `API_ORIGIN` to your backend origin, for example `https://your-api-host.example.com`. The Pages Functions in `client/functions/` proxy `/api/*` and `/auth/*` through the frontend domain so Brave and other browsers treat auth cookies as same-origin.
+- **WorkOS callback:** Set `WORKOS_REDIRECT_URI` to the frontend callback URL, for example `https://trackergen30.pages.dev/auth/callback`, and register that exact URL in WorkOS.
 
 🔗 **Live:** [trackergen30.pages.dev](https://trackergen30.pages.dev)
 

@@ -35,6 +35,7 @@ app.set("trust proxy", 1);
 const COOKIE_NAME = "wos-session";
 // This is the frontend URL in dev or your deployed frontend later
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
+const IS_PROD = process.env.NODE_ENV === "production";
 
 // Path to built frontend files if you later serve the React app from Express
 const DIST_DIR = path.resolve(__dirname, "../client/dist");
