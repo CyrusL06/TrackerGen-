@@ -1,5 +1,5 @@
 import { LogOut, Plus } from "lucide-react";
-import { COLORS, TW } from "./shared.js";
+import { COLORS, FONTS, TW } from "./shared.js";
 import { Tag } from "./primitives.jsx";
 
 export default function TopNav({ onAddTransaction, onLogout }) {
@@ -18,7 +18,7 @@ export default function TopNav({ onAddTransaction, onLogout }) {
               />
             </svg>
           </div>
-          <span className="text-[1.05rem] font-semibold tracking-[-0.02em]">
+          <span className="text-[1.05rem] font-bold tracking-[-0.02em]" style={FONTS.display}>
             TrackerGen
           </span>
           <Tag color={COLORS.accent}>Preview</Tag>

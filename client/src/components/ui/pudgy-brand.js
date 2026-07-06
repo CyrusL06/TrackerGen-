@@ -1,6 +1,7 @@
 export const FONTS = {
-  display: "font-['Geist_Variable'] font-['sans-serif']",
-  body: "font-['Geist_Variable'] font-['sans-serif']",
+  hero: "font-['Space_Grotesk']",
+  display: "font-['Space_Grotesk']",
+  body: "font-['Inter_Variable']",
   mono: "font-['DM_Mono']",
 };
 
@@ -8,13 +9,13 @@ export const COLORS = {
   blue: "#2779a7",
   blueLight: "#3a9bd1",
   blueDark: "#1d5f83",
-  bg: "#000000",
-  surface: "#0a0a0a",
-  surface2: "#141414",
-  border: "rgba(255,255,255,0.08)",
-  text: "#ffffff",
-  muted: "#9ca3af",
-  dim: "#6b7280",
+  bg: "oklch(0.13 0.025 260)",
+  surface: "oklch(0.17 0.03 260)",
+  surface2: "oklch(0.21 0.04 260)",
+  border: "rgba(255,255,255,0.06)",
+  text: "oklch(0.92 0.015 260)",
+  muted: "oklch(0.65 0.025 260)",
+  dim: "oklch(0.52 0.025 260)",
 };
 
 export const LAYOUT = {

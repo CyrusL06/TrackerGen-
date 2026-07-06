@@ -52,7 +52,7 @@ export function LoginForm({ className = "", ...props }) {
           auxiliary={
             <button
               type="button"
-              className={`text-[0.72rem] text-[rgba(255,255,255,0.5)] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(255,255,255,0.15)] ${FONTS.body}`}
+              className={`text-caption text-[rgba(255,255,255,0.5)] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(255,255,255,0.15)] ${FONTS.body}`}
             >
               Forgot password?
             </button>

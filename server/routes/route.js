@@ -1,9 +1,12 @@
 import express from "express";
 import crypto from "crypto";
+import mongoose from "mongoose";
 import { Transaction } from "../model/data.js"
 import {UserProfile}  from "../model/userProfile.js"
+import { createRateLimiter } from "../config/rateLimit.js";
 
 const VALID_CATEGORIES = new Set([
+    "Housing",
     "Shopping",
     "Utilities",
     "Food & Drink",
@@ -82,11 +85,16 @@ function maskTelegramId(telegramId) {
     return `...${String(telegramId).slice(-4)}`;
 }
 
+function isValidObjectId(id) {
+    return typeof id === "string" && mongoose.Types.ObjectId.isValid(id);
+}
+
 export function buildRouter({getAuthenticatedUser, csrfProtection}){
     const router = express.Router()
     const stateChangingRoutes = csrfProtection ? [csrfProtection] : [];
+    const apiLimiter = createRateLimiter({ windowMs: 60 * 1000, maxRequests: 100 });
 
-router.get("/api/profile", async (req,res) => {
+router.get("/api/profile", apiLimiter, async (req,res) => {
     const user = await getAuthenticatedUser(req,res);
 
     if(!user){
@@ -100,7 +108,7 @@ router.get("/api/profile", async (req,res) => {
 
 })
 
-router.post("/api/profile/onboarding-complete", ...stateChangingRoutes, async (req, res) => {
+router.post("/api/profile/onboarding-complete", apiLimiter, ...stateChangingRoutes, async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -132,17 +140,18 @@ router.post("/api/profile/onboarding-complete", ...stateChangingRoutes, async (r
                 new: true,
                 upsert: true,
                 setDefaultsOnInsert: true,
+                runValidators: true,
             },
         );
 
         return res.status(200).json({ ok: true, profile });
     } catch (error) {
-        console.log(`ERROR ${error}`);
+        console.error("Failed to save onboarding profile:", error.message || error);
         return res.status(500).json({ message: "Failed to save onboarding profile" });
     }
 })
 
-router.get("/api/profile/telegram", async (req, res) => {
+router.get("/api/profile/telegram", apiLimiter, async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -170,7 +179,7 @@ router.get("/api/profile/telegram", async (req, res) => {
     });
 })
 
-router.post("/api/profile/telegram-link-code", ...stateChangingRoutes, async (req, res) => {
+router.post("/api/profile/telegram-link-code", apiLimiter, ...stateChangingRoutes, async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -194,6 +203,7 @@ router.post("/api/profile/telegram-link-code", ...stateChangingRoutes, async (re
                 new: true,
                 upsert: true,
                 setDefaultsOnInsert: true,
+                runValidators: true,
             },
         );
 
@@ -210,13 +220,13 @@ router.post("/api/profile/telegram-link-code", ...stateChangingRoutes, async (re
             botUsername: process.env.TELEGRAM_BOT_USERNAME ?? null,
         });
     } catch (error) {
-        console.log(`ERROR ${error}`);
+        console.error("Failed to create Telegram link code:", error.message || error);
         return res.status(500).json({ message: "Failed to create Telegram link code" });
     }
 })
 
 //Fetch transaction of each user
-router.get("/api/transactions", async (req,res) => {
+router.get("/api/transactions", apiLimiter, async (req,res) => {
 
     const user = await getAuthenticatedUser(req,res);
 
@@ -239,13 +249,13 @@ router.get("/api/transactions", async (req,res) => {
          res.status(200).json(transactions)
 
     } catch (error) {
-        console.log(`ERROR ${error}`)
+        console.error("Failed to fetch transactions:", error.message || error)
         res.status(500).json({message:"Failed to fetch Transactions"})
     }
 })
 
 //AdD Transaction
-router.post("/api/transactions", ...stateChangingRoutes, async(req,res) => {
+router.post("/api/transactions", apiLimiter, ...stateChangingRoutes, async(req,res) => {
     const user = await getAuthenticatedUser(req,res);
 
     if (!user) {
@@ -270,17 +280,21 @@ router.post("/api/transactions", ...stateChangingRoutes, async(req,res) => {
         return res.status(201).json({transaction})
 
     } catch (error) {
-        console.log(`ERROR ${error}`)
+        console.error("Failed to post transaction:", error.message || error)
         res.status(500).json({message:"Failed to post Transactions"})
     }
 
 })
 
-router.put("/api/transactions/:id", ...stateChangingRoutes, async (req, res) => {
+router.put("/api/transactions/:id", apiLimiter, ...stateChangingRoutes, async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
         return res.status(401).json({ message: "Unauthorized User" });
+    }
+
+    if (!isValidObjectId(req.params.id)) {
+        return res.status(400).json({ message: "Invalid transaction ID" });
     }
 
     try {
@@ -311,19 +325,23 @@ router.put("/api/transactions/:id", ...stateChangingRoutes, async (req, res) => 
 
         return res.status(200).json({ transaction: updatedTransaction });
     } catch (error) {
-        console.log(`ERROR ${error}`);
+        console.error("Failed to update transaction:", error.message || error);
         return res.status(500).json({ message: "Failed to update transaction" });
     }
 })
 
 
-router.delete("/api/transactions/:id", ...stateChangingRoutes, async (req,res) => {
+router.delete("/api/transactions/:id", apiLimiter, ...stateChangingRoutes, async (req,res) => {
     const user = await getAuthenticatedUser(req);
 
     try {
 
         if (!user) {
             return res.status(401).json({ message: "Unauthorized User" });
+        }
+
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({ message: "Invalid transaction ID" });
         }
 
         const deleted = await Transaction.findOneAndDelete({
@@ -338,7 +356,7 @@ router.delete("/api/transactions/:id", ...stateChangingRoutes, async (req,res) =
         return res.json({ok:true})
 
     } catch (error) {
-         console.log(`ERROR ${error}`);
+         console.error("Failed to delete transaction:", error.message || error);
          return res.status(500).json({ message: "Failed to delete transaction" });
     }
 

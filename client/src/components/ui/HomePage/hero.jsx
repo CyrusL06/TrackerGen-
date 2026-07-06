@@ -166,7 +166,7 @@ export default function Hero() {
     <section
       id="home"
       className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-20 pb-20 text-center md:pb-24"
-      style={{ background: "#000" }}
+      style={{ background: "var(--bg-page)" }}
     >
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#2779a7]/6 via-transparent to-transparent" />
       <div className="pointer-events-none absolute left-1/2 top-[-20%] h-[600px] w-[800px] -translate-x-1/2 bg-[radial-gradient(ellipse,#2779a7/5_0%,transparent_60%)]" />
@@ -174,12 +174,12 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center px-5 md:px-10">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[rgba(39,121,167,0.2)] bg-[rgba(39,121,167,0.06)] px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-[#2779a7] animate-pulse" />
-          <span className={`text-[0.75rem] font-medium uppercase tracking-[0.12em] text-[#2779a7] ${FONTS.mono}`}>
+          <span className={`text-caption font-medium uppercase tracking-[0.12em] text-[#2779a7] ${FONTS.mono}`}>
             Early Access
           </span>
         </div>
 
-        <h1 className={`mb-4 text-[clamp(3.5rem,10vw,6rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-white ${FONTS.display}`}>
+        <h1 className={`mb-4 text-[clamp(3.5rem,10vw,6rem)] font-bold leading-[1.05] tracking-[-0.02em] text-white ${FONTS.hero}`}>
           <span className="relative inline-block">
             <PenguinBack />
             <span style={{ position: "relative", zIndex: 0, textShadow: "0 0 30px rgba(0,0,0,0.95), 0 6px 20px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.9)" }}>Track</span>
@@ -190,14 +190,14 @@ export default function Hero() {
           <span className="text-[#2779a7]">from Telegram.</span>
         </h1>
 
-        <p className={`mx-auto mb-10 max-w-lg text-[1rem] leading-relaxed text-[#6b7280] md:text-[1.05rem] ${FONTS.body}`}>
+        <p className={`mx-auto mb-10 max-w-lg text-body leading-relaxed text-[oklch(0.52_0.025_260)] md:text-lead ${FONTS.body}`}>
           Add income and expenses via text message. See your monthly snapshot in one place. No bank connections required.
         </p>
 
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <a
             href="/login"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#2779a7] px-8 py-3.5 text-[0.95rem] font-medium text-white no-underline transition-all duration-200 hover:bg-[#1d5f83] hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#2779a7] px-8 py-3.5 text-body font-medium text-white no-underline transition-all duration-200 hover:bg-[#1d5f83] hover:-translate-y-0.5"
           >
             Open Preview
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -206,7 +206,7 @@ export default function Hero() {
           </a>
           <a
             href="#how-it-works"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[rgba(255,255,255,0.15)] px-8 py-3.5 text-[0.95rem] font-medium text-[#9ca3af] no-underline transition-all duration-200 hover:border-[rgba(255,255,255,0.3)] hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[rgba(255,255,255,0.15)] px-8 py-3.5 text-body font-medium text-[oklch(0.65_0.025_260)] no-underline transition-all duration-200 hover:border-[rgba(255,255,255,0.3)] hover:text-white"
           >
             See how it works
           </a>
@@ -229,8 +229,8 @@ export default function Hero() {
                 </svg>
               </div>
               <div className="text-left">
-                <div className={`text-[0.85rem] font-medium text-white ${FONTS.body}`}>{label}</div>
-                <div className={`text-[0.75rem] text-[#6b7280] ${FONTS.body}`}>{detail}</div>
+                <div className={`text-body-sm font-medium text-white ${FONTS.body}`}>{label}</div>
+                <div className={`text-caption text-[oklch(0.52_0.025_260)] ${FONTS.body}`}>{detail}</div>
               </div>
             </div>
           ))}

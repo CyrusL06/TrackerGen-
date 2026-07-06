@@ -54,7 +54,7 @@ export function StatCard({ label, value, change, up, accent, sub }) {
       </div>
       <div
         className="mb-2 text-[2rem] font-bold tracking-[-0.02em] sm:text-[24px]"
-        style={{ color: accent }}
+        style={{ color: accent, ...FONTS.display }}
       >
         {value}
       </div>
@@ -101,7 +101,7 @@ export function TxnRow({ txn, onEdit, onDelete }) {
       <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
         <div
           className="text-[15px] font-semibold sm:text-[13px]"
-          style={{ color: isPositive ? COLORS.accent : COLORS.red }}
+          style={{ color: isPositive ? COLORS.accent : COLORS.red, ...FONTS.display }}
         >
           {isPositive ? "+" : "-"}${Math.abs(txn.amount).toFixed(2)}
         </div>

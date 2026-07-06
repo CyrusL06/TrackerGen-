@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   CheckCircle2,
   Copy,
@@ -447,7 +447,7 @@ function StepCommandReference() {
 /* ------------------------------------------------------------------ */
 /*  Step indicator                                                     */
 /* ------------------------------------------------------------------ */
-function StepIndicator({ current, total, labels }) {
+function StepIndicator({ current, total }) {
   return (
     <div className="flex items-center gap-2">
       {Array.from({ length: total }, (_, i) => (
@@ -514,44 +514,27 @@ export default function TelegramSetupAssistant({
   onCreateCode,
   onCopyCommand,
 }) {
-  const [step, setStep] = useState(0);
+  const [manualStep, setManualStep] = useState(null);
   const linked = Boolean(telegram?.linked);
-  const prevLinkedRef = useRef(linked);
-
-  // Auto-advance past verify when linked
-  useEffect(() => {
-    if (linked && !prevLinkedRef.current) {
-      setStep(3); // jump to "test" step
-    }
-    prevLinkedRef.current = linked;
-  }, [linked]);
-
-  // Reset step when modal opens
-  useEffect(() => {
-    if (show) {
-      if (linked) {
-        setStep(3); // already linked — start at test
-      } else if (telegram?.linkCommand) {
-        setStep(1); // has code — start at connect
-      } else {
-        setStep(0); // start fresh
-      }
-    }
-  }, [show, linked, telegram?.linkCommand]);
+  const defaultStep = linked ? 3 : telegram?.linkCommand ? 1 : 0;
+  const step = linked
+    ? Math.max(manualStep ?? defaultStep, 3)
+    : (manualStep ?? defaultStep);
 
   const currentStepName = STEPS[step];
   const isFirst = step === 0;
   const isLast = step === STEPS.length - 1;
 
   const goNext = useCallback(() => {
-    if (step < STEPS.length - 1) setStep((s) => s + 1);
+    if (step < STEPS.length - 1) setManualStep(step + 1);
   }, [step]);
 
   const goPrev = useCallback(() => {
-    if (step > 0) setStep((s) => s - 1);
+    if (step > 0) setManualStep(step - 1);
   }, [step]);
 
   const handleClose = useCallback(() => {
+    setManualStep(null);
     onClose();
   }, [onClose]);
 
@@ -596,7 +579,7 @@ export default function TelegramSetupAssistant({
 
         {/* step indicator */}
         <div className="border-b border-[color:var(--dashboard-border)] px-4 py-3 sm:px-4 sm:py-[10px]">
-          <StepIndicator current={step} total={STEPS.length} labels={STEP_LABELS} />
+          <StepIndicator current={step} total={STEPS.length} />
           <div className="mt-2">
             <StepLabels labels={STEP_LABELS} current={step} />
           </div>

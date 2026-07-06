@@ -4,10 +4,10 @@ import { COLORS, FONTS } from "@/components/ui/pudgy-brand";
 
 const pageVars = {
   "--auth-bg": COLORS.bg,
-  "--auth-border": "rgba(255,255,255,0.06)",
+  "--auth-border": COLORS.border,
   "--auth-border-strong": "rgba(255,255,255,0.12)",
   "--auth-text": COLORS.text,
-  "--auth-muted": "#6b7280",
+  "--auth-muted": COLORS.dim,
   "--auth-accent": COLORS.blue,
 };
 
@@ -144,7 +144,7 @@ export function AuthShell({
       {showTopAction ? (
         <Link
           to={topActionTo}
-          className={`absolute left-4 top-4 z-10 inline-flex min-h-10 items-center gap-2 text-[0.74rem] tracking-[0.02em] text-[color:var(--auth-muted)] transition-colors hover:text-[color:var(--auth-text)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(255,255,255,0.15)] sm:left-5 sm:top-5 ${FONTS.body}`}
+          className={`absolute left-4 top-4 z-10 inline-flex min-h-10 items-center gap-2 text-caption tracking-[0.02em] text-[color:var(--auth-muted)] transition-colors hover:text-[color:var(--auth-text)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(255,255,255,0.15)] sm:left-5 sm:top-5 ${FONTS.body}`}
         >
           <ChevronLeft size={16} />
           <span>{topActionLabel}</span>
@@ -157,25 +157,25 @@ export function AuthShell({
           <div className="mt-5 text-center">
             {eyebrow ? (
               <div
-                className={`mb-2.5 text-[0.7rem] tracking-[0.08em] text-[color:var(--auth-muted)] ${FONTS.body}`}
+                className={`mb-2.5 text-caption tracking-[0.08em] text-[color:var(--auth-muted)] ${FONTS.body}`}
               >
                 {eyebrow}
               </div>
             ) : null}
 
             <h1
-              className={`text-[clamp(1.9rem,4vw,2.55rem)] font-semibold leading-[0.96] tracking-[-0.02em] text-[color:var(--auth-text)] ${FONTS.display}`}
+              className={`text-[clamp(1.9rem,4vw,2.55rem)] font-bold leading-[0.96] tracking-[-0.02em] text-[color:var(--auth-text)] ${FONTS.display}`}
             >
               {title}
             </h1>
             <p
-              className={`mx-auto mt-2 max-w-[22rem] text-[0.76rem] leading-5 text-[color:var(--auth-muted)] ${FONTS.body}`}
+              className={`mx-auto mt-2 max-w-[22rem] text-body-sm leading-5 text-[color:var(--auth-muted)] ${FONTS.body}`}
             >
               {subtitle}
             </p>
             {switchPrompt && switchCta && switchTo ? (
               <p
-                className={`mx-auto mt-1.5 text-[0.78rem] leading-5 text-[color:var(--auth-muted)] ${FONTS.body}`}
+                className={`mx-auto mt-1.5 text-body-sm leading-5 text-[color:var(--auth-muted)] ${FONTS.body}`}
               >
                 {switchPrompt}{" "}
                 <Link
@@ -192,7 +192,7 @@ export function AuthShell({
 
           {footerNote ? (
             <p
-              className={`mx-auto mt-6 max-w-[24rem] text-center text-[0.68rem] leading-5 text-[color:var(--auth-muted)] ${FONTS.body}`}
+              className={`mx-auto mt-6 max-w-[24rem] text-center text-tiny leading-5 text-[color:var(--auth-muted)] ${FONTS.body}`}
             >
               {footerNote}
             </p>

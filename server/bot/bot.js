@@ -1,6 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { Transaction } from "../model/data.js";
 import { UserProfile } from "../model/userProfile.js";
+import { ProxyAgent } from "undici";
 
 const HELP_TEXT = [
     "What's up boss",
@@ -22,10 +23,16 @@ const TRANSACTION_TYPE_CALLBACK_PREFIX = "transaction_type:";
 const MESSAGE_DELETE_DELAY_MS = 5 * 60 * 1000;
 const LINK_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const LINK_RATE_LIMIT_MAX_ATTEMPTS = 5;
+const MAX_TELEGRAM_AMOUNT = 1_000_000_000;
 
 const botStartedAt = Math.floor(Date.now() / 1000);
 const pendingTransactionTypes = new Map();
 const linkAttempts = new Map();
+
+const VALID_CATEGORIES = new Set([
+    "Housing", "Shopping", "Utilities", "Food & Drink",
+    "Income", "Transport", "Dining", "Subscriptions", "Other",
+]);
 
 const CATEGORY_ALIASES = {
     food: "Food & Drink",
@@ -68,7 +75,7 @@ function formatSignedMoney(value) {
 function parseAmountToken(token) {
     const cleaned = token.replace(/[$,]/g, "");
     const amount = Number(cleaned);
-    return Number.isFinite(amount) && amount > 0 ? amount : null;
+    return Number.isFinite(amount) && amount > 0 && amount <= MAX_TELEGRAM_AMOUNT ? amount : null;
 }
 
 function normalizeCategory(rawCategory, type) {
@@ -76,7 +83,8 @@ function normalizeCategory(rawCategory, type) {
         return type === "income" ? "Income" : "Other";
     }
 
-    return CATEGORY_ALIASES[rawCategory.toLowerCase()] ?? rawCategory;
+    const mapped = CATEGORY_ALIASES[rawCategory.toLowerCase()] ?? rawCategory;
+    return VALID_CATEGORIES.has(mapped) ? mapped : (type === "income" ? "Income" : "Other");
 }
 
 export function parseTransactionText(text, type) {
@@ -305,7 +313,7 @@ async function handleLinkCommand(bot, msg, text) {
                 telegramLinkCodeExpiresAt: "",
             },
         },
-        { new: true },
+        { new: true, runValidators: true },
     );
 
     if (!profile) {
@@ -401,7 +409,22 @@ export function startTelegramBot(app) {
     }
 
     const useWebhook = Boolean(webhookUrl && app);
-    const bot = new TelegramBot(token, { polling: !useWebhook });
+    const proxyUrl = process.env.TELEGRAM_PROXY_URL;
+    const botOptions = { polling: !useWebhook };
+
+    if (proxyUrl) {
+        const proxyAgent = new ProxyAgent(proxyUrl);
+        botOptions.request = {
+            fetchOptions: { dispatcher: proxyAgent },
+        };
+        console.log(`Telegram bot using proxy: ${proxyUrl}`);
+    }
+
+    const bot = new TelegramBot(token, botOptions);
+
+    if (useWebhook && process.env.NODE_ENV === "production" && !webhookSecret) {
+        throw new Error("TELEGRAM_WEBHOOK_SECRET is required when Telegram webhooks are enabled in production.");
+    }
 
     bot.on("polling_error", (error) => {
         console.log("Telegram polling error:", error.message || error);
@@ -434,7 +457,7 @@ export function startTelegramBot(app) {
                 `Send the details like this:\n${getTransactionDetailExample(type)}`,
             );
         } catch (error) {
-            console.log("Telegram button error:", error);
+            console.log("Telegram button error:", error.message || error);
             await bot.answerCallbackQuery(query.id, {
                 text: "Something went wrong.",
             });
@@ -556,7 +579,7 @@ export function startTelegramBot(app) {
 
             await sendAutoDeletingMessage(bot, chatId, HELP_TEXT);
         } catch (error) {
-            console.log("Telegram bot error:", error);
+            console.log("Telegram bot error:", error.message || error);
             await sendAutoDeletingMessage(bot, chatId, "Something went wrong while updating TrackerGen.");
         }
     });

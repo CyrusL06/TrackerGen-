@@ -1,27 +1,36 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/space-grotesk";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: "Manrope", sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
   color-scheme: dark;
-  --text-main: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-dim: #7a8ca5;
-  --border-soft: rgba(148, 163, 184, 0.24);
+
+  /* ─── Type scale ─── */
+  --text-xs:   0.6875rem;  /* 11px — fine print, labels */
+  --text-sm:   0.75rem;    /* 12px — captions, eyebrow */
+  --text-base: 0.875rem;   /* 14px — body small (dashboard) */
+  --text-md:   1rem;       /* 16px — body default */
+  --text-lg:   1.125rem;   /* 18px — body large */
+  --text-xl:   1.25rem;    /* 20px — subheading */
+  --text-2xl:  1.5rem;     /* 24px — section heading */
+  --text-3xl:  2rem;       /* 32px — page heading */
+  --text-4xl:  2.5rem;     /* 40px — display title */
+  --text-5xl:  3.25rem;    /* 52px — hero */
+
+  /* ─── Shadcn tokens (kept from original) ─── */
+  --text-main: oklch(0.92 0.015 260);
+  --text-muted: oklch(0.65 0.025 260);
+  --text-dim: oklch(0.52 0.025 260);
+  --border-soft: rgba(255,255,255,0.06);
   --accent: oklch(0.97 0 0);
   --accent-strong: #10b981;
   --accent-soft: #5eead4;
-  --bg-page: #000000;
+  --bg-page: oklch(0.13 0.025 260);
 
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -278,7 +287,23 @@ body {
 }
 
 @theme inline {
-  --font-sans: 'Geist Variable', sans-serif;
+  --font-sans: 'Inter Variable', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'DM Mono', 'SF Mono', 'Fira Code', monospace;
+  --font-hero: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+
+  /* ─── Type scale tokens ─── */
+  --text-tiny:    0.6875rem; /* 11px – fine print */
+  --text-caption: 0.75rem;   /* 12px – captions, eyebrow labels */
+  --text-body-sm: 0.875rem;  /* 14px – compact body (dashboard) */
+  --text-body:    1rem;      /* 16px – default body */
+  --text-lead:    1.125rem;  /* 18px – large body / lead */
+  --text-sub:     1.25rem;   /* 20px – subheading */
+  --text-h3:      1.5rem;    /* 24px – section heading */
+  --text-h2:      2rem;      /* 32px – page heading */
+  --text-h1:      2.5rem;    /* 40px – display title */
+  --text-hero:    3.25rem;   /* 52px – hero */
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

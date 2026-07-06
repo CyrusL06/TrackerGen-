@@ -11,11 +11,11 @@ export default function Footer() {
               <polyline points="16 7 22 7 22 13" />
             </svg>
           </div>
-          <span className="text-[0.82rem] font-medium text-[#6b7280]">
+          <span className="text-body-sm font-medium text-[oklch(0.52_0.025_260)]">
             Tracki <span className="text-[#4b5563]">—</span> <span className="font-normal">© 2026</span>
           </span>
         </div>
-        <span className="text-[0.82rem] text-[#6b7280]">
+        <span className="text-body-sm text-[oklch(0.52_0.025_260)]">
           Built for people who care about their money.
         </span>
       </div>

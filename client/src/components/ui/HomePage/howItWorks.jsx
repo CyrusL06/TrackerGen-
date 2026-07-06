@@ -22,13 +22,13 @@ export default function HowItWorks() {
   return (
     <section id="how-it-works" className={`${LAYOUT.content} py-20 md:py-28`}>
       <div className="mx-auto max-w-2xl text-center">
-        <p className={`mb-3 text-[0.72rem] font-medium uppercase tracking-[0.15em] text-[#2779a7] ${FONTS.mono}`}>
+        <p className={`mb-3 text-caption font-medium uppercase tracking-[0.15em] text-[#2779a7] ${FONTS.mono}`}>
           How It Works
         </p>
-        <h2 className={`mb-4 text-[clamp(2rem,6vw,3.5rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-white ${FONTS.display}`}>
+        <h2 className={`mb-4 text-[clamp(2rem,6vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.02em] text-white ${FONTS.display}`}>
           Three steps to clarity.
         </h2>
-        <p className={`mb-14 text-[1rem] leading-relaxed text-[#6b7280] md:text-[1.05rem] ${FONTS.body}`}>
+        <p className={`mb-14 text-body leading-relaxed text-[oklch(0.52_0.025_260)] md:text-lead ${FONTS.body}`}>
           No fluff, no fuss. Just your finances in view.
         </p>
       </div>
@@ -39,11 +39,11 @@ export default function HowItWorks() {
             key={num}
             className="group relative rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-8 transition-all duration-300 hover:border-[rgba(39,121,167,0.2)] hover:bg-[rgba(39,121,167,0.03)]"
           >
-            <span className={`mb-5 block text-[2.5rem] font-semibold text-[rgba(255,255,255,0.06)] ${FONTS.display}`}>
+            <span className={`mb-5 block text-h1 font-semibold text-[rgba(255,255,255,0.06)] ${FONTS.display}`}>
               {num}
             </span>
-            <h3 className={`mb-3 text-[1.2rem] font-semibold text-white ${FONTS.display}`}>{title}</h3>
-            <p className={`text-[0.9rem] leading-relaxed text-[#6b7280] ${FONTS.body}`}>{desc}</p>
+            <h3 className={`mb-3 text-sub font-bold text-white ${FONTS.display}`}>{title}</h3>
+            <p className={`text-body-sm leading-relaxed text-[oklch(0.52_0.025_260)] ${FONTS.body}`}>{desc}</p>
           </div>
         ))}
       </div>

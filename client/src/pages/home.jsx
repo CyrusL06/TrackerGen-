@@ -6,7 +6,7 @@ import HowItWorks from "@/components/ui/HomePage/howItWorks";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden text-white" style={{ background: "#000" }}>
+    <div className="relative min-h-screen overflow-x-hidden text-white" style={{ background: "var(--bg-page)" }}>
       <MarqueeStrip />
       <main className="relative z-10">
         <Hero />

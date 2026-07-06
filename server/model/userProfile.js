@@ -1,6 +1,8 @@
 //Import this from mongo
 import mongoose from "mongoose";
 
+const MAX_AMOUNT = 1_000_000_000;
+
 const userProfileSchema = new mongoose.Schema(
     {
         workosUserId: {
@@ -12,18 +14,24 @@ const userProfileSchema = new mongoose.Schema(
         email:{
             type:String,
             required: true,
-            trim: true
+            trim: true,
+            lowercase: true,
+            maxlength: 320,
         },
         monthlyGoal: {
             type: Number,
             default:null,
+            min: 0,
+            max: MAX_AMOUNT,
         },
         wantsReminders: {
             type: String,
+            enum: ["yes", "not-now", null],
             default: null,
         },
         preferredChannel: {
             type: String,
+            enum: ["discord", "telegram", "none", null],
             default: null,
         },
         hasCompletedOnboarding: {

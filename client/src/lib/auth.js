@@ -65,6 +65,11 @@ export async function createTransaction(loadNew) {
   });
 
   const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to create transaction");
+  }
+
   return data.transaction;
 }
 
@@ -109,6 +114,11 @@ export async function deleteTransactionById(id) {
   });
 
   const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to delete transaction");
+  }
+
   return data;
 }
 

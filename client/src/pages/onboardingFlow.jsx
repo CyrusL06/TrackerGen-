@@ -343,7 +343,7 @@ export function OnboardingCompletePage() {
           onboardingSummary: summary,
         },
       });
-    } catch (saveError) {
+    } catch {
       setError("We couldn't save your onboarding details yet. Please try again.");
     } finally {
       setIsSaving(false);
@@ -374,12 +374,12 @@ export function OnboardingCompletePage() {
         </div>
 
         {error ? (
-          <p className={`rounded-[14px] border border-[rgba(242,237,230,0.1)] bg-[rgba(24,24,22,0.72)] px-4 py-3 text-[0.74rem] leading-6 text-[rgba(242,237,230,0.86)] ${FONTS.mono}`}>
+          <p className={`rounded-[14px] border border-[rgba(242,237,230,0.1)] bg-[rgba(24,24,22,0.72)] px-4 py-3 text-caption leading-6 text-[rgba(242,237,230,0.86)] ${FONTS.mono}`}>
             {error}
           </p>
         ) : null}
 
-        <p className={`text-center text-[0.74rem] leading-6 text-[rgba(242,237,230,0.58)] ${FONTS.mono}`}>
+        <p className={`text-center text-caption leading-6 text-[rgba(242,237,230,0.58)] ${FONTS.mono}`}>
           These answers shape the current onboarding experience only.  adjust the real product
           behavior later when those settings exist.
         </p>

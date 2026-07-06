@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import { doubleCsrf } from "csrf-csrf";
 import { WorkOS } from "@workos-inc/node";
 import { fileURLToPath } from "url";
+import helmet from "helmet";
 
 //Database
 import { buildRouter } from "./routes/route.js";
@@ -16,6 +17,7 @@ import { createAuthHelpers } from "./config/auth.js";
 import {connectDB} from "./config/db.js"
 import { UserProfile } from "./model/userProfile.js";
 import { startTelegramBot } from "./bot/bot.js";
+import { createRateLimiter } from "./config/rateLimit.js";
 
 // Recreates __dirname in ES module mode
 const __filename = fileURLToPath(import.meta.url);
@@ -26,6 +28,7 @@ dotenv.config({ path: envPath });
 
 const app = express();
 const port = process.env.PORT || 3200;
+app.set("trust proxy", 1);
 
 
 
@@ -124,8 +127,10 @@ const { getAuthenticatedUser } = createAuthHelpers({
 // sending requests with your logged-in cookies.
 const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
   getSecret: () => CSRF_SECRET,
-  getSessionIdentifier: (req) => req.cookies[COOKIE_NAME] ?? "anonymous",
+  getSessionIdentifier: (req) => req.cookies[COOKIE_NAME] ?? req.ip ?? "unknown-session",
 });
+
+const authLimiter = createRateLimiter({ windowMs: 60 * 1000, maxRequests: 60 });
 
 const router = buildRouter({getAuthenticatedUser, csrfProtection: doubleCsrfProtection});
 
@@ -154,6 +159,34 @@ const startServerDB = async ()=> {
 // CORS setup
 // 1. Allow the frontend domain to call this API
 // 2. credentials: true is required for cookies to be sent
+if (IS_PROD) {
+  app.use((req, res, next) => {
+    if (!req.secure && req.get("x-forwarded-proto") !== "https") {
+      return res.redirect(308, `https://${req.headers.host}${req.originalUrl}`);
+    }
+    return next();
+  });
+}
+
+app.use(
+  helmet({
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        fontSrc: ["'self'", "data:"],
+        imgSrc: ["'self'", "data:", "blob:"],
+        connectSrc: ["'self'", FRONTEND_ORIGIN],
+      },
+    },
+  }),
+);
+
 app.use(
   cors({
     origin: FRONTEND_ORIGIN,
@@ -365,14 +398,14 @@ app.get("/auth/callback", async (req, res) => {
     // Send the user back to the frontend
     return res.redirect(`${FRONTEND_ORIGIN}${finalReturnTo}`);
   } catch (error) {
-    console.error("WorkOS callback error:", error);
+    console.error("WorkOS callback error:", error.message || error);
     return res.redirect(`${FRONTEND_ORIGIN}/login`);
   }
 });
 
 // "WHO AM I?" ROUTE
 // The frontend calls this to find out if the current browser is authenticated.
-app.get("/api/auth/me", async (req, res) => {
+app.get("/api/auth/me", authLimiter, async (req, res) => {
   if (IS_OFFLINE_AUTH) {
     return res.json({
       authenticated: true,
@@ -415,14 +448,14 @@ app.get("/api/auth/me", async (req, res) => {
 
 // CSRF TOKEN ROUTE
 // The frontend can call this before protected POST actions later.
-app.get("/api/auth/csrf-token", (req, res) => {
+app.get("/api/auth/csrf-token", authLimiter, (req, res) => {
   const csrfToken = generateCsrfToken(req, res);
   res.json({ csrfToken });
 });
 
 // LOGOUT ROUTE
 // POST is used because logout changes state.
-app.post("/api/auth/logout", doubleCsrfProtection, async (req, res) => {
+app.post("/api/auth/logout", authLimiter, doubleCsrfProtection, async (req, res) => {
   if (IS_OFFLINE_AUTH) {
     clearSessionCookie(res);
     return res.json({ ok: true });

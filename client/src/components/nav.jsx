@@ -11,9 +11,9 @@ const navItems = [
 ];
 
 const baseLinkClass =
-  `text-[0.85rem] font-medium text-[#6b7280] no-underline transition-all duration-200 hover:text-white ${FONTS.body}`;
+  `text-body-sm font-medium text-[oklch(0.52_0.025_260)] no-underline transition-all duration-200 hover:text-white ${FONTS.body}`;
 const mobileLinkClass =
-  `block w-full border-b border-[rgba(255,255,255,0.05)] px-4 py-4 text-[0.88rem] font-medium text-white no-underline transition-colors duration-200 hover:bg-[rgba(39,121,167,0.08)] hover:text-[#2779a7] ${FONTS.body}`;
+  `block w-full border-b border-[rgba(255,255,255,0.05)] px-4 py-4 text-body-sm font-medium text-white no-underline transition-colors duration-200 hover:bg-[rgba(39,121,167,0.08)] hover:text-[#2779a7] ${FONTS.body}`;
 
 function Logo() {
   return (
@@ -24,7 +24,7 @@ function Logo() {
           <polyline points="16 7 22 7 22 13" />
         </svg>
       </div>
-      <span className={`text-[1.2rem] font-semibold tracking-[-0.02em] text-white ${FONTS.display}`}>Tracki</span>
+      <span className={`text-sub font-semibold tracking-[-0.02em] text-white ${FONTS.display}`}>Tracki</span>
     </a>
   );
 }
@@ -53,13 +53,13 @@ export default function Nav() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[rgba(255,255,255,0.05)]" style={{ background: "rgba(0,0,0,0.92)" }}>
+    <nav className="sticky top-0 z-50 border-b border-[rgba(255,255,255,0.05)]" style={{ background: "oklch(0.13 0.025 260 / 0.92)" }}>
       <div className={`${LAYOUT.nav} flex-wrap md:flex-nowrap`}>
         <div className="flex w-full items-center justify-between gap-4 md:w-auto md:flex-none md:justify-start">
           <Logo />
           <button type="button" aria-expanded={isMenuOpen} aria-controls={mobileMenuId} aria-label={isMenuOpen ? "Close" : "Open"}
             onClick={() => setIsMenuOpen((prev) => !prev)}
-            className={`inline-flex items-center gap-2 rounded-lg border border-[rgba(255,255,255,0.1)] px-3 py-2 text-[0.78rem] font-medium text-[#9ca3af] transition-all duration-200 hover:border-[#2779a7]/40 hover:text-[#2779a7] md:hidden ${FONTS.body}`}>
+             className={`inline-flex items-center gap-2 rounded-lg border border-[rgba(255,255,255,0.1)] px-3 py-2 text-caption font-medium text-[oklch(0.65_0.025_260)] transition-all duration-200 hover:border-[#2779a7]/40 hover:text-[#2779a7] md:hidden ${FONTS.body}`}>
             {isMenuOpen ? <X size={16} /> : <Menu size={16} />}
             <span>{isMenuOpen ? "Close" : "Menu"}</span>
           </button>
@@ -73,12 +73,12 @@ export default function Nav() {
       {isMenuOpen ? (
         <div className="border-t border-[rgba(255,255,255,0.05)] md:hidden">
           <div className="mx-auto w-full max-w-[1200px] px-5 pb-4">
-            <div className="overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[#0a0a0a] shadow-xl">
+            <div className="overflow-hidden rounded-lg border border-[rgba(255,255,255,0.05)] bg-[oklch(0.17_0.03_260)] shadow-xl">
               {navItems.map((item) => (
                 <NavLink key={item.href} href={item.href} className={mobileLinkClass} onClick={closeMenu}>{item.label}</NavLink>
               ))}
               <a href="/login" onClick={closeMenu}
-                className={`block w-full bg-[#2779a7] px-4 py-4 text-center text-[0.88rem] font-medium text-white no-underline transition-opacity hover:opacity-90 ${FONTS.body}`}>
+                className={`block w-full bg-[#2779a7] px-4 py-4 text-center text-body-sm font-medium text-white no-underline transition-opacity hover:opacity-90 ${FONTS.body}`}>
                 Log in
               </a>
             </div>

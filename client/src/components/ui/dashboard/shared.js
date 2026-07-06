@@ -12,11 +12,11 @@ import { COLORS as BRAND_COLORS, FONT_FAMILIES, NOISE_BACKGROUND } from "../bran
 
 export const COLORS = {
   bg: BRAND_COLORS.bg,
-  surface: "#0a0a0a",
-  surface2: "#141414",
-  border: "rgba(255,255,255,0.08)",
+  surface: BRAND_COLORS.surface,
+  surface2: BRAND_COLORS.surface2,
+  border: BRAND_COLORS.border,
   text: BRAND_COLORS.text,
-  muted: "#9ca3af",
+  muted: BRAND_COLORS.muted,
   accent: BRAND_COLORS.accent,
   amber: BRAND_COLORS.amber,
   red: BRAND_COLORS.danger,
@@ -37,6 +37,7 @@ export const PAGE_VARS = {
 export const FONTS = {
   mono: { fontFamily: FONT_FAMILIES.mono },
   display: { fontFamily: FONT_FAMILIES.display },
+  body: { fontFamily: FONT_FAMILIES.body },
 };
 
 export const TW = {
@@ -46,7 +47,7 @@ export const TW = {
   panel: "border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[0_1px_3px_0_rgba(0,0,0,0.4)]",
   panelPadding: "px-5 py-5 sm:px-6 sm:py-[18px]",
   eyebrow: "mb-1.5 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
-  displayTitle: "text-[1.35rem] font-semibold tracking-[-0.01em] sm:text-[1.2rem]",
+  displayTitle: "text-[1.35rem] font-bold tracking-[-0.01em] sm:text-[1.2rem]",
   fieldLabel:
     "mb-[5px] block text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
   fieldError: "mt-1 text-[11px] text-[color:var(--dashboard-red)]",

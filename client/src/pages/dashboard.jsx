@@ -462,19 +462,43 @@ export default function Dashboard() {
     setForm((prev) => ({ ...prev, type }));
   }
 
-  function undoRemove() {
+  async function undoRemove() {
     if (!lastRemoved) return;
+    const removed = lastRemoved;
 
-    setTxns((prev) => [lastRemoved, ...prev]);
-    setStatusMessage({
-      tone: "success",
-      text: `${lastRemoved.name} was restored to the cash flow view.`,
-    });
+    setTxns((prev) => [removed, ...prev]);
     setLastRemoved(null);
+
+    try {
+      const created = await createTransaction({
+        name: removed.name,
+        category: removed.cat,
+        amount: removed.amount,
+        date: removed.rawDate ?? removed.date,
+      });
+      const restored = toDashboardTxn({
+        ...created,
+        rawDate: created?.date ?? removed.rawDate,
+        date: created?.date ?? removed.date,
+      });
+
+      setTxns((prev) => prev.map((txn) => (txn.id === removed.id ? restored : txn)));
+      setStatusMessage({
+        tone: "success",
+        text: `${restored.name} was restored to the cash flow view.`,
+      });
+    } catch (error) {
+      setTxns((prev) => prev.filter((txn) => txn.id !== removed.id));
+      setStatusMessage({
+        tone: "warning",
+        text: `Could not restore ${removed.name}. Please add it again manually.`,
+      });
+      console.error("Failed to restore transaction:", error.message || error);
+    }
   }
 
   return (
-    <div className={TW.page} style={{ fontFamily: "'Geist Variable', sans-serif", ...PAGE_VARS }}>
+    <div className={TW.page} style={PAGE_VARS}>
       <div
         className={TW.pageTexture}
         style={{ backgroundImage: DASHBOARD_TEXTURE }}

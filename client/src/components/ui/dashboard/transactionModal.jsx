@@ -13,19 +13,6 @@ export default function TransactionModal({
   onFieldChange,
   onTypeChange,
 }) {
-  if (!show) return null;
-
-  const isEditing = Boolean(editingTransaction);
-
-  const inputClassName = (hasError) =>
-    cx(
-      TW.inputBase,
-      "rounded-[8px]",
-      hasError
-        ? "border-[color:var(--dashboard-red)]"
-        : "border-[color:var(--dashboard-border)]"
-    );
-
   useEffect(() => {
     if (!show) return undefined;
 
@@ -40,6 +27,17 @@ export default function TransactionModal({
   }, [onClose, show]);
 
   if (!show) return null;
+
+  const isEditing = Boolean(editingTransaction);
+
+  const inputClassName = (hasError) =>
+    cx(
+      TW.inputBase,
+      "rounded-[8px]",
+      hasError
+        ? "border-[color:var(--dashboard-red)]"
+        : "border-[color:var(--dashboard-border)]"
+    );
 
   return (
     <div
@@ -61,7 +59,7 @@ export default function TransactionModal({
               className="h-[18px] w-[3px] rounded-full"
               style={{ backgroundColor: COLORS.accent }}
             />
-            <span className="text-[1.1rem] font-semibold tracking-[-0.01em]">
+            <span className="text-[1.1rem] font-bold tracking-[-0.01em]" style={FONTS.display}>
               {isEditing ? "Edit Transaction" : "New Transaction"}
             </span>
           </div>
