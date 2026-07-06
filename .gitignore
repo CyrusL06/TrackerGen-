@@ -12,6 +12,7 @@ docs/
 !**/.env.example
 
 # Explicit app env files
+client/.env
 client/.env.local
 server/.env.local
 
@@ -23,6 +24,15 @@ server/.env.local
 *.crt
 *.transactions.json
 
+# Research markdown files (root level)
+/*research*.md
+/*RESEARCH*.md
+
 # macOS noise
 .DS_Store
 **/.DS_Store
+
+# Syncthing local metadata
+.stfolder/
+.stversions/
+.stignore

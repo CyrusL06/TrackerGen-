@@ -11,9 +11,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-   server: {
+  server: {
     proxy: {
       "/api": {
+        target: "http://127.0.0.1:3200",
+        changeOrigin: true,
+      },
+      "/auth": {
         target: "http://127.0.0.1:3200",
         changeOrigin: true,
       },

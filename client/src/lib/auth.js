@@ -1,5 +1,9 @@
-// Backend API base URL, usually the deployed server or local Express server.
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// Backend API base URL.
+// By default, uses relative URLs so all requests stay same-origin
+// (no cross-origin cookie issues with Brave or any browser).
+// Set VITE_API_BASE_URL to an absolute URL only if the backend is on a
+// different origin in production (not recommended — same-origin is simpler).
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 let csrfTokenPromise = null;
 

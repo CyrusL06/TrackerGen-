@@ -35,7 +35,6 @@ app.set("trust proxy", 1);
 const COOKIE_NAME = "wos-session";
 // This is the frontend URL in dev or your deployed frontend later
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
-const IS_PROD = process.env.NODE_ENV === "production";
 
 // Path to built frontend files if you later serve the React app from Express
 const DIST_DIR = path.resolve(__dirname, "../client/dist");
@@ -203,8 +202,13 @@ app.use("/", router);
 
 const sessionCookieOptions = {
   httpOnly: true,
-  secure: IS_PROD,
-  sameSite: IS_PROD ? "none" : "lax",
+  // Secure flag: required for SameSite=None, needed for cross-origin deployment.
+  // Default false (same-origin via Vite proxy in dev, Express serves SPA in prod).
+  secure: process.env.COOKIE_SECURE === "true",
+  // SameSite: "lax" works for same-origin and same-site cross-origin.
+  // Set to "none" + COOKIE_SECURE=true when frontend and backend are on
+  // completely different domains (not recommended — same-origin is simpler).
+  sameSite: process.env.COOKIE_SAMESITE || "lax",
   path: "/",
 };
 
