@@ -13,6 +13,7 @@ import helmet from "helmet";
 
 //Database
 import { buildRouter } from "./routes/route.js";
+import { buildEmailIngestionRouter } from "./routes/emailIngestion.js";
 import { createAuthHelpers } from "./config/auth.js";
 import {connectDB} from "./config/db.js"
 import { UserProfile } from "./model/userProfile.js";
@@ -133,6 +134,10 @@ const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
 const authLimiter = createRateLimiter({ windowMs: 60 * 1000, maxRequests: 60 });
 
 const router = buildRouter({getAuthenticatedUser, csrfProtection: doubleCsrfProtection});
+const emailIngestionRouter = buildEmailIngestionRouter({
+  getAuthenticatedUser,
+  csrfProtection: doubleCsrfProtection,
+});
 
 
 const startServerDB = async ()=> {
@@ -196,9 +201,19 @@ app.use(
 
 // Read cookies and request bodies from the browser
 app.use(cookieParser());
-app.use(express.json({ limit: "1mb" }));
+app.use(
+  express.json({
+    limit: "1mb",
+    verify: (req, res, buffer) => {
+      if (req.originalUrl === "/api/internal/email/rbc") {
+        req.rawBody = Buffer.from(buffer);
+      }
+    },
+  }),
+);
 // app.use(cors())
 
+app.use("/", emailIngestionRouter);
 app.use("/", router);
 
 const sessionCookieOptions = {
