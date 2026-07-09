@@ -43,9 +43,51 @@ const dataSchema = new mongoose.Schema({
     },
     source: {
       type: String,
-      enum: ["dashboard", "telegram"],
+      enum: ["dashboard", "telegram", "email_rbc"],
       default: "dashboard",
       index: true,
+    },
+    status: {
+      type: String,
+      enum: ["posted", "pending", "adjusted", "reversed"],
+      default: "posted",
+      index: true,
+    },
+    institution: {
+      type: String,
+      enum: ["rbc", null],
+      default: null,
+      index: true,
+    },
+    currency: {
+      type: String,
+      uppercase: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 3,
+      default: "CAD",
+    },
+    accountLastFour: {
+      type: String,
+      match: /^\d{4}$/,
+      default: null,
+    },
+    authorizedAmount: {
+      type: Number,
+      min: 0,
+      max: MAX_AMOUNT,
+      default: null,
+    },
+    ingestionConfidence: {
+      type: Number,
+      min: 0,
+      max: 1,
+      default: null,
+    },
+    sourceMessageIdHash: {
+      type: String,
+      match: /^[a-f0-9]{64}$/,
+      default: null,
     },
     telegramChatId: {
       type: String,
@@ -73,6 +115,17 @@ dataSchema.index(
       source: "telegram",
       telegramChatId: { $type: "string" },
       telegramMessageId: { $type: "string" },
+    },
+  },
+);
+
+dataSchema.index(
+  { workosUserId: 1, sourceMessageIdHash: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      source: "email_rbc",
+      sourceMessageIdHash: { $type: "string" },
     },
   },
 );
