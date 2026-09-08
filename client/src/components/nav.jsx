@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Menu, Moon, Sun, X } from "lucide-react";
-import NavCta from "./ui/HomePage/navcta";
 import { FONTS } from "./ui/pudgy-brand";
 
 const navItems = [
@@ -99,7 +98,6 @@ export default function Nav({ theme, onThemeChange }) {
         <div className="hidden flex-1 items-center justify-end gap-4 md:flex">
           <ThemeToggle theme={theme} onThemeChange={onThemeChange} />
           <a href="/login" className={`nav-signin-glow inline-flex ${FONTS.body}`}>Sign In</a>
-          <NavCta href="/signup">Create free account</NavCta>
         </div>
       </div>
 
@@ -112,10 +110,6 @@ export default function Nav({ theme, onThemeChange }) {
               ))}
               <a href="/login" onClick={closeMenu} className={mobileLinkClass}>Sign in</a>
             </div>
-            <a href="/signup" onClick={closeMenu}
-              className={`mt-auto inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-[var(--home-border-strong)] bg-[var(--action-primary)] px-5 py-3 text-body-sm font-semibold text-white no-underline transition-colors hover:bg-[var(--action-primary-hover)] ${FONTS.body}`}>
-              Create free account
-            </a>
           </div>
         </div>
       ) : null}
