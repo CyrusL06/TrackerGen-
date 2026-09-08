@@ -3,6 +3,9 @@ import { Transaction } from "../model/data.js";
 import { UserProfile } from "../model/userProfile.js";
 import { ProxyAgent } from "undici";
 
+
+
+// WELCOME MESSGAHE WHEN BOT STARTs
 const HELP_TEXT = [
     "What's up boss",
     "Here are the commands:",
@@ -18,6 +21,7 @@ const HELP_TEXT = [
     "income paycheck 1200 work -> add income",
 ].join("\n");
 
+//Revent transsaction limit per user
 const RECENT_TRANSACTION_LIMIT = 5;
 const TRANSACTION_TYPE_CALLBACK_PREFIX = "transaction_type:";
 const MESSAGE_DELETE_DELAY_MS = 5 * 60 * 1000;
@@ -29,10 +33,25 @@ const botStartedAt = Math.floor(Date.now() / 1000);
 const pendingTransactionTypes = new Map();
 const linkAttempts = new Map();
 
+
+/*
+ * AUG - 10  2026
+ * 1:41pm TO BE DONBE....
+ * PROBLEM: User have different type of SETS
+ *
+ * Need to have this fix to have a custom categry so have
+ * 4-5 catgerory and have add button custom to be added
+ *
+ * Change the DB Schema and havbe that fix
+ * */
+
 const VALID_CATEGORIES = new Set([
     "Housing", "Shopping", "Utilities", "Food & Drink",
     "Income", "Transport", "Dining", "Subscriptions", "Other",
 ]);
+
+
+
 
 const CATEGORY_ALIASES = {
     food: "Food & Drink",
@@ -56,10 +75,12 @@ const CATEGORY_ALIASES = {
     income: "Income",
 };
 
+/** Produces the server's current ISO date for bot-created transaction records. */
 function todayIsoDate() {
     return new Date().toISOString().slice(0, 10);
 }
 
+/** Formats numeric transaction data for display without changing stored ownership or value. */
 function formatMoney(value) {
     return `$${Math.abs(value).toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -67,17 +88,20 @@ function formatMoney(value) {
     })}`;
 }
 
+/** Adds transaction direction to a display-only monetary value. */
 function formatSignedMoney(value) {
     const sign = value >= 0 ? "+" : "-";
     return `${sign}${formatMoney(value)}`;
 }
 
+/** Parses and bounds an untrusted Telegram amount token before persistence. */
 function parseAmountToken(token) {
     const cleaned = token.replace(/[$,]/g, "");
     const amount = Number(cleaned);
     return Number.isFinite(amount) && amount > 0 && amount <= MAX_TELEGRAM_AMOUNT ? amount : null;
 }
 
+/** Maps untrusted category text into the application's fixed category set. */
 function normalizeCategory(rawCategory, type) {
     if (!rawCategory) {
         return type === "income" ? "Income" : "Other";
@@ -87,8 +111,10 @@ function normalizeCategory(rawCategory, type) {
     return VALID_CATEGORIES.has(mapped) ? mapped : (type === "income" ? "Income" : "Other");
 }
 
+/** Parses bounded Telegram text into transaction fields; caller must establish linked ownership. */
 export function parseTransactionText(text, type) {
     const [, ...parts] = text.trim().split(/\s+/);
+    // Locates the first token that satisfies the transaction amount policy.
     const amountIndex = parts.findIndex((part) => parseAmountToken(part) !== null);
 
     if (amountIndex === -1) {
@@ -119,10 +145,29 @@ export function parseTransactionText(text, type) {
     };
 }
 
-async function findLinkedProfile(chatId) {
-    return UserProfile.findOne({ telegramChatId: String(chatId) });
+/** Builds a query requiring both Telegram chat and user identity to establish profile linkage. */
+export function buildLinkedProfileQuery(chatId, userId) {
+    if (chatId === null || chatId === undefined || userId === null || userId === undefined) {
+        return null;
+    }
+    return {
+        telegramChatId: String(chatId),
+        telegramUserId: String(userId),
+    };
 }
 
+/** Resolves a profile only when both Telegram identity components match stored ownership. */
+async function findLinkedProfile(chatId, userId) {
+    const query = buildLinkedProfileQuery(chatId, userId);
+    return query ? UserProfile.findOne(query) : null;
+}
+
+/** Names process-local pending state by both chat and Telegram user identity. */
+function telegramIdentityKey(chatId, userId) {
+    return `${chatId}:${userId}`;
+}
+
+/** Limits link-code guesses per process and chat; it is not a distributed abuse control. */
 function checkLinkRateLimit(chatId) {
     const now = Date.now();
     const attempt = linkAttempts.get(chatId);
@@ -140,6 +185,7 @@ function checkLinkRateLimit(chatId) {
     return true;
 }
 
+/** Extracts nullable identity fields from Telegram-owned message metadata. */
 function getTelegramUser(msg) {
     return {
         userId: msg.from?.id ? String(msg.from.id) : null,
@@ -147,6 +193,7 @@ function getTelegramUser(msg) {
     };
 }
 
+/** Normalizes Telegram identifiers for ownership and deduplication checks. */
 function getTelegramMessageIdentity(msg) {
     return {
         chatId: String(msg.chat.id),
@@ -155,6 +202,7 @@ function getTelegramMessageIdentity(msg) {
     };
 }
 
+/** Builds fixed callback data rather than reflecting untrusted message content. */
 function getAddTransactionKeyboard() {
     return {
         reply_markup: {
@@ -168,21 +216,25 @@ function getAddTransactionKeyboard() {
     };
 }
 
+/** Sends transaction choices to the already selected Telegram chat. */
 async function sendAddTransactionButtons(bot, chatId) {
     await sendAutoDeletingMessage(bot, chatId, "What are you looking to add?", getAddTransactionKeyboard());
 }
 
+/** Selects a fixed help example for the validated transaction direction. */
 function getTransactionDetailExample(type) {
     return type === "income"
         ? "paycheck 1200 work"
         : "coffee 6.50 food";
 }
 
+/** Schedules best-effort removal of bot-visible content from its originating chat. */
 function scheduleMessageDelete(bot, chatId, messageId) {
     if (!messageId) {
         return;
     }
 
+    // Deletes the specific Telegram message after the configured retention delay.
     setTimeout(async () => {
         try {
             await bot.deleteMessage(chatId, messageId);
@@ -195,12 +247,14 @@ function scheduleMessageDelete(bot, chatId, messageId) {
     }, MESSAGE_DELETE_DELAY_MS);
 }
 
+/** Sends a response to the selected chat and applies the bot's best-effort retention policy. */
 async function sendAutoDeletingMessage(bot, chatId, text, options) {
     const sentMessage = await bot.sendMessage(chatId, text, options);
     scheduleMessageDelete(bot, chatId, sentMessage.message_id);
     return sentMessage;
 }
 
+/** Extracts only the configured webhook path for local Express registration. */
 function getWebhookPath(webhookUrl) {
     try {
         return new URL(webhookUrl).pathname;
@@ -209,6 +263,16 @@ function getWebhookPath(webhookUrl) {
     }
 }
 
+/** Rejects webhook mode unless its configured shared secret has a minimum strength. */
+export function validateTelegramWebhookSecret(webhookEnabled, webhookSecret) {
+    if (webhookEnabled && (typeof webhookSecret !== "string" || webhookSecret.length < 32)) {
+        throw new Error(
+            "TELEGRAM_WEBHOOK_SECRET of at least 32 characters is required when Telegram webhooks are enabled.",
+        );
+    }
+}
+
+/** Summarizes transactions already scoped to the linked TrackerGen owner. */
 async function sendMonthlySummary(bot, chatId, workosUserId) {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -221,10 +285,14 @@ async function sendMonthlySummary(bot, chatId, workosUserId) {
     });
 
     const income = transactions
+        // Selects owner-scoped income records for aggregation.
         .filter((transaction) => transaction.amount > 0)
+        // Totals income values without mutating persisted transactions.
         .reduce((sum, transaction) => sum + transaction.amount, 0);
     const expenses = transactions
+        // Selects owner-scoped expense records for aggregation.
         .filter((transaction) => transaction.amount < 0)
+        // Totals expense magnitudes without mutating persisted transactions.
         .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
     const net = income - expenses;
 
@@ -242,6 +310,7 @@ async function sendMonthlySummary(bot, chatId, workosUserId) {
     );
 }
 
+/** Summarizes recent transactions already scoped to the linked TrackerGen owner. */
 async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
     const transactions = await Transaction.find({ workosUserId })
         .sort({ createdAt: -1 })
@@ -253,12 +322,17 @@ async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
     }
 
     const income = transactions
+        // Selects recent owner-scoped income records.
         .filter((transaction) => transaction.amount > 0)
+        // Totals recent income values for display.
         .reduce((sum, transaction) => sum + transaction.amount, 0);
     const expenses = transactions
+        // Selects recent owner-scoped expense records.
         .filter((transaction) => transaction.amount < 0)
+        // Totals recent expense magnitudes for display.
         .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
     const net = income - expenses;
+    // Formats each owner-scoped transaction without exposing database identifiers.
     const recentLines = transactions.map((transaction, index) => {
         return `${index + 1}. ${transaction.name} (${transaction.category}) ${formatSignedMoney(transaction.amount)}`;
     });
@@ -278,6 +352,7 @@ async function sendRecentTransactionSummary(bot, chatId, workosUserId) {
     );
 }
 
+/** Consumes a link credential and binds both Telegram identities to its profile owner. */
 async function handleLinkCommand(bot, msg, text) {
     const chatId = String(msg.chat.id);
     const { userId, username } = getTelegramUser(msg);
@@ -317,7 +392,7 @@ async function handleLinkCommand(bot, msg, text) {
     );
 
     if (!profile) {
-        console.log(`Telegram link failed for chat ${chatId} with code ${linkCode}`);
+        console.log(`Telegram link failed for chat ${chatId}`);
         await sendAutoDeletingMessage(bot, chatId, "That link code is invalid or expired. Generate a new code in TrackerGen.");
         return;
     }
@@ -328,9 +403,10 @@ async function handleLinkCommand(bot, msg, text) {
     await sendAutoDeletingMessage(bot, chatId, "Telegram is connected to TrackerGen. Try: expense coffee 6.50 food");
 }
 
+/** Creates a transaction only after linked identity, duplicate, and input checks pass. */
 async function handleTransactionCommand(bot, msg, text, type) {
     const { chatId, messageId, userId } = getTelegramMessageIdentity(msg);
-    const profile = await findLinkedProfile(chatId);
+    const profile = await findLinkedProfile(chatId, userId);
 
     if (!profile) {
         console.log(`Telegram ${type} rejected because chat ${chatId} is not linked`);
@@ -398,6 +474,7 @@ async function handleTransactionCommand(bot, msg, text, type) {
     return true;
 }
 
+/** Starts the Telegram integration in polling or shared-secret webhook mode when configured. */
 export function startTelegramBot(app) {
     const token = process.env.BOT_TOKEN;
     const webhookUrl = process.env.TELEGRAM_WEBHOOK_URL;
@@ -420,21 +497,21 @@ export function startTelegramBot(app) {
         console.log(`Telegram bot using proxy: ${proxyUrl}`);
     }
 
+    validateTelegramWebhookSecret(useWebhook, webhookSecret);
     const bot = new TelegramBot(token, botOptions);
 
-    if (useWebhook && process.env.NODE_ENV === "production" && !webhookSecret) {
-        throw new Error("TELEGRAM_WEBHOOK_SECRET is required when Telegram webhooks are enabled in production.");
-    }
-
+    // Records polling failures without logging bot credentials.
     bot.on("polling_error", (error) => {
         console.log("Telegram polling error:", error.message || error);
     });
 
+    // Handles fixed transaction choices only after the Telegram user and chat are linked.
     bot.on("callback_query", async (query) => {
         const chatId = query.message?.chat?.id ? String(query.message.chat.id) : null;
+        const userId = query.from?.id ? String(query.from.id) : null;
         const data = query.data ?? "";
 
-        if (!chatId || !data.startsWith(TRANSACTION_TYPE_CALLBACK_PREFIX)) {
+        if (!chatId || !userId || !data.startsWith(TRANSACTION_TYPE_CALLBACK_PREFIX)) {
             await bot.answerCallbackQuery(query.id);
             return;
         }
@@ -447,7 +524,12 @@ export function startTelegramBot(app) {
         }
 
         try {
-            pendingTransactionTypes.set(chatId, type);
+            const profile = await findLinkedProfile(chatId, userId);
+            if (!profile) {
+                await bot.answerCallbackQuery(query.id, { text: "Connect your account first." });
+                return;
+            }
+            pendingTransactionTypes.set(telegramIdentityKey(chatId, userId), type);
             await bot.answerCallbackQuery(query.id, {
                 text: `${type === "income" ? "Income" : "Expense"} selected`,
             });
@@ -464,15 +546,18 @@ export function startTelegramBot(app) {
         }
     });
 
+    // Routes Telegram messages through linkage, freshness, validation, and deduplication checks.
     bot.on("message", async (msg) => {
         const chatId = String(msg.chat.id);
+        const userId = msg.from?.id ? String(msg.from.id) : null;
+        const identityKey = telegramIdentityKey(chatId, userId ?? "missing");
         const text = msg.text?.trim() ?? "";
         const isOldMessage = Boolean(msg.date && msg.date < botStartedAt);
 
         try {
             if (isOldMessage) {
                 console.log(
-                    `Received old Telegram message ${msg.message_id} from chat ${chatId}: ${text}`,
+                    `Received old Telegram message ${msg.message_id} from chat ${chatId}`,
                 );
             }
 
@@ -483,7 +568,7 @@ export function startTelegramBot(app) {
                 return;
             }
 
-            console.log(`Telegram message from chat ${chatId}: ${text}`);
+            console.log(`Telegram message received from chat ${chatId}`);
 
             if (/^\/?add(?:@\w+)?$/i.test(text)) {
                 await sendAddTransactionButtons(bot, chatId);
@@ -491,7 +576,7 @@ export function startTelegramBot(app) {
             }
 
             if (/^\/?cancel(?:@\w+)?$/i.test(text)) {
-                pendingTransactionTypes.delete(chatId);
+                pendingTransactionTypes.delete(identityKey);
                 await sendAutoDeletingMessage(bot, chatId, "Canceled the current button entry.");
                 return;
             }
@@ -510,7 +595,7 @@ export function startTelegramBot(app) {
                 const saved = await handleTransactionCommand(bot, msg, text, "expense");
 
                 if (saved) {
-                    pendingTransactionTypes.delete(chatId);
+                    pendingTransactionTypes.delete(identityKey);
                 }
 
                 return;
@@ -525,14 +610,14 @@ export function startTelegramBot(app) {
                 const saved = await handleTransactionCommand(bot, msg, text, "income");
 
                 if (saved) {
-                    pendingTransactionTypes.delete(chatId);
+                    pendingTransactionTypes.delete(identityKey);
                 }
 
                 return;
             }
 
             if (/^\/?summary(?:@\w+)?$/i.test(text)) {
-                const profile = await findLinkedProfile(chatId);
+                const profile = await findLinkedProfile(chatId, userId);
 
                 if (!profile) {
                     await sendAutoDeletingMessage(bot, chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
@@ -544,7 +629,7 @@ export function startTelegramBot(app) {
             }
 
             if (/^\/?recent(?:@\w+)?$/i.test(text)) {
-                const profile = await findLinkedProfile(chatId);
+                const profile = await findLinkedProfile(chatId, userId);
 
                 if (!profile) {
                     await sendAutoDeletingMessage(bot, chatId, "Connect first from TrackerGen, then send /link TG-123456 here.");
@@ -555,7 +640,7 @@ export function startTelegramBot(app) {
                 return;
             }
 
-            const pendingType = pendingTransactionTypes.get(chatId);
+            const pendingType = pendingTransactionTypes.get(identityKey);
 
             if (pendingType && !text.startsWith("/")) {
                 if (isOldMessage) {
@@ -571,7 +656,7 @@ export function startTelegramBot(app) {
                 );
 
                 if (saved) {
-                    pendingTransactionTypes.delete(chatId);
+                    pendingTransactionTypes.delete(identityKey);
                 }
 
                 return;
@@ -592,11 +677,9 @@ export function startTelegramBot(app) {
             return bot;
         }
 
+        // Accepts Telegram updates only when the configured webhook secret matches.
         app.post(webhookPath, (req, res) => {
-            if (
-                webhookSecret
-                && req.get("X-Telegram-Bot-Api-Secret-Token") !== webhookSecret
-            ) {
+            if (req.get("X-Telegram-Bot-Api-Secret-Token") !== webhookSecret) {
                 return res.sendStatus(401);
             }
 
@@ -609,9 +692,11 @@ export function startTelegramBot(app) {
             : {};
 
         bot.setWebHook(webhookUrl, webhookOptions)
+            // Reports successful registration without exposing the webhook secret.
             .then(() => {
                 console.log(`Telegram webhook set at ${webhookPath}`);
             })
+            // Reports registration failures without exposing bot credentials.
             .catch((error) => {
                 console.log("Telegram webhook setup error:", error.message || error);
             });

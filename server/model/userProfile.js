@@ -71,8 +71,42 @@ const userProfileSchema = new mongoose.Schema(
         telegramLinkedAt: {
             type: Date,
             default: null,
+        },
+        emailIngestionToken: {
+            type: String,
+            default: null,
+            minlength: 32,
+            maxlength: 128,
+            select: false,
+        },
+        emailIngestionTokenHash: {
+            type: String,
+            default: null,
+            match: /^[a-f0-9]{64}$/,
+        },
+        emailIngestionEnabled: {
+            type: Boolean,
+            default: false,
+        },
+        emailIngestionCreatedAt: {
+            type: Date,
+            default: null,
+        },
+        emailIngestionLastReceivedAt: {
+            type: Date,
+            default: null,
         }
     }
 )
+
+userProfileSchema.index(
+    { emailIngestionTokenHash: 1 },
+    {
+        unique: true,
+        partialFilterExpression: {
+            emailIngestionTokenHash: { $type: "string" },
+        },
+    },
+);
 
 export const UserProfile = mongoose.model("UserProfile", userProfileSchema);

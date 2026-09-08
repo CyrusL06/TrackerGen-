@@ -14,6 +14,8 @@ const RANGE_OPTIONS = [
   { value: "6m", label: "6M" },
   { value: "12m", label: "12M" },
 ];
+const CHART_INCOME = "var(--dashboard-accent)";
+const CHART_EXPENSES = "var(--dashboard-amber)";
 
 function formatWholeDollars(value) {
   return `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
@@ -27,10 +29,10 @@ function ChartTooltip({ active, payload, label }) {
 
   return (
     <div
-      className="max-w-[180px] rounded-[8px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-3 text-[11px] shadow-[0_12px_32px_-8px_rgba(0,0,0,0.6)]"
-      style={FONTS.mono}
+      className="max-w-[190px] rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-3 text-[12px] shadow-[var(--dashboard-shadow)]"
+      style={FONTS.body}
     >
-      <div className="mb-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
+      <div className="mb-2 text-[11px] font-semibold text-[color:var(--dashboard-muted)]">
         {label}
       </div>
       <div className="mb-1.5 flex items-center gap-2 text-[color:var(--dashboard-accent)]">
@@ -60,7 +62,7 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
-          <div className="flex rounded-[8px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] p-0.5">
+          <div className="flex rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] p-1">
             {RANGE_OPTIONS.map((option) => {
               const active = selectedRange === option.value;
 
@@ -69,12 +71,12 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
                   key={option.value}
                   type="button"
                   onClick={() => onRangeChange(option.value)}
-                  className={`min-w-[42px] rounded-[6px] px-3 py-1.5 text-[10px] tracking-[0.08em] transition-all ${
+                  className={`min-h-9 min-w-[44px] rounded-lg px-3 py-1.5 text-[11px] font-medium transition-colors ${
                     active
-                      ? "bg-[color:var(--dashboard-accent)] font-semibold text-[color:var(--dashboard-bg)] shadow-sm"
+                      ? "bg-[color:var(--dashboard-accent)] font-semibold text-white shadow-sm"
                       : "text-[color:var(--dashboard-muted)] hover:text-[color:var(--dashboard-text)]"
                   }`}
-                  style={FONTS.mono}
+                  style={FONTS.body}
                 >
                   {option.label}
                 </button>
@@ -82,10 +84,10 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
             })}
           </div>
 
-          <div className="flex gap-4 text-[11px] text-[color:var(--dashboard-muted)] sm:text-[10px]">
+          <div className="flex gap-4 text-[12px] text-[color:var(--dashboard-muted)]">
             {[
-              [COLORS.accent, "Income"],
-              [COLORS.amber, "Expenses"],
+              [CHART_INCOME, "Income"],
+              [CHART_EXPENSES, "Expenses"],
             ].map(([color, label]) => (
               <span key={label} className="flex items-center gap-[6px]">
                 <span
@@ -104,16 +106,16 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
           <AreaChart data={cashFlow} margin={{ top: 6, right: 8, left: -18, bottom: 0 }}>
             <defs>
               <linearGradient id="gI" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={COLORS.accent} stopOpacity={0.2} />
-                <stop offset="95%" stopColor={COLORS.accent} stopOpacity={0} />
+                <stop offset="5%" stopColor={CHART_INCOME} stopOpacity={0.2} />
+                <stop offset="95%" stopColor={CHART_INCOME} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gE" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={COLORS.amber} stopOpacity={0.15} />
-                <stop offset="95%" stopColor={COLORS.amber} stopOpacity={0} />
+                <stop offset="5%" stopColor={CHART_EXPENSES} stopOpacity={0.15} />
+                <stop offset="95%" stopColor={CHART_EXPENSES} stopOpacity={0} />
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" stroke="#181816" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--dashboard-border)" vertical={false} />
             <XAxis dataKey="month" tick={chartTick} axisLine={false} tickLine={false} />
             <YAxis tick={chartTick} axisLine={false} tickLine={false} />
             <Tooltip
@@ -124,20 +126,20 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
             <Area
               type="monotone"
               dataKey="income"
-              stroke={COLORS.accent}
+              stroke={CHART_INCOME}
               strokeWidth={2}
               fill="url(#gI)"
               dot={false}
-              activeDot={{ r: 4, fill: COLORS.accent, stroke: COLORS.surface, strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: CHART_INCOME, stroke: "var(--dashboard-surface)", strokeWidth: 2 }}
             />
             <Area
               type="monotone"
               dataKey="expenses"
-              stroke={COLORS.amber}
+              stroke={CHART_EXPENSES}
               strokeWidth={2}
               fill="url(#gE)"
               dot={false}
-              activeDot={{ r: 4, fill: COLORS.amber, stroke: COLORS.surface, strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: CHART_EXPENSES, stroke: "var(--dashboard-surface)", strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>

@@ -8,7 +8,7 @@ import {
   Pizza,
   Wifi,
 } from "lucide-react";
-import { COLORS as BRAND_COLORS, FONT_FAMILIES, NOISE_BACKGROUND } from "../brand";
+import { COLORS as BRAND_COLORS, FONT_FAMILIES } from "../brand";
 
 export const COLORS = {
   bg: BRAND_COLORS.bg,
@@ -32,7 +32,28 @@ export const PAGE_VARS = {
   "--dashboard-accent": COLORS.accent,
   "--dashboard-amber": COLORS.amber,
   "--dashboard-red": COLORS.red,
+  "--dashboard-nav": "oklch(0.13 0.025 260 / 0.94)",
+  "--dashboard-shadow": "0 18px 48px rgba(0,0,0,0.2)",
+  "--dashboard-grid-line": "rgba(255,255,255,0.025)",
 };
+
+const LIGHT_PAGE_VARS = {
+  "--dashboard-bg": "oklch(0.975 0.008 240)",
+  "--dashboard-surface": "oklch(0.995 0.003 240)",
+  "--dashboard-surface-2": "oklch(0.955 0.015 240)",
+  "--dashboard-border": "oklch(0.84 0.018 240 / 0.85)",
+  "--dashboard-text": "oklch(0.24 0.04 255)",
+  "--dashboard-muted": "oklch(0.43 0.035 250)",
+  "--dashboard-accent": "#2779a7",
+  "--dashboard-amber": "#b56d08",
+  "--dashboard-red": "#c64141",
+  "--dashboard-nav": "oklch(0.985 0.006 240 / 0.92)",
+  "--dashboard-shadow": "0 16px 42px rgba(28,55,75,0.1)",
+  "--dashboard-grid-line": "rgba(28,75,105,0.045)",
+};
+
+export const getDashboardPageVars = (theme) =>
+  theme === "light" ? LIGHT_PAGE_VARS : PAGE_VARS;
 
 export const FONTS = {
   mono: { fontFamily: FONT_FAMILIES.mono },
@@ -41,22 +62,22 @@ export const FONTS = {
 };
 
 export const TW = {
-  page: "relative min-h-screen overflow-hidden bg-[color:var(--dashboard-bg)] text-[color:var(--dashboard-text)]",
-  pageTexture: "pointer-events-none absolute inset-0 opacity-40",
-  pageShell: "relative mx-auto max-w-[1200px] px-5 py-6 sm:px-6 sm:py-8",
-  panel: "border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[0_1px_3px_0_rgba(0,0,0,0.4)]",
-  panelPadding: "px-5 py-5 sm:px-6 sm:py-[18px]",
-  eyebrow: "mb-1.5 text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
-  displayTitle: "text-[1.35rem] font-bold tracking-[-0.01em] sm:text-[1.2rem]",
+  page: "dashboard-root relative min-h-screen overflow-hidden bg-[color:var(--dashboard-bg)] text-[color:var(--dashboard-text)]",
+  pageTexture: "pointer-events-none absolute inset-0",
+  pageShell: "relative mx-auto max-w-[1200px] px-5 py-7 sm:px-6 sm:py-9",
+  panel: "border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[var(--dashboard-shadow)]",
+  panelPadding: "px-5 py-5 sm:px-6 sm:py-6",
+  eyebrow: "mb-1.5 text-[12px] font-medium text-[color:var(--dashboard-muted)]",
+  displayTitle: "text-[1.35rem] font-bold tracking-[-0.025em]",
   fieldLabel:
-    "mb-[5px] block text-[10px] uppercase tracking-[0.12em] text-[color:var(--dashboard-muted)]",
+    "mb-1.5 block text-[12px] font-medium text-[color:var(--dashboard-muted)]",
   fieldError: "mt-1 text-[11px] text-[color:var(--dashboard-red)]",
   inputBase:
-    "w-full border bg-[color:var(--dashboard-surface-2)] px-3 py-[11px] text-[14px] text-[color:var(--dashboard-text)] outline-none transition-all placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)] focus:shadow-[0_0_0_1px_var(--dashboard-accent)] sm:text-[12px] sm:py-[9px]",
+    "w-full border bg-[color:var(--dashboard-surface-2)] px-3.5 py-3 text-[14px] text-[color:var(--dashboard-text)] outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-[color:var(--dashboard-muted)] focus:border-[color:var(--dashboard-accent)] focus:bg-[color:var(--dashboard-surface)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--dashboard-accent)_14%,transparent)]",
   primaryButton:
-    "inline-flex min-h-11 items-center justify-center gap-1.5 bg-[color:var(--dashboard-accent)] px-[16px] py-[8px] text-[12px] font-semibold uppercase tracking-[0.07em] text-[color:var(--dashboard-bg)] transition-all hover:opacity-[0.9] hover:shadow-[0_0_16px_-2px_var(--dashboard-accent)] active:scale-[0.97] sm:min-h-10 sm:text-[10px]",
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[color:var(--dashboard-accent)] px-4 py-2.5 text-[13px] font-semibold text-white transition-[background-color,transform,box-shadow] duration-150 hover:bg-[#226b93] hover:shadow-[0_10px_24px_rgba(39,121,167,0.2)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50",
   secondaryButton:
-    "inline-flex min-h-11 items-center justify-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-[14px] py-[7px] text-[11px] tracking-[0.06em] text-[color:var(--dashboard-muted)] transition-all hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)] hover:bg-[color:color-mix(in_srgb,var(--dashboard-accent)_6%,transparent)] active:scale-[0.97] sm:min-h-10 sm:px-[12px] sm:py-[6px] sm:text-[10px]",
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-4 py-2.5 text-[13px] font-medium text-[color:var(--dashboard-muted)] transition-[border-color,color,background-color,transform] duration-150 hover:border-[color:var(--dashboard-accent)] hover:bg-[color:color-mix(in_srgb,var(--dashboard-accent)_7%,var(--dashboard-surface))] hover:text-[color:var(--dashboard-accent)] active:scale-[0.98]",
 };
 
 export const CATEGORY_ICONS = {
@@ -75,23 +96,24 @@ export const CATEGORIES = Object.keys(CATEGORY_ICONS);
 export const EXPENSE_CATEGORIES = CATEGORIES.filter((category) => category !== "Income");
 
 export const SPENDING_CATEGORY_COLORS = {
-  Housing: COLORS.amber,
+  Housing: "#c98016",
   "Food & Drink": COLORS.accent,
-  Utilities: COLORS.text,
-  Shopping: COLORS.muted,
-  Transport: COLORS.amber,
-  Dining: COLORS.accent,
-  Subscriptions: COLORS.text,
+  Utilities: "#71879a",
+  Shopping: "#60798b",
+  Transport: "#d99a2b",
+  Dining: "#358fbd",
+  Subscriptions: "#486d83",
 };
 
 export const SPENDING_FALLBACK_COLOR = COLORS.muted;
 
 export const chartTick = {
-  fill: COLORS.muted,
+  fill: "var(--dashboard-muted)",
   fontSize: 11,
-  fontFamily: FONTS.mono.fontFamily,
+  fontFamily: FONTS.body.fontFamily,
 };
 
-export const DASHBOARD_TEXTURE = NOISE_BACKGROUND;
+export const DASHBOARD_TEXTURE =
+  "linear-gradient(135deg, var(--dashboard-grid-line) 1px, transparent 1px)";
 
 export const cx = (...classes) => classes.filter(Boolean).join(" ");

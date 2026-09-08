@@ -1,5 +1,6 @@
 // This would help to get Auth User
 
+/** Creates request authentication helpers bound to the configured WorkOS or explicit offline trust mode. */
 export function createAuthHelpers({
   authMode,
   workos,
@@ -7,7 +8,7 @@ export function createAuthHelpers({
   cookiePassword,
   offlineUser,
 }) {
-  // Reads the current user from either WorkOS or the local offline mode.
+  /** Resolves identity from the trusted session source without exposing invalid-session details. */
   async function getAuthenticatedUser(req) {
     if (authMode === "offline") {
       return offlineUser;

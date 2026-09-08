@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "trackergen-rbc-email-ingestion",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-09",
+  "vars": {
+    "TRACKERGEN_API_URL": "https://api.example.com"
+  }
+}

@@ -3,49 +3,43 @@ import { FONTS, LAYOUT } from "../pudgy-brand";
 const steps = [
   {
     num: "01",
-    title: "Open the Preview",
-    desc: "Jump into the dashboard from your browser. No signup required, no waiting.",
+    title: "Create your account",
+    desc: "Set the basics once.",
   },
   {
     num: "02",
-    title: "Add What Changed",
-    desc: "Log income and expenses with a date, amount, and category. Simple as typing a message.",
+    title: "Record what changed",
+    desc: "Add a purchase by Telegram or web.",
   },
   {
     num: "03",
-    title: "Review Your Month",
-    desc: "Check net change, cash flow, category mix, and recent activity in one place.",
+    title: "Notice the pattern",
+    desc: "Use the month view to decide what comes next.",
   },
 ];
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className={`${LAYOUT.content} py-20 md:py-28`}>
-      <div className="mx-auto max-w-2xl text-center">
-        <p className={`mb-3 text-caption font-medium uppercase tracking-[0.15em] text-[#2779a7] ${FONTS.mono}`}>
-          How It Works
-        </p>
-        <h2 className={`mb-4 text-[clamp(2rem,6vw,3.5rem)] font-bold leading-[1.1] tracking-[-0.02em] text-white ${FONTS.display}`}>
-          Three steps to clarity.
-        </h2>
-        <p className={`mb-14 text-body leading-relaxed text-[oklch(0.52_0.025_260)] md:text-lead ${FONTS.body}`}>
-          No fluff, no fuss. Just your finances in view.
-        </p>
-      </div>
+    <section id="how-it-works" className="scroll-mt-24 border-y border-[var(--home-border)] py-14 md:py-20" style={{ background: "var(--bg-page)" }}>
+      <div className={LAYOUT.content}>
+        <div data-gsap-section className="mb-9 max-w-2xl">
+          <h2 className={`text-balance text-[clamp(2rem,4.4vw,3.75rem)] font-bold leading-[1.03] tracking-[-0.035em] text-[var(--home-text)] ${FONTS.display}`}>
+            Three steps, then keep moving.
+          </h2>
+          <p className={`mt-4 max-w-xl text-pretty text-body leading-7 text-[var(--home-muted)] ${FONTS.body}`}>
+            A compact setup for the habit shown above.
+          </p>
+        </div>
 
-      <div className="grid gap-6 md:grid-cols-3 md:gap-8">
-        {steps.map(({ num, title, desc }) => (
-          <div
-            key={num}
-            className="group relative rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-8 transition-all duration-300 hover:border-[rgba(39,121,167,0.2)] hover:bg-[rgba(39,121,167,0.03)]"
-          >
-            <span className={`mb-5 block text-h1 font-semibold text-[rgba(255,255,255,0.06)] ${FONTS.display}`}>
-              {num}
-            </span>
-            <h3 className={`mb-3 text-sub font-bold text-white ${FONTS.display}`}>{title}</h3>
-            <p className={`text-body-sm leading-relaxed text-[oklch(0.52_0.025_260)] ${FONTS.body}`}>{desc}</p>
-          </div>
-        ))}
+        <ol className="grid gap-4 md:grid-cols-3">
+          {steps.map(({ num, title, desc }) => (
+            <li key={num} data-gsap-card className="rounded-[1.75rem] border border-[var(--home-border)] bg-[var(--home-surface)] p-5 shadow-[var(--home-shadow)] sm:p-6">
+              <span className={`text-body-sm font-semibold text-[var(--home-accent)] ${FONTS.body}`}>{num}</span>
+              <h3 className={`mt-5 text-balance text-sub font-bold tracking-[-0.02em] text-[var(--home-text)] ${FONTS.display}`}>{title}</h3>
+              <p className={`mt-2 text-body-sm leading-6 text-[var(--home-muted)] ${FONTS.body}`}>{desc}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

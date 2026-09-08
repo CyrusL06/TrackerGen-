@@ -41,7 +41,7 @@ export default function TransactionModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-[6px]"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm"
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -51,7 +51,7 @@ export default function TransactionModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-[420px] overflow-hidden rounded-[12px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.6)]"
+        className="w-full max-w-[440px] overflow-hidden rounded-2xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[var(--dashboard-shadow)]"
       >
         <div className="flex items-center justify-between border-b border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-5 py-4">
           <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ export default function TransactionModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-[6px] text-[color:var(--dashboard-muted)] transition-colors hover:bg-[color:var(--dashboard-surface)] hover:text-[color:var(--dashboard-text)]"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-[color:var(--dashboard-muted)] transition-colors hover:bg-[color:var(--dashboard-surface)] hover:text-[color:var(--dashboard-text)]"
           >
             <X size={16} />
           </button>
@@ -153,7 +153,6 @@ export default function TransactionModal({
                 type="date"
                 value={form.date}
                 onChange={(event) => onFieldChange("date", event.target.value)}
-                style={{ colorScheme: "dark" }}
               />
               <FieldError>{errors.date}</FieldError>
             </div>
@@ -173,7 +172,7 @@ export default function TransactionModal({
                 <option
                   key={category}
                   value={category}
-                  style={{ backgroundColor: COLORS.surface2 }}
+                  style={{ backgroundColor: "var(--dashboard-surface-2)" }}
                 >
                   {category}
                 </option>

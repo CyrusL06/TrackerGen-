@@ -110,7 +110,7 @@ export function AuthField({
 
 export function AuthSocialButtons({ providers }) {
   return (
-    <div className="grid gap-2.5 sm:grid-cols-2" style={vars}>
+    <div className="grid gap-3" style={vars}>
       {providers.map((provider) => {
         const Icon = provider.icon === "github" ? GithubIcon : GoogleIcon;
         return (
@@ -118,7 +118,7 @@ export function AuthSocialButtons({ providers }) {
             key={provider.label}
             type="button"
             onClick={provider.onClick}
-            className={`inline-flex min-h-[2.95rem] items-center justify-center gap-2.5 rounded-[12px] border border-[color:var(--auth-border)] bg-[rgba(255,255,255,0.04)] px-3.5 text-body-sm text-[color:var(--auth-text)] transition-colors hover:border-[color:var(--auth-border-strong)] hover:bg-[rgba(255,255,255,0.07)] focus-visible:border-[color:var(--auth-border-strong)] focus-visible:ring-1 focus-visible:ring-[rgba(255,255,255,0.15)] motion-reduce:transition-none ${FONTS.body}`}
+            className={`inline-flex min-h-[3.25rem] items-center justify-center gap-3 rounded-xl border border-white/[0.10] bg-white/[0.035] px-4 text-body-sm font-semibold text-white transition-colors duration-200 hover:border-[#70b8df]/28 hover:bg-white/[0.055] focus-visible:border-[#70b8df]/40 focus-visible:ring-1 focus-visible:ring-[#70b8df]/35 motion-reduce:transition-none ${FONTS.body}`}
           >
             <Icon />
             <span>{provider.label}</span>

@@ -4,10 +4,10 @@ import { LoginForm } from "@/components/ui/login/login-form";
 export default function LoginPage() {
   return (
     <AuthShell
-      title="Log in to TrackerGen"
-      subtitle="Use your email, and password to continue."
-      switchPrompt="Don't have an account?"
-      switchCta="Create one."
+      title="Welcome back"
+      subtitle="Continue to TrackerGen with one secure provider."
+      switchPrompt="New to TrackerGen?"
+      switchCta="Create an account."
       switchTo="/signup"
       footerNote={null}
     >

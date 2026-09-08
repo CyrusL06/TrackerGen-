@@ -32,7 +32,7 @@ export default function TelegramConnect({
             <button
               type="button"
               onClick={() => setShowAssistant(true)}
-              className="mt-3 inline-flex min-h-10 items-center gap-[5px] border border-[color:var(--dashboard-border)] bg-transparent px-[10px] py-[5px] text-[10px] uppercase tracking-[0.06em] text-[color:var(--dashboard-muted)] transition-colors hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)] sm:min-h-9 sm:text-[8px]"
+              className="mt-3 inline-flex min-h-10 items-center gap-2 rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] px-3 py-2 text-[12px] font-medium text-[color:var(--dashboard-muted)] transition-colors hover:border-[color:var(--dashboard-accent)] hover:text-[color:var(--dashboard-accent)]"
             >
               <Wand2 size={11} />
               Setup Assistant
@@ -45,7 +45,7 @@ export default function TelegramConnect({
         </div>
 
         <div className="grid gap-3 lg:grid-cols-[1fr_1.1fr]">
-          <div className="border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] p-3">
+          <div className="rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] p-4">
             <div className="mb-2 flex items-center gap-2 text-[13px] text-[color:var(--dashboard-text)] sm:text-[11px]">
               <Send size={13} color={COLORS.accent} />
               Connect from Telegram
@@ -81,7 +81,7 @@ export default function TelegramConnect({
                     <div className="text-[11px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
                       Paste this command in Telegram
                     </div>
-                    <div className="select-all break-all border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] px-3 py-3 text-[14px] text-[color:var(--dashboard-text)] sm:text-[12px]">
+                    <div className="select-all break-all rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] px-3 py-3 text-[14px] text-[color:var(--dashboard-text)]">
                       {linkCommand}
                     </div>
                     <div className="flex flex-col gap-2 sm:flex-row">
@@ -116,7 +116,7 @@ export default function TelegramConnect({
             ) : null}
           </div>
 
-          <div className="grid gap-2 border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] p-3">
+          <div className="grid gap-2 rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] p-4">
             <div className="text-[13px] text-[color:var(--dashboard-text)] sm:text-[11px]">
               Try these after linking
             </div>
@@ -142,7 +142,7 @@ export default function TelegramConnect({
 
 function CommandExample({ command }) {
   return (
-    <div className="border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] px-3 py-2 text-[13px] text-[color:var(--dashboard-muted)] sm:text-[11px]">
+    <div className="rounded-lg border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] px-3 py-2.5 text-[13px] text-[color:var(--dashboard-muted)]">
       {command}
     </div>
   );
@@ -155,7 +155,7 @@ function TelegramIdValue({ label, value }) {
   }
 
   return (
-    <div className="border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] p-3">
+    <div className="rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] p-3">
       <div className="mb-1 text-[10px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)]">
         {label}
       </div>
