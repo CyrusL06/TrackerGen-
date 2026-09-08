@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Menu, Moon, Sun, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { FONTS } from "./ui/pudgy-brand";
 
 const navItems = [
@@ -32,22 +32,7 @@ function NavLink({ children, href = "#", className = "", onClick }) {
   return <a href={href} onClick={onClick} className={`${baseLinkClass} ${className}`.trim()}>{children}</a>;
 }
 
-function ThemeToggle({ theme, onThemeChange, className = "" }) {
-  const isLight = theme === "light";
-  return (
-    <button
-      type="button"
-      aria-label={`Switch to ${isLight ? "dark" : "light"} theme`}
-      title={`Switch to ${isLight ? "dark" : "light"} theme`}
-      onClick={() => onThemeChange(isLight ? "dark" : "light")}
-      className={`inline-flex h-10 w-10 items-center justify-center rounded-md text-[var(--home-muted)] transition-colors duration-150 hover:bg-[var(--home-surface-subtle)] hover:text-[var(--home-text)] focus-visible:ring-2 focus-visible:ring-[var(--home-border-strong)] ${className}`}
-    >
-      {isLight ? <Moon aria-hidden="true" size={19} /> : <Sun aria-hidden="true" size={19} />}
-    </button>
-  );
-}
-
-export default function Nav({ theme, onThemeChange }) {
+export default function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const mobileMenuId = useId();
   const menuButtonRef = useRef(null);
@@ -83,7 +68,6 @@ export default function Nav({ theme, onThemeChange }) {
         <div className="flex w-full items-center justify-between py-4 md:w-auto md:flex-1 md:py-0">
           <Logo />
           <div className="flex items-center md:hidden">
-            <ThemeToggle theme={theme} onThemeChange={onThemeChange} />
             <button ref={menuButtonRef} type="button" aria-expanded={isMenuOpen} aria-controls={mobileMenuId} aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               onClick={() => setIsMenuOpen((prev) => !prev)}
               className="inline-flex h-10 w-10 items-center justify-center rounded-md text-[var(--home-text)] transition-colors duration-150 hover:bg-[var(--home-surface-subtle)] focus-visible:ring-2 focus-visible:ring-[var(--home-border-strong)]">
@@ -96,7 +80,6 @@ export default function Nav({ theme, onThemeChange }) {
           {navItems.map((item) => <li key={item.href}><NavLink href={item.href}>{item.label}</NavLink></li>)}
         </ul>
         <div className="hidden flex-1 items-center justify-end gap-4 md:flex">
-          <ThemeToggle theme={theme} onThemeChange={onThemeChange} />
           <a href="/login" className={`nav-signin-glow inline-flex ${FONTS.body}`}>Sign In</a>
         </div>
       </div>
