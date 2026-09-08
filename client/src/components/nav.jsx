@@ -98,7 +98,7 @@ export default function Nav({ theme, onThemeChange }) {
         </ul>
         <div className="hidden flex-1 items-center justify-end gap-4 md:flex">
           <ThemeToggle theme={theme} onThemeChange={onThemeChange} />
-          <NavLink href="/login" className="hidden lg:inline-flex">Sign in</NavLink>
+          <a href="/login" className={`nav-signin-glow hidden lg:inline-flex ${FONTS.body}`}>Sign In</a>
           <NavCta href="/signup">Create free account</NavCta>
         </div>
       </div>
