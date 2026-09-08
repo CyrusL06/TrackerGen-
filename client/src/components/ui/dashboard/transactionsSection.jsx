@@ -14,7 +14,7 @@ export default function TransactionsSection({
         <div>
           <Eyebrow>Activity</Eyebrow>
           <DisplayTitle>Recent Transactions</DisplayTitle>
-          <p className="mt-2 max-w-md text-[14px] leading-6 text-[color:var(--dashboard-muted)] sm:text-[12px]">
+          <p className="mt-2 max-w-md text-[14px] leading-6 text-[color:var(--dashboard-muted)]">
             Manual entries update the current month review and recent activity list.
           </p>
         </div>
@@ -34,10 +34,10 @@ export default function TransactionsSection({
             <div className="flex h-12 w-12 items-center justify-center rounded-[10px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)]">
               <Receipt size={20} className="text-[color:var(--dashboard-muted)]" />
             </div>
-            <p className="text-[14px] font-medium text-[color:var(--dashboard-muted)] sm:text-[12px]">
+             <p className="text-[14px] font-medium text-[color:var(--dashboard-muted)]">
               No transactions yet
             </p>
-            <p className="text-[12px] text-[color:var(--dashboard-muted)] sm:text-[10px]">
+             <p className="text-[12px] text-[color:var(--dashboard-muted)]">
               Add your first transaction to start tracking.
             </p>
           </div>

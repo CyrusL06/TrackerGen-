@@ -19,6 +19,7 @@ import {connectDB} from "./config/db.js"
 import { UserProfile } from "./model/userProfile.js";
 import { startTelegramBot } from "./bot/bot.js";
 import { createRateLimiter } from "./config/rateLimit.js";
+import { createAuthState, verifyAuthState } from "./services/authState.js";
 
 // Recreates __dirname in ES module mode
 const __filename = fileURLToPath(import.meta.url);
@@ -34,6 +35,7 @@ app.set("trust proxy", 1);
 
 
 const COOKIE_NAME = "wos-session";
+const AUTH_STATE_COOKIE_NAME = "wos-auth-state";
 // This is the frontend URL in dev or your deployed frontend later
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -48,6 +50,7 @@ const placeholderValues = new Set([
   "replace_with_a_long_random_secret_32_plus_chars",
 ]);
 
+/** Returns a required environment value while rejecting unsafe placeholder credentials. */
 function requireEnv(name) {
   const value = process.env[name];
 
@@ -126,9 +129,20 @@ const { getAuthenticatedUser } = createAuthHelpers({
 // CSRF setup
 // Cross-Site Request Forgery means another site tricks the browser into
 // sending requests with your logged-in cookies.
+const csrfCookieSecure = IS_PROD || process.env.COOKIE_SECURE === "true";
 const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
+  // Supplies the process-owned secret used by the CSRF implementation.
   getSecret: () => CSRF_SECRET,
+  // Binds CSRF tokens to a session cookie when present, otherwise the request network identity.
   getSessionIdentifier: (req) => req.cookies[COOKIE_NAME] ?? req.ip ?? "unknown-session",
+  // __Host- cookies require HTTPS; local HTTP development uses a non-prefixed cookie.
+  cookieName: csrfCookieSecure ? "__Host-psifi.x-csrf-token" : "psifi.x-csrf-token",
+  cookieOptions: {
+    httpOnly: true,
+    path: "/",
+    sameSite: process.env.COOKIE_SAMESITE || "lax",
+    secure: csrfCookieSecure,
+  },
 });
 
 const authLimiter = createRateLimiter({ windowMs: 60 * 1000, maxRequests: 60 });
@@ -140,18 +154,19 @@ const emailIngestionRouter = buildEmailIngestionRouter({
 });
 
 
-const startServerDB = async ()=> {
-    console.log("Connecting to MongoDB...")
-    await connectDB(URI);
-    console.log("2nd Check Connected")
-    console.log(`Auth mode: ${AUTH_MODE}`);
-    startTelegramBot(app);
+/** Starts process services only after the application database connection succeeds. */
+const startServerDB = async () => {
+  console.log("Connecting to MongoDB...");
+  await connectDB(URI);
+  console.log("2nd Check Connected");
+  console.log(`Auth mode: ${AUTH_MODE}`);
+  startTelegramBot(app);
 
-    app.listen(port, () => {
-  console.log(`API server running at ${port}`);
-});
-
-}
+  // Reports readiness after Express owns the configured listening socket.
+  app.listen(port, () => {
+    console.log(`API server running at ${port}`);
+  });
+};
 
 
 
@@ -165,9 +180,10 @@ const startServerDB = async ()=> {
 // 1. Allow the frontend domain to call this API
 // 2. credentials: true is required for cookies to be sent
 if (IS_PROD) {
+  // Rejects non-HTTPS production traffic using the trusted proxy configuration above.
   app.use((req, res, next) => {
     if (!req.secure && req.get("x-forwarded-proto") !== "https") {
-      return res.redirect(308, `https://${req.headers.host}${req.originalUrl}`);
+      return res.status(400).json({ message: "HTTPS is required" });
     }
     return next();
   });
@@ -204,6 +220,7 @@ app.use(cookieParser());
 app.use(
   express.json({
     limit: "1mb",
+    // Preserves internal email request bytes for HMAC verification before trusting parsed JSON.
     verify: (req, res, buffer) => {
       if (req.originalUrl === "/api/internal/email/rbc") {
         req.rawBody = Buffer.from(buffer);
@@ -220,7 +237,7 @@ const sessionCookieOptions = {
   httpOnly: true,
   // Secure flag: required for SameSite=None, needed for cross-origin deployment.
   // Default false (same-origin via Vite proxy in dev, Express serves SPA in prod).
-  secure: process.env.COOKIE_SECURE === "true",
+  secure: IS_PROD || process.env.COOKIE_SECURE === "true",
   // SameSite: "lax" works for same-origin and same-site cross-origin.
   // Set to "none" + COOKIE_SECURE=true when frontend and backend are on
   // completely different domains (not recommended — same-origin is simpler).
@@ -228,36 +245,17 @@ const sessionCookieOptions = {
   path: "/",
 };
 
+/** Stores only the provider-sealed session using the application's hardened cookie policy. */
 function setSessionCookie(res, sealedSession) {
   res.cookie(COOKIE_NAME, sealedSession, sessionCookieOptions);
 }
 
-// Removes the session cookie from the browser
+/** Removes the application-owned session cookie with matching policy attributes. */
 function clearSessionCookie(res) {
   res.clearCookie(COOKIE_NAME, sessionCookieOptions);
 }
 
-// Encode where the user should go after login.
-// We store it in WorkOS state so it survives the redirect round trip.
-function encodeState(returnTo = "/dashboard") {
-  return Buffer.from(JSON.stringify({ returnTo })).toString("base64url");
-}
-
-// Read the returnTo value back from WorkOS state.
-function decodeState(state) {
-  if (typeof state !== "string" || !state) {
-    return { returnTo: "/dashboard" };
-  }
-
-  try {
-    return JSON.parse(Buffer.from(state, "base64url").toString("utf8"));
-  } catch {
-    return { returnTo: "/dashboard" };
-  }
-}
-
-// Only allow internal app paths like /dashboard.
-// This prevents open redirect issues.
+/** Restricts untrusted return targets to local application paths to prevent open redirects. */
 function safeReturnTo(returnTo) {
   if (typeof returnTo !== "string") {
     return "/dashboard";
@@ -270,32 +268,44 @@ function safeReturnTo(returnTo) {
   return returnTo;
 }
 
+/** Identifies the local onboarding flow after the return path has been constrained. */
 function isOnboardingIntent(returnTo) {
   return typeof returnTo === "string" && returnTo.startsWith("/onboarding");
 }
 
-// Shared helper so login, signup, and social login all build the same
-// correct WorkOS authorization URL.
+/** Builds provider authorization URLs from server-owned client and redirect configuration. */
 function buildAuthorizationUrl({
   provider = "authkit",
   screenHint,
-  returnTo = "/dashboard",
+  state,
 }) {
   return workos.userManagement.getAuthorizationUrl({
     provider,
     clientId: WORKOS_CLIENT_ID,
     redirectUri: WORKOS_REDIRECT_URI,
     screenHint,
-    state: encodeState(returnTo),
+    state,
   });
 }
 
+/** Pairs signed OAuth state with an HTTP-only nonce cookie to bind callbacks to their browser flow. */
+function authorizationState(res, returnTo) {
+  const result = createAuthState(CSRF_SECRET, safeReturnTo(returnTo));
+  res.cookie(AUTH_STATE_COOKIE_NAME, result.nonce, {
+    ...sessionCookieOptions,
+    maxAge: 10 * 60 * 1000,
+  });
+  return result.state;
+}
+
+// Exposes process health without returning credentials or user-owned data.
 app.get("/api/health", (req, res) => {
   res.json({ ok: true });
 });
 
 // LOGIN
 // Gets the hosted login page from WorkOS
+// Starts sign-in with constrained state, or the explicitly configured offline identity.
 app.get("/auth/login", (req, res) => {
   if (IS_OFFLINE_AUTH) {
     const returnTo = safeReturnTo(req.query.returnTo || "/dashboard");
@@ -306,7 +316,7 @@ app.get("/auth/login", (req, res) => {
     // https://workos.com/docs/reference/authkit/authentication/get-authorization-url
   const authorizationUrl = buildAuthorizationUrl({
     screenHint: "sign-in",
-    returnTo: req.query.returnTo || "/dashboard",
+    state: authorizationState(res, req.query.returnTo || "/dashboard"),
   });
 
   res.redirect(authorizationUrl);
@@ -314,6 +324,7 @@ app.get("/auth/login", (req, res) => {
 
 // SIGNUP
 // Sends the user to the hosted sign-up screen
+// Starts sign-up with onboarding as the server-owned return destination.
 app.get("/auth/signup", (req, res) => {
   if (IS_OFFLINE_AUTH) {
     return res.redirect(`${FRONTEND_ORIGIN}/onboarding/goal`);
@@ -322,7 +333,7 @@ app.get("/auth/signup", (req, res) => {
      //Builds a WORKos auth URL and redirect user to it. 
   const authorizationUrl = buildAuthorizationUrl({
     screenHint: "sign-up",
-    returnTo: "/onboarding/goal",
+    state: authorizationState(res, "/onboarding/goal"),
   });
 
   res.redirect(authorizationUrl);
@@ -331,6 +342,7 @@ app.get("/auth/signup", (req, res) => {
 // SOCIAL LOGIN
 // Converts a route like /auth/login/google into the exact provider name
 // WorkOS expects.
+// Starts social login only for the server's fixed provider allowlist.
 app.get("/auth/login/:provider", (req, res) => {
   if (IS_OFFLINE_AUTH) {
     const returnTo = safeReturnTo(req.query.returnTo || "/dashboard");
@@ -350,7 +362,7 @@ app.get("/auth/login/:provider", (req, res) => {
 
   const authorizationUrl = buildAuthorizationUrl({
     provider,
-    returnTo: req.query.returnTo || "/dashboard",
+    state: authorizationState(res, req.query.returnTo || "/dashboard"),
   });
 
   return res.redirect(authorizationUrl);
@@ -359,6 +371,7 @@ app.get("/auth/login/:provider", (req, res) => {
 // CALLBACK ROUTE
 // WorkOS sends the browser here after login/signup.
     // The query string includes a temporary "code".
+// Exchanges a provider code only after signed state and nonce verification, then sets the sealed session.
 app.get("/auth/callback", async (req, res) => {
   if (IS_OFFLINE_AUTH) {
     return res.redirect(`${FRONTEND_ORIGIN}/dashboard`);
@@ -367,11 +380,19 @@ app.get("/auth/callback", async (req, res) => {
 //When callback it attaches a temporary code in URL 
   const code = typeof req.query.code === "string" ? req.query.code : ""; //prevents crashing
 
-  const state = decodeState(req.query.state);
+  const state = verifyAuthState(
+    CSRF_SECRET,
+    req.query.state,
+    req.cookies[AUTH_STATE_COOKIE_NAME],
+  );
+  res.clearCookie(AUTH_STATE_COOKIE_NAME, sessionCookieOptions);
 
   // No code means login cannot continue
   if (!code) {
     return res.status(400).json({ message: "Missing authorization code" });
+  }
+  if (!state) {
+    return res.status(400).json({ message: "Invalid or expired authentication state" });
   }
 
   try {
@@ -425,6 +446,7 @@ app.get("/auth/callback", async (req, res) => {
 
 // "WHO AM I?" ROUTE
 // The frontend calls this to find out if the current browser is authenticated.
+// Resolves the current browser identity from a provider-sealed cookie or explicit offline mode.
 app.get("/api/auth/me", authLimiter, async (req, res) => {
   if (IS_OFFLINE_AUTH) {
     return res.json({
@@ -468,6 +490,7 @@ app.get("/api/auth/me", authLimiter, async (req, res) => {
 
 // CSRF TOKEN ROUTE
 // The frontend can call this before protected POST actions later.
+// Issues a rate-limited CSRF token bound by the configured session identifier.
 app.get("/api/auth/csrf-token", authLimiter, (req, res) => {
   const csrfToken = generateCsrfToken(req, res);
   res.json({ csrfToken });
@@ -475,6 +498,7 @@ app.get("/api/auth/csrf-token", authLimiter, (req, res) => {
 
 // LOGOUT ROUTE
 // POST is used because logout changes state.
+// Clears the local session and obtains provider logout information under CSRF protection.
 app.post("/api/auth/logout", authLimiter, doubleCsrfProtection, async (req, res) => {
   if (IS_OFFLINE_AUTH) {
     clearSessionCookie(res);
@@ -510,6 +534,7 @@ app.post("/api/auth/logout", authLimiter, doubleCsrfProtection, async (req, res)
 });
 
 // Keep this API 404 route near the bottom.
+// Returns a fixed response for unknown API paths without leaking routing details.
 app.use("/api", (req, res) => {
   res.status(404).json({ message: "API route not found" });
 });
@@ -519,6 +544,7 @@ if (fs.existsSync(indexHtml)) {
   app.use(express.static(DIST_DIR));
 
   // Send the React app for non-API routes
+  // Serves the application-owned SPA shell only after API routes have been exhausted.
   app.get("/{*path}", (req, res) => {
     res.sendFile(indexHtml);
   });
@@ -527,4 +553,4 @@ if (fs.existsSync(indexHtml)) {
 }
 
 // Start the server
-startServerDB()
+startServerDB();

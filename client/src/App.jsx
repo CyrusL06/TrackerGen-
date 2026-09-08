@@ -63,16 +63,21 @@ function ProtectedRoute({ children, skeleton }) {
 
 const App = () => {
   const location = useLocation();
+  const [homeTheme, setHomeTheme] = useState(() => localStorage.getItem("trackergen-home-theme") || "dark");
   const skeleton = <div className="h-28 rounded-lg bg-muted/40 animate-pulse" />;
   const showNavAndFooter =
     location.pathname === "/";
     // location.pathname === "/login" ||
     // location.pathname === "/signup";
 
+  useEffect(() => {
+    localStorage.setItem("trackergen-home-theme", homeTheme);
+  }, [homeTheme]);
+
   return (
-    <>
+    <div className={showNavAndFooter ? "home-theme" : undefined} data-home-theme={showNavAndFooter ? homeTheme : undefined}>
       <link href={FONT_HREF} rel="stylesheet" />
-      {showNavAndFooter ? <Nav /> : null}
+      {showNavAndFooter ? <Nav theme={homeTheme} onThemeChange={setHomeTheme} /> : null}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
@@ -96,14 +101,14 @@ const App = () => {
           element={
             <ProtectedRoute skeleton={skeleton}>
               <Suspense fallback={skeleton}>
-                <Dashboard />
+                <Dashboard theme={homeTheme} onThemeChange={setHomeTheme} />
               </Suspense>
             </ProtectedRoute>
           }
         />
       </Routes>
       {showNavAndFooter ? <Footer /> : null}
-    </>
+    </div>
   );
 };
 

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { RbcEmailParseError, parseRbcPurchaseEmail } from "../services/rbcEmailParser.js";
 
+// Verifies labelled purchase fields produce a normalized transaction candidate.
 test("parses a labelled RBC purchase alert", () => {
   const result = parseRbcPurchaseEmail({
     subject: "RBC Credit Card Purchase Alert",
@@ -23,6 +24,7 @@ test("parses a labelled RBC purchase alert", () => {
   assert.equal(result.status, "pending");
 });
 
+// Verifies sentence-style alerts parse amounts, merchants, cards, and local dates.
 test("parses an RBC sentence-style purchase alert", () => {
   const result = parseRbcPurchaseEmail({
     subject: "A purchase was made on your RBC credit card",
@@ -37,26 +39,32 @@ test("parses an RBC sentence-style purchase alert", () => {
   assert.equal(result.date, "2026-07-09");
 });
 
+// Verifies missing merchant data produces the specific parser failure.
 test("rejects an email without a merchant instead of guessing", () => {
   assert.throws(
+    // Attempts to parse an otherwise plausible alert without a merchant.
     () =>
       parseRbcPurchaseEmail({
         subject: "RBC purchase alert",
         text: "Purchase amount: $12.00\nCard ending in 1234",
         receivedAt: "2026-07-09T18:00:00.000Z",
       }),
+    // Accepts only the expected structured missing-merchant error.
     (error) => error instanceof RbcEmailParseError && error.code === "missing_merchant",
   );
 });
 
+// Verifies unrelated messages produce the specific non-purchase failure.
 test("rejects unrelated email", () => {
   assert.throws(
+    // Attempts to parse content that is not an RBC purchase alert.
     () =>
       parseRbcPurchaseEmail({
         subject: "Newsletter",
         text: "Your order total is $12.00 at SHOP.",
         receivedAt: "2026-07-09T18:00:00.000Z",
       }),
+    // Accepts only the expected structured unrelated-message error.
     (error) => error instanceof RbcEmailParseError && error.code === "not_rbc_purchase",
   );
 });

@@ -5,10 +5,10 @@ export default function SignupPage() {
   return (
     <AuthShell
       title="Create a TrackerGen account"
-      subtitle="Sign up with your details"
-      switchPrompt="Already have an account?"
-      switchCta="Log in."
-      switchTo="/login"
+      subtitle="Use Google or GitHub to continue."
+      switchPrompt={null}
+      switchCta={null}
+      switchTo={null}
       footerNote={null}
     >
       <SignupForm />

@@ -541,16 +541,16 @@ export default function TelegramSetupAssistant({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto pt-[5vh] sm:pt-[8vh]">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto p-4 pt-[5vh] sm:pt-[8vh]">
       {/* backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/55 backdrop-blur-sm"
         onClick={handleClose}
       />
 
       {/* modal */}
       <div
-        className="relative z-10 mx-4 w-full max-w-[560px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-bg)] shadow-2xl"
+        className="relative z-10 w-full max-w-[560px] overflow-hidden rounded-2xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface)] shadow-[var(--dashboard-shadow)]"
         role="dialog"
         aria-modal="true"
         aria-label="Telegram bot setup assistant"
@@ -558,11 +558,11 @@ export default function TelegramSetupAssistant({
         {/* header */}
         <div className="flex items-center justify-between border-b border-[color:var(--dashboard-border)] px-4 py-3 sm:px-4 sm:py-[12px]">
           <div>
-            <div className="text-[11px] uppercase tracking-[0.1em] text-[color:var(--dashboard-muted)] sm:text-[9px]">
+            <div className="text-[12px] font-medium text-[color:var(--dashboard-muted)]">
               Telegram Bot
             </div>
             <div
-              className="text-[1.1rem] tracking-[0.04em] text-[color:var(--dashboard-text)] sm:text-[1rem]"
+              className="text-[1.1rem] font-bold tracking-[-0.02em] text-[color:var(--dashboard-text)]"
               style={FONTS.display}
             >
               Setup Assistant
@@ -571,7 +571,7 @@ export default function TelegramSetupAssistant({
           <button
             type="button"
             onClick={handleClose}
-            className="flex h-9 w-9 items-center justify-center text-[color:var(--dashboard-muted)] transition-colors hover:text-[color:var(--dashboard-text)] sm:h-8 sm:w-8"
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-[color:var(--dashboard-muted)] transition-colors hover:bg-[color:var(--dashboard-surface-2)] hover:text-[color:var(--dashboard-text)]"
           >
             <X size={16} />
           </button>
@@ -621,7 +621,7 @@ export default function TelegramSetupAssistant({
             type="button"
             onClick={goPrev}
             disabled={isFirst}
-            className={`inline-flex min-h-10 items-center gap-1 px-3 py-2 text-[11px] tracking-[0.05em] uppercase transition-colors sm:min-h-9 sm:text-[9px] ${
+            className={`inline-flex min-h-11 items-center gap-1 rounded-xl px-3 py-2 text-[13px] font-medium transition-colors ${
               isFirst
                 ? "cursor-not-allowed text-[color:var(--dashboard-border)]"
                 : "text-[color:var(--dashboard-muted)] hover:text-[color:var(--dashboard-accent)]"

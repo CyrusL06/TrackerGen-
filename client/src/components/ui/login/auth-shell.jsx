@@ -140,7 +140,8 @@ export function AuthShell({
   showTopAction = true,
 }) {
   return (
-    <main className="relative bg-[color:var(--auth-bg)]" style={pageVars}>
+    <main className="relative min-h-[100dvh] overflow-hidden bg-[color:var(--auth-bg)]" style={pageVars}>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/[0.08]" />
       {showTopAction ? (
         <Link
           to={topActionTo}
@@ -151,10 +152,10 @@ export function AuthShell({
         </Link>
       ) : null}
 
-      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-[42rem] items-center justify-center px-4 py-8 sm:px-5 sm:py-10">
-        <section className="w-full max-w-[35rem]">
+      <div className="relative mx-auto flex min-h-[100dvh] w-full max-w-[34rem] items-center justify-center px-5 py-8 sm:py-10">
+        <section className="w-full">
           <AuthLogo />
-          <div className="mt-5 text-center">
+          <div className="mt-6 text-center">
             {eyebrow ? (
               <div
                 className={`mb-2.5 text-caption tracking-[0.08em] text-[color:var(--auth-muted)] ${FONTS.body}`}
@@ -164,12 +165,12 @@ export function AuthShell({
             ) : null}
 
             <h1
-              className={`text-[clamp(1.9rem,4vw,2.55rem)] font-bold leading-[0.96] tracking-[-0.02em] text-[color:var(--auth-text)] ${FONTS.display}`}
+              className={`text-[clamp(2rem,5vw,2.75rem)] font-bold leading-[1] tracking-[-0.035em] text-[color:var(--auth-text)] ${FONTS.display}`}
             >
               {title}
             </h1>
             <p
-              className={`mx-auto mt-2 max-w-[22rem] text-body-sm leading-5 text-[color:var(--auth-muted)] ${FONTS.body}`}
+              className={`mx-auto mt-3 max-w-[22rem] text-body-sm leading-6 text-[#a8bdce] ${FONTS.body}`}
             >
               {subtitle}
             </p>
@@ -188,7 +189,7 @@ export function AuthShell({
             ) : null}
           </div>
 
-          <div className="mt-6">{children}</div>
+          <div className="mt-7">{children}</div>
 
           {footerNote ? (
             <p

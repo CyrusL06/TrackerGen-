@@ -35,6 +35,11 @@ const dataSchema = new mongoose.Schema({
         required: true,
         min: -MAX_AMOUNT,
         max: MAX_AMOUNT,
+        validate: {
+          // Rejects zero-valued transactions at the persistence boundary.
+          validator: (value) => value !== 0,
+          message: "amount must be non-zero",
+        },
     },
     date: {
       type: String,

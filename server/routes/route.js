@@ -21,7 +21,21 @@ const MAX_NAME_LENGTH = 200;
 const MAX_AMOUNT = 1_000_000_000;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
-function validateTransactionInput(body) {
+// Confirms an untrusted date is both ISO-shaped and a real UTC calendar date.
+function isValidIsoDate(value) {
+    if (typeof value !== "string" || !DATE_REGEX.test(value)) return false;
+    const [year, month, day] = value.split("-").map(
+        // Converts each fixed date segment for calendar validation.
+        Number,
+    );
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.getUTCFullYear() === year
+        && date.getUTCMonth() === month - 1
+        && date.getUTCDate() === day;
+}
+
+/** Validates client transaction fields before they are persisted for an authenticated owner. */
+export function validateTransactionInput(body) {
     const errors = [];
 
     if (!body.name || typeof body.name !== "string" || !body.name.trim()) {
@@ -33,6 +47,8 @@ function validateTransactionInput(body) {
     const amount = Number(body.amount);
     if (!Number.isFinite(amount) || Number.isNaN(amount)) {
         errors.push("amount must be a valid number");
+    } else if (amount === 0) {
+        errors.push("amount must be non-zero");
     } else if (Math.abs(amount) > MAX_AMOUNT) {
         errors.push(`amount must not exceed ${MAX_AMOUNT}`);
     }
@@ -43,13 +59,14 @@ function validateTransactionInput(body) {
         errors.push(`category must be one of: ${[...VALID_CATEGORIES].join(", ")}`);
     }
 
-    if (!body.date || typeof body.date !== "string" || !DATE_REGEX.test(body.date)) {
-        errors.push("date must be in YYYY-MM-DD format");
+    if (!isValidIsoDate(body.date)) {
+        errors.push("date must be a valid calendar date in YYYY-MM-DD format");
     }
 
     return errors;
 }
 
+// Bounds optional onboarding preferences before profile persistence.
 function validateOnboardingInput(body) {
     const errors = [];
     const goal = Number(body.monthlyGoal);
@@ -71,30 +88,39 @@ function validateOnboardingInput(body) {
     return errors;
 }
 
-function createTelegramLinkCode() {
-    return `TG-${crypto.randomInt(100000, 999999)}`;
+/** Creates an opaque linking credential for the caller to assign an owner and expiry. */
+export function createTelegramLinkCode() {
+    return `TG-${crypto.randomBytes(24).toString("base64url")}`;
 }
 
+// Builds the redacted chat-ID preview returned alongside the raw owner-visible value.
 function maskChatId(chatId) {
     if (!chatId) return null;
     return `...${String(chatId).slice(-4)}`;
 }
 
+// Builds the redacted user-ID preview returned alongside the raw owner-visible value.
 function maskTelegramId(telegramId) {
     if (!telegramId) return null;
     return `...${String(telegramId).slice(-4)}`;
 }
 
+// Rejects malformed client identifiers before owner-scoped database queries.
 function isValidObjectId(id) {
     return typeof id === "string" && mongoose.Types.ObjectId.isValid(id);
 }
 
+/** Builds owner-scoped profile and transaction routes with rate limiting and optional CSRF middleware. */
 export function buildRouter({getAuthenticatedUser, csrfProtection}){
     const router = express.Router()
     const stateChangingRoutes = csrfProtection ? [csrfProtection] : [];
     const apiLimiter = createRateLimiter({ windowMs: 60 * 1000, maxRequests: 100 });
 
-router.get("/api/profile", apiLimiter, async (req,res) => {
+router.get(
+    "/api/profile",
+    apiLimiter,
+    // Returns profile data only for the authenticated WorkOS owner.
+    async (req,res) => {
     const user = await getAuthenticatedUser(req,res);
 
     if(!user){
@@ -106,9 +132,15 @@ router.get("/api/profile", apiLimiter, async (req,res) => {
     })
     return res.json({profile});
 
-})
+    },
+)
 
-router.post("/api/profile/onboarding-complete", apiLimiter, ...stateChangingRoutes, async (req, res) => {
+router.post(
+    "/api/profile/onboarding-complete",
+    apiLimiter,
+    ...stateChangingRoutes,
+    // Persists validated onboarding fields for the authenticated profile owner.
+    async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -149,9 +181,14 @@ router.post("/api/profile/onboarding-complete", apiLimiter, ...stateChangingRout
         console.error("Failed to save onboarding profile:", error.message || error);
         return res.status(500).json({ message: "Failed to save onboarding profile" });
     }
-})
+    },
+)
 
-router.get("/api/profile/telegram", apiLimiter, async (req, res) => {
+router.get(
+    "/api/profile/telegram",
+    apiLimiter,
+    // Returns Telegram linkage state for the authenticated profile owner.
+    async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -177,9 +214,15 @@ router.get("/api/profile/telegram", apiLimiter, async (req, res) => {
         linkCommand: hasActiveCode ? `/link ${profile.telegramLinkCode}` : null,
         botUsername: process.env.TELEGRAM_BOT_USERNAME ?? null,
     });
-})
+    },
+)
 
-router.post("/api/profile/telegram-link-code", apiLimiter, ...stateChangingRoutes, async (req, res) => {
+router.post(
+    "/api/profile/telegram-link-code",
+    apiLimiter,
+    ...stateChangingRoutes,
+    // Issues a temporary Telegram link credential for the authenticated profile owner.
+    async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -223,10 +266,14 @@ router.post("/api/profile/telegram-link-code", apiLimiter, ...stateChangingRoute
         console.error("Failed to create Telegram link code:", error.message || error);
         return res.status(500).json({ message: "Failed to create Telegram link code" });
     }
-})
+    },
+)
 
-//Fetch transaction of each user
-router.get("/api/transactions", apiLimiter, async (req,res) => {
+router.get(
+    "/api/transactions",
+    apiLimiter,
+    // Fetches transactions constrained to the authenticated owner's identifier.
+    async (req,res) => {
 
     const user = await getAuthenticatedUser(req,res);
 
@@ -252,10 +299,15 @@ router.get("/api/transactions", apiLimiter, async (req,res) => {
         console.error("Failed to fetch transactions:", error.message || error)
         res.status(500).json({message:"Failed to fetch Transactions"})
     }
-})
+    },
+)
 
-//AdD Transaction
-router.post("/api/transactions", apiLimiter, ...stateChangingRoutes, async(req,res) => {
+router.post(
+    "/api/transactions",
+    apiLimiter,
+    ...stateChangingRoutes,
+    // Creates a validated transaction owned by the authenticated user.
+    async(req,res) => {
     const user = await getAuthenticatedUser(req,res);
 
     if (!user) {
@@ -284,9 +336,15 @@ router.post("/api/transactions", apiLimiter, ...stateChangingRoutes, async(req,r
         res.status(500).json({message:"Failed to post Transactions"})
     }
 
-})
+    },
+)
 
-router.put("/api/transactions/:id", apiLimiter, ...stateChangingRoutes, async (req, res) => {
+router.put(
+    "/api/transactions/:id",
+    apiLimiter,
+    ...stateChangingRoutes,
+    // Updates a validated transaction only when its identifier and owner both match.
+    async (req, res) => {
     const user = await getAuthenticatedUser(req);
 
     if (!user) {
@@ -328,10 +386,16 @@ router.put("/api/transactions/:id", apiLimiter, ...stateChangingRoutes, async (r
         console.error("Failed to update transaction:", error.message || error);
         return res.status(500).json({ message: "Failed to update transaction" });
     }
-})
+    },
+)
 
 
-router.delete("/api/transactions/:id", apiLimiter, ...stateChangingRoutes, async (req,res) => {
+router.delete(
+    "/api/transactions/:id",
+    apiLimiter,
+    ...stateChangingRoutes,
+    // Deletes a transaction only when its identifier and authenticated owner both match.
+    async (req,res) => {
     const user = await getAuthenticatedUser(req);
 
     try {
@@ -360,7 +424,8 @@ router.delete("/api/transactions/:id", apiLimiter, ...stateChangingRoutes, async
          return res.status(500).json({ message: "Failed to delete transaction" });
     }
 
-})
+    },
+)
 
     return router
 }

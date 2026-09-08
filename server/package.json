@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "test:email-ingestion": "node --test test/emailIngestionSecurity.test.js test/rbcEmailParser.test.js test/emailIngestionRoute.test.js test/rbcEmailIngestionE2E.test.js"
   },
   "keywords": [],
   "author": "",

@@ -21,7 +21,7 @@ import {
   COLORS,
   DASHBOARD_TEXTURE,
   EXPENSE_CATEGORIES,
-  PAGE_VARS,
+  getDashboardPageVars,
   SPENDING_CATEGORY_COLORS,
   SPENDING_FALLBACK_COLOR,
   TW,
@@ -161,7 +161,7 @@ function buildCategoryBreakdown(transactions) {
   });
 }
 
-export default function Dashboard() {
+export default function Dashboard({ theme = "dark", onThemeChange }) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -299,7 +299,7 @@ export default function Dashboard() {
       value: formatCurrencyDelta(netChange),
       change: `${txns.length} entries`,
       up: netChange >= 0,
-      accent: COLORS.text,
+      accent: "var(--dashboard-text)",
       sub: "current snapshot",
     },
     {
@@ -307,7 +307,7 @@ export default function Dashboard() {
       value: formatWholeDollars(totalIncome),
       change: `${incomeEntries} entries`,
       up: true,
-      accent: COLORS.accent,
+      accent: "var(--dashboard-accent)",
       sub: "tracked income",
     },
     {
@@ -315,7 +315,7 @@ export default function Dashboard() {
       value: formatWholeDollars(totalExpenses),
       change: `${expenseEntries} entries`,
       up: false,
-      accent: COLORS.amber,
+      accent: "var(--dashboard-amber)",
       sub: "tracked spend",
     },
     {
@@ -323,7 +323,7 @@ export default function Dashboard() {
       value: `${savingsRate}%`,
       change: totalIncome > 0 ? formatCurrencyDelta(totalIncome - totalExpenses) : "$0",
       up: totalIncome - totalExpenses >= 0,
-      accent: COLORS.accent,
+      accent: "var(--dashboard-accent)",
       sub: "left after spend",
     },
   ];
@@ -498,17 +498,17 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={TW.page} style={PAGE_VARS}>
+    <div className={TW.page} style={{ ...getDashboardPageVars(theme), colorScheme: theme }} data-dashboard-theme={theme}>
       <div
         className={TW.pageTexture}
-        style={{ backgroundImage: DASHBOARD_TEXTURE }}
+        style={{ backgroundImage: DASHBOARD_TEXTURE, backgroundSize: "38px 38px" }}
       />
-      <TopNav onAddTransaction={openForm} onLogout={handleLogout} />
+      <TopNav theme={theme} onThemeChange={onThemeChange} onAddTransaction={openForm} onLogout={handleLogout} />
 
       <div className={TW.pageShell}>
         {statusMessage ? (
           <div
-            className={`mb-4 flex flex-col gap-3 rounded-[8px] border px-4 py-3.5 text-[14px] leading-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:text-[12px] ${
+            className={`mb-4 flex flex-col gap-3 rounded-xl border px-4 py-3.5 text-[14px] leading-6 sm:flex-row sm:items-center sm:justify-between ${
               statusMessage.tone === "warning"
                 ? "border-[color:color-mix(in_srgb,var(--dashboard-amber)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-amber)_6%,transparent)]"
                 : "border-[color:color-mix(in_srgb,var(--dashboard-accent)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_6%,transparent)]"
@@ -532,18 +532,18 @@ export default function Dashboard() {
         ) : null}
 
         {onboardingSummary ? (
-          <div className="mb-4 rounded-[8px] border border-[color:color-mix(in_srgb,var(--dashboard-accent)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_6%,transparent)] px-4 py-3.5 text-[14px] leading-6 text-[color:var(--dashboard-text)] shadow-sm sm:text-[12px]">
+          <div className="mb-4 rounded-xl border border-[color:color-mix(in_srgb,var(--dashboard-accent)_25%,transparent)] bg-[color:color-mix(in_srgb,var(--dashboard-accent)_6%,transparent)] px-4 py-3.5 text-[14px] leading-6 text-[color:var(--dashboard-text)]">
             {onboardingSummary.text}
           </div>
         ) : null}
 
-        <div className="mb-5 rounded-[8px] border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-4 py-3 text-[13px] leading-6 text-[color:var(--dashboard-muted)] shadow-sm sm:text-[11px]">
-          Preview build — chart reflects your saved transactions and updates as entries change.
+        <div className="mb-5 rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-4 py-3 text-[13px] leading-6 text-[color:var(--dashboard-muted)]">
+          Your charts reflect saved transactions and update as entries change.
         </div>
 
         <StatsSection cards={statCards} />
 
-        <div className="mb-3 grid min-w-0 items-stretch gap-3 2xl:grid-cols-[minmax(0,1fr)_minmax(260px,300px)]">
+        <div className="mb-3 grid min-w-0 items-stretch gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(260px,300px)]">
           <CashFlowSection
             cashFlow={cashFlowData}
             selectedRange={selectedRange}

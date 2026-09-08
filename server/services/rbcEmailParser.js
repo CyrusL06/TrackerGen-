@@ -3,6 +3,7 @@ const MAX_SUBJECT_LENGTH = 500;
 const MONEY_PATTERN = "(?:CAD|C\\$|\\$)\\s*([0-9]{1,9}(?:,[0-9]{3})*(?:\\.[0-9]{2})?)";
 
 export class RbcEmailParseError extends Error {
+  /** Creates a stable parser failure without retaining untrusted email contents. */
   constructor(code, message) {
     super(message);
     this.name = "RbcEmailParseError";
@@ -10,6 +11,7 @@ export class RbcEmailParseError extends Error {
   }
 }
 
+// Normalizes and bounds untrusted email text before pattern matching.
 function cleanText(value, maxLength) {
   if (typeof value !== "string") return "";
   return value
@@ -19,6 +21,7 @@ function cleanText(value, maxLength) {
     .trim();
 }
 
+// Extracts a bounded positive purchase amount from normalized RBC alert text.
 function parseAmount(text) {
   const patterns = [
     new RegExp(`(?:purchase|transaction)\\s+amount\\s*[:\\-]?\\s*${MONEY_PATTERN}`, "i"),
@@ -38,6 +41,7 @@ function parseAmount(text) {
   return null;
 }
 
+// Normalizes and bounds merchant text before it becomes transaction-owned data.
 function cleanMerchant(value) {
   return String(value ?? "")
     .replace(/\s+/g, " ")
@@ -46,6 +50,7 @@ function cleanMerchant(value) {
     .slice(0, 200);
 }
 
+// Extracts a merchant only from recognized purchase phrasing.
 function parseMerchant(text) {
   const labelled = text.match(/(?:merchant|transaction description)\s*[:\-]\s*([^\n]{2,200})/i);
   if (labelled) return cleanMerchant(labelled[1]);
@@ -56,6 +61,7 @@ function parseMerchant(text) {
   return sentence ? cleanMerchant(sentence[1]) : null;
 }
 
+// Extracts only the non-secret last four card digits from alert text.
 function parseCardSuffix(text) {
   const match = text.match(
     /(?:ending(?:\s+in)?|last\s+four\s+digits|card\s+number)\s*[:#-]?\s*(?:x+|\*+)?\s*(\d{4})\b/i,
@@ -63,6 +69,7 @@ function parseCardSuffix(text) {
   return match?.[1] ?? null;
 }
 
+// Formats a parsed date in the configured transaction timezone.
 function formatDateInTimeZone(date, timeZone) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -70,10 +77,14 @@ function formatDateInTimeZone(date, timeZone) {
     month: "2-digit",
     day: "2-digit",
   }).formatToParts(date);
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const values = Object.fromEntries(parts.map(
+    // Converts formatter-owned date parts into a lookup entry.
+    (part) => [part.type, part.value],
+  ));
   return `${values.year}-${values.month}-${values.day}`;
 }
 
+// Uses an alert date when present and otherwise falls back to trusted delivery time.
 function parseDate(text, receivedAt, timeZone) {
   const isoMatch = text.match(/(?:date|transaction date)\s*[:\-]?\s*(\d{4}-\d{2}-\d{2})/i);
   if (isoMatch) return isoMatch[1];
@@ -93,6 +104,7 @@ function parseDate(text, receivedAt, timeZone) {
   return formatDateInTimeZone(fallback, timeZone);
 }
 
+// Maps normalized merchant names to the application's fixed category set.
 function categorizeMerchant(merchant) {
   const value = merchant.toLowerCase();
   if (/tim hortons|starbucks|restaurant|cafe|coffee|doordash|uber eats/.test(value)) return "Food & Drink";
@@ -102,6 +114,7 @@ function categorizeMerchant(merchant) {
   return "Other";
 }
 
+/** Parses bounded RBC alert content into a pending transaction candidate without establishing sender trust. */
 export function parseRbcPurchaseEmail({
   subject,
   text,

@@ -16,11 +16,26 @@ import { RbcEmailParseError, parseRbcPurchaseEmail } from "../services/rbcEmailP
 const MAX_SUBJECT_LENGTH = 500;
 const MAX_TEXT_LENGTH = 100_000;
 const MAX_HEADER_LENGTH = 2_000;
+const CORRELATION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+// Accepts only safe correlation IDs before including them in diagnostics.
+function safeCorrelationId(value) {
+  return typeof value === "string" && CORRELATION_ID_PATTERN.test(value)
+    ? value
+    : crypto.randomUUID();
+}
+
+// Logs a fixed diagnostic schema rather than request or email contents.
+function emitDiagnostic(logger, level, event, reason, correlationId) {
+  logger[level](event, { event, reason, correlationId: safeCorrelationId(correlationId) });
+}
+
+// Formats the private forwarding address returned to an authenticated user.
 function buildAddress(token, domain) {
   return token && domain ? `expenses+${token}@${domain}` : null;
 }
 
+// Shapes owner-visible profile state with the routing token embedded only in its forwarding address.
 function publicEmailIngestionProfile(profile, domain, available) {
   return {
     available,
@@ -32,11 +47,13 @@ function publicEmailIngestionProfile(profile, domain, available) {
   };
 }
 
+// Applies explicit type and length limits to worker-supplied strings.
 function isBoundedString(value, maxLength, { required = true } = {}) {
   if (value === undefined || value === null) return !required;
-  return typeof value === "string" && value.length > 0 && value.length <= maxLength;
+  return typeof value === "string" && (required ? value.length > 0 : true) && value.length <= maxLength;
 }
 
+// Validates the complete worker-to-server payload before policy or persistence work.
 function validateWorkerPayload(body) {
   if (!body || typeof body !== "object" || Array.isArray(body)) return false;
   return (
@@ -46,14 +63,21 @@ function validateWorkerPayload(body) {
     isBoundedString(body.subject, MAX_SUBJECT_LENGTH, { required: false }) &&
     isBoundedString(body.text, MAX_TEXT_LENGTH) &&
     isBoundedString(body.authenticationResults, MAX_HEADER_LENGTH, { required: false }) &&
-    isBoundedString(body.receivedAt, 100)
+    isBoundedString(body.receivedAt, 100) &&
+    typeof body.correlationId === "string" && CORRELATION_ID_PATTERN.test(body.correlationId)
   );
 }
 
+// Recognizes only the compound idempotency constraint used by email transactions.
 function isDuplicateKeyError(error) {
-  return error?.code === 11000;
+  return (
+    error?.code === 11000 &&
+    error?.keyPattern?.workosUserId === 1 &&
+    error?.keyPattern?.sourceMessageIdHash === 1
+  );
 }
 
+/** Builds profile controls and an internal ingestion endpoint with separate user and worker trust checks. */
 export function buildEmailIngestionRouter({
   getAuthenticatedUser,
   csrfProtection,
@@ -62,6 +86,9 @@ export function buildEmailIngestionRouter({
   allowedSenderDomains = parseAllowedDomains(process.env.RBC_EMAIL_ALLOWED_DOMAINS),
   requireAuthenticationPass = process.env.EMAIL_REQUIRE_AUTH_PASS !== "false",
   timeZone = process.env.EMAIL_TRANSACTION_TIME_ZONE || "America/Vancouver",
+  transactionModel = Transaction,
+  profileModel = UserProfile,
+  logger = console,
 } = {}) {
   const router = express.Router();
   const stateChangingRoutes = csrfProtection ? [csrfProtection] : [];
@@ -75,25 +102,31 @@ export function buildEmailIngestionRouter({
       allowedSenderDomains.length > 0,
   );
 
-  router.get("/api/profile/email-ingestion", userLimiter, async (req, res) => {
+  router.get(
+    "/api/profile/email-ingestion",
+    userLimiter,
+    // Returns forwarding state only for the authenticated profile owner.
+    async (req, res) => {
     const user = await getAuthenticatedUser(req, res);
     if (!user) return res.status(401).json({ message: "Unauthorized User" });
 
     try {
-      const profile = await UserProfile.findOne({ workosUserId: user.id }).select(
+      const profile = await profileModel.findOne({ workosUserId: user.id }).select(
         "+emailIngestionToken",
       );
       return res.json(publicEmailIngestionProfile(profile, normalizedDomain, available));
     } catch (error) {
-      console.error("Failed to load email ingestion profile:", error.message || error);
+      emitDiagnostic(logger, "error", "EMAIL_PROFILE_FAILED", "load_failed");
       return res.status(500).json({ message: "Failed to load email tracking setup" });
     }
-  });
+    },
+  );
 
   router.post(
     "/api/profile/email-ingestion/rotate",
     userLimiter,
     ...stateChangingRoutes,
+    // Rotates the authenticated owner's opaque address under CSRF protection when configured.
     async (req, res) => {
       const user = await getAuthenticatedUser(req, res);
       if (!user) return res.status(401).json({ message: "Unauthorized User" });
@@ -105,7 +138,7 @@ export function buildEmailIngestionRouter({
 
       try {
         const token = crypto.randomBytes(24).toString("hex");
-        const profile = await UserProfile.findOneAndUpdate(
+        const profile = await profileModel.findOneAndUpdate(
           { workosUserId: user.id },
           {
             $set: {
@@ -128,7 +161,7 @@ export function buildEmailIngestionRouter({
           publicEmailIngestionProfile(profile, normalizedDomain, available),
         );
       } catch (error) {
-        console.error("Failed to rotate email ingestion address:", error.message || error);
+        emitDiagnostic(logger, "error", "EMAIL_PROFILE_FAILED", "rotate_failed");
         return res.status(500).json({ message: "Failed to create email tracking address" });
       }
     },
@@ -138,24 +171,30 @@ export function buildEmailIngestionRouter({
     "/api/profile/email-ingestion/disable",
     userLimiter,
     ...stateChangingRoutes,
+    // Disables ingestion only for the authenticated profile owner under CSRF protection.
     async (req, res) => {
       const user = await getAuthenticatedUser(req, res);
       if (!user) return res.status(401).json({ message: "Unauthorized User" });
 
       try {
-        await UserProfile.updateOne(
+        await profileModel.updateOne(
           { workosUserId: user.id },
           { $set: { emailIngestionEnabled: false } },
         );
         return res.json({ ok: true, enabled: false });
       } catch (error) {
-        console.error("Failed to disable email ingestion:", error.message || error);
+        emitDiagnostic(logger, "error", "EMAIL_PROFILE_FAILED", "disable_failed");
         return res.status(500).json({ message: "Failed to disable email tracking" });
       }
     },
   );
 
-  router.post("/api/internal/email/rbc", internalLimiter, async (req, res) => {
+  router.post(
+    "/api/internal/email/rbc",
+    internalLimiter,
+    // Accepts worker payloads only after HMAC, sender policy, recipient ownership, and parser checks.
+    async (req, res) => {
+    const correlationId = safeCorrelationId(req.body?.correlationId);
     if (!available) {
       return res.status(503).json({ message: "Email ingestion is not configured" });
     }
@@ -167,18 +206,24 @@ export function buildEmailIngestionRouter({
       rawBody: req.rawBody,
     });
     if (!signatureResult.ok) {
-      return res.status(401).json({ message: "Invalid ingestion signature" });
+      emitDiagnostic(logger, "warn", "EMAIL_API_REJECTED", `signature_${signatureResult.reason}`);
+      return res.status(401).json({ message: "Ingestion request rejected" });
     }
 
     if (!validateWorkerPayload(req.body)) {
-      return res.status(400).json({ message: "Invalid email ingestion payload" });
+      emitDiagnostic(logger, "warn", "EMAIL_API_REJECTED", "invalid_payload", correlationId);
+      return res.status(400).json({ message: "Ingestion request rejected" });
     }
 
     const token = extractRecipientToken(req.body.to, normalizedDomain);
-    if (!token) return res.status(404).json({ message: "Unknown ingestion address" });
+    if (!token) {
+      emitDiagnostic(logger, "warn", "EMAIL_API_REJECTED", "recipient_policy", correlationId);
+      return res.status(403).json({ message: "Ingestion request rejected" });
+    }
 
     if (!isAllowedSender(req.body.from, allowedSenderDomains)) {
-      return res.status(403).json({ message: "Untrusted email sender" });
+      emitDiagnostic(logger, "warn", "EMAIL_API_REJECTED", "sender_policy", correlationId);
+      return res.status(403).json({ message: "Ingestion request rejected" });
     }
     if (
       requireAuthenticationPass &&
@@ -188,15 +233,19 @@ export function buildEmailIngestionRouter({
         allowedSenderDomains,
       )
     ) {
-      return res.status(403).json({ message: "Email authentication did not pass" });
+      emitDiagnostic(logger, "warn", "EMAIL_API_REJECTED", "authentication_policy", correlationId);
+      return res.status(403).json({ message: "Ingestion request rejected" });
     }
 
     try {
-      const profile = await UserProfile.findOne({
+      const profile = await profileModel.findOne({
         emailIngestionTokenHash: sha256Hex(token),
         emailIngestionEnabled: true,
       });
-      if (!profile) return res.status(404).json({ message: "Unknown ingestion address" });
+      if (!profile) {
+        emitDiagnostic(logger, "warn", "EMAIL_API_REJECTED", "recipient_policy", correlationId);
+        return res.status(403).json({ message: "Ingestion request rejected" });
+      }
 
       const parsed = parseRbcPurchaseEmail({
         subject: req.body.subject ?? "",
@@ -206,7 +255,7 @@ export function buildEmailIngestionRouter({
       });
       const sourceMessageIdHash = sha256Hex(`${profile.workosUserId}:${req.body.messageId}`);
 
-      const transaction = await Transaction.create({
+      const transaction = await transactionModel.create({
         workosUserId: profile.workosUserId,
         name: parsed.merchant,
         category: parsed.category,
@@ -222,11 +271,12 @@ export function buildEmailIngestionRouter({
         sourceMessageIdHash,
       });
 
-      await UserProfile.updateOne(
+      await profileModel.updateOne(
         { _id: profile._id },
         { $set: { emailIngestionLastReceivedAt: new Date() } },
       );
 
+      emitDiagnostic(logger, "info", "EMAIL_API_ACCEPTED", "created", correlationId);
       return res.status(201).json({
         ok: true,
         transactionId: transaction._id,
@@ -234,16 +284,19 @@ export function buildEmailIngestionRouter({
       });
     } catch (error) {
       if (isDuplicateKeyError(error)) {
+        emitDiagnostic(logger, "info", "EMAIL_API_ACCEPTED", "duplicate", correlationId);
         return res.status(200).json({ ok: true, duplicate: true });
       }
       if (error instanceof RbcEmailParseError) {
-        return res.status(422).json({ message: "RBC purchase email was not recognized" });
+        emitDiagnostic(logger, "warn", "EMAIL_API_REJECTED", `parser_${error.code}`, correlationId);
+        return res.status(422).json({ message: "Ingestion request rejected" });
       }
 
-      console.error("Failed to ingest RBC purchase email:", error.message || error);
+      emitDiagnostic(logger, "error", "EMAIL_API_FAILED", "internal_error", correlationId);
       return res.status(500).json({ message: "Failed to process purchase email" });
     }
-  });
+    },
+  );
 
   return router;
 }
