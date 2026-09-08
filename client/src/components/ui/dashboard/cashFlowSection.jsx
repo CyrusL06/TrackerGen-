@@ -11,8 +11,8 @@ import { chartTick, COLORS, FONTS, TW } from "./shared.js";
 import { DisplayTitle, Eyebrow, SurfaceCard } from "./primitives.jsx";
 
 const RANGE_OPTIONS = [
-  { value: "6m", label: "6M" },
-  { value: "12m", label: "12M" },
+  { value: "1m", label: "1M" },
+  { value: "12m", label: "1Y" },
 ];
 const CHART_INCOME = "var(--dashboard-accent)";
 const CHART_EXPENSES = "var(--dashboard-amber)";
@@ -51,14 +51,14 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange }) {
-  const monthCount = selectedRange === "12m" ? 12 : 6;
+  const title = selectedRange === "12m" ? "1 Year Overview" : "Monthly Overview";
 
   return (
     <SurfaceCard className={`${TW.panelPadding} flex h-full min-w-0 flex-col overflow-hidden`}>
       <div className="mb-[18px] flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
         <div className="min-w-0">
           <Eyebrow>Cash Flow</Eyebrow>
-          <DisplayTitle>{monthCount} Month Overview</DisplayTitle>
+          <DisplayTitle>{title}</DisplayTitle>
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-3">
