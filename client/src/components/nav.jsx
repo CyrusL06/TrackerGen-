@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { FONTS } from "./ui/pudgy-brand";
-import NavCta from "./ui/HomePage/navcta";
 
 const navItems = [
   { href: "#product", label: "See it work" },
@@ -87,7 +86,12 @@ export default function Nav() {
           >
             Log in
           </a>
-          <NavCta href="/signup">Get Track</NavCta>
+          <a href="/signup" className={`nav-track-glow inline-flex ${FONTS.body}`}>
+            Get Track
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
         </div>
       </div>
 
@@ -109,9 +113,12 @@ export default function Nav() {
                 <a
                   href="/signup"
                   onClick={closeMenu}
-                  className={`inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[var(--action-primary)] px-4 py-3 text-[0.95rem] font-semibold text-white no-underline transition-colors hover:bg-[var(--action-primary-hover)] ${FONTS.body}`}
+                  className={`nav-track-glow inline-flex min-h-11 flex-1 px-4 py-3 text-[0.95rem] ${FONTS.body}`}
                 >
                   Get Track
+                  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </a>
               </div>
             </div>
