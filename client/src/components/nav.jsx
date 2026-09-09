@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { FONTS } from "./ui/pudgy-brand";
+import NavCta from "./ui/HomePage/navcta";
 
 const navItems = [
   { href: "#product", label: "See it work" },
@@ -86,12 +87,7 @@ export default function Nav() {
           >
             Log in
           </a>
-          <a
-            href="/signup"
-            className={`inline-flex h-10 items-center justify-center rounded-xl bg-[var(--action-primary)] px-4 text-body-sm font-semibold text-white no-underline transition-colors hover:bg-[var(--action-primary-hover)] ${FONTS.body}`}
-          >
-            Get Track
-          </a>
+          <NavCta href="/signup">Get Track</NavCta>
         </div>
       </div>
 
