@@ -91,7 +91,22 @@ export default function Nav() {
               {navItems.map((item) => (
                 <NavLink key={item.href} href={item.href} className={mobileLinkClass} onClick={closeMenu}>{item.label}</NavLink>
               ))}
-              <a href="/login" onClick={closeMenu} className={mobileLinkClass}>Sign in</a>
+              <div className="flex items-center gap-3 border-b border-[var(--home-border)] py-4">
+                <a
+                  href="/login"
+                  onClick={closeMenu}
+                  className={`inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-slate-900 bg-white px-4 py-3 text-[0.95rem] font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
+                >
+                  Log in
+                </a>
+                <a
+                  href="/signup"
+                  onClick={closeMenu}
+                  className={`inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[var(--action-primary)] px-4 py-3 text-[0.95rem] font-semibold text-white no-underline transition-colors hover:bg-[var(--action-primary-hover)] ${FONTS.body}`}
+                >
+                  Get Track
+                </a>
+              </div>
             </div>
           </div>
         </div>
