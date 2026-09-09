@@ -29,7 +29,7 @@ import {
 
 const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const rangeConfig = {
-  "6m": 6,
+  "1m": 1,
   "12m": 12,
 };
 
@@ -161,12 +161,22 @@ function buildCategoryBreakdown(transactions) {
   });
 }
 
+function filterTransactionsByMonthKeys(transactions, monthKeys) {
+  return transactions.filter((txn) => {
+    const txnDate = parseIsoDate(txn.rawDate);
+    if (!txnDate) return false;
+
+    const monthKey = `${txnDate.getFullYear()}-${String(txnDate.getMonth() + 1).padStart(2, "0")}`;
+    return monthKeys.has(monthKey);
+  });
+}
+
 export default function Dashboard({ theme = "dark", onThemeChange }) {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [txns, setTxns] = useState([]);
-  const [selectedRange, setSelectedRange] = useState("6m");
+  const [selectedRange, setSelectedRange] = useState("1m");
   const [showForm, setShowForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [form, setForm] = useState({
@@ -184,7 +194,9 @@ export default function Dashboard({ theme = "dark", onThemeChange }) {
   const [telegramError, setTelegramError] = useState("");
   const onboardingSummary = location.state?.onboardingSummary ?? null;
   const cashFlowData = buildCashFlowFromTransactions(txns, selectedRange);
-  const categoryBreakdown = buildCategoryBreakdown(txns);
+  const selectedMonthKeys = new Set(cashFlowData.map((bucket) => bucket.monthKey));
+  const rangeTxns = filterTransactionsByMonthKeys(txns, selectedMonthKeys);
+  const categoryBreakdown = buildCategoryBreakdown(rangeTxns);
 
   useEffect(() => {
     let cancelled = false;
@@ -280,27 +292,24 @@ export default function Dashboard({ theme = "dark", onThemeChange }) {
     };
   }, [telegram?.linked]);
 
-  const totalIncome = txns
-    .filter((txn) => txn.amount > 0)
-    .reduce((sum, txn) => sum + txn.amount, 0);
-  const totalExpenses = txns
-    .filter((txn) => txn.amount < 0)
-    .reduce((sum, txn) => sum + Math.abs(txn.amount), 0);
+  const totalIncome = cashFlowData.reduce((sum, bucket) => sum + bucket.income, 0);
+  const totalExpenses = cashFlowData.reduce((sum, bucket) => sum + bucket.expenses, 0);
 
   const netChange = totalIncome - totalExpenses;
   const savingsRate =
     totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
-  const incomeEntries = txns.filter((txn) => txn.amount > 0).length;
-  const expenseEntries = txns.filter((txn) => txn.amount < 0).length;
+  const incomeEntries = rangeTxns.filter((txn) => txn.amount > 0).length;
+  const expenseEntries = rangeTxns.filter((txn) => txn.amount < 0).length;
+  const rangeLabel = selectedRange === "12m" ? "selected year" : "this month";
 
   const statCards = [
     {
       label: "Net Change",
       value: formatCurrencyDelta(netChange),
-      change: `${txns.length} entries`,
+      change: `${rangeTxns.length} entries`,
       up: netChange >= 0,
       accent: "var(--dashboard-text)",
-      sub: "current snapshot",
+      sub: rangeLabel,
     },
     {
       label: "Income",
@@ -308,7 +317,7 @@ export default function Dashboard({ theme = "dark", onThemeChange }) {
       change: `${incomeEntries} entries`,
       up: true,
       accent: "var(--dashboard-accent)",
-      sub: "tracked income",
+      sub: rangeLabel,
     },
     {
       label: "Expenses",
@@ -316,7 +325,7 @@ export default function Dashboard({ theme = "dark", onThemeChange }) {
       change: `${expenseEntries} entries`,
       up: false,
       accent: "var(--dashboard-amber)",
-      sub: "tracked spend",
+      sub: rangeLabel,
     },
     {
       label: "Savings Rate",
