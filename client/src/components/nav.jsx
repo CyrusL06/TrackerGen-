@@ -82,7 +82,7 @@ export default function Nav() {
         <div className="hidden flex-1 items-center justify-end gap-3 md:flex">
           <a
             href="/login"
-            className={`inline-flex min-h-10 items-center justify-center rounded-full border border-slate-900 bg-white px-[1.05rem] py-2.5 text-body-sm font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
+            className={`inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-900 bg-white px-[1.05rem] py-2.5 text-body-sm font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
           >
             Log in
           </a>
@@ -106,7 +106,7 @@ export default function Nav() {
                 <a
                   href="/login"
                   onClick={closeMenu}
-                  className={`inline-flex min-h-10 flex-1 items-center justify-center rounded-full border border-slate-900 bg-white px-[1.05rem] py-2.5 text-[0.95rem] font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
+                  className={`inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-slate-900 bg-white px-[1.05rem] py-2.5 text-[0.95rem] font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
                 >
                   Log in
                 </a>
