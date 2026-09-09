@@ -6,6 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Line,
 } from "recharts";
 import { chartTick, COLORS, FONTS, TW } from "./shared.js";
 import { DisplayTitle, Eyebrow, SurfaceCard } from "./primitives.jsx";
@@ -16,6 +17,7 @@ const RANGE_OPTIONS = [
 ];
 const CHART_INCOME = "var(--dashboard-accent)";
 const CHART_EXPENSES = "var(--dashboard-amber)";
+const CHART_NET = "var(--dashboard-text)";
 
 function formatWholeDollars(value) {
   return `$${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
@@ -52,6 +54,7 @@ function ChartTooltip({ active, payload, label }) {
 
 export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange }) {
   const title = selectedRange === "12m" ? "1 Year Overview" : "Monthly Overview";
+  const xAxisInterval = selectedRange === "1m" ? 3 : 0;
 
   return (
     <SurfaceCard className={`${TW.panelPadding} flex h-full min-w-0 flex-col overflow-hidden`}>
@@ -88,6 +91,7 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
             {[
               [CHART_INCOME, "Income"],
               [CHART_EXPENSES, "Expenses"],
+              [CHART_NET, "Net"],
             ].map(([color, label]) => (
               <span key={label} className="flex items-center gap-[6px]">
                 <span
@@ -116,7 +120,7 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
             </defs>
 
             <CartesianGrid strokeDasharray="3 3" stroke="var(--dashboard-border)" vertical={false} />
-            <XAxis dataKey="month" tick={chartTick} axisLine={false} tickLine={false} />
+            <XAxis dataKey="month" tick={chartTick} axisLine={false} tickLine={false} interval={xAxisInterval} />
             <YAxis tick={chartTick} axisLine={false} tickLine={false} />
             <Tooltip
               content={<ChartTooltip />}
@@ -140,6 +144,14 @@ export default function CashFlowSection({ cashFlow, selectedRange, onRangeChange
               fill="url(#gE)"
               dot={false}
               activeDot={{ r: 4, fill: CHART_EXPENSES, stroke: "var(--dashboard-surface)", strokeWidth: 2 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="net"
+              stroke={CHART_NET}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 4, fill: CHART_NET, stroke: "var(--dashboard-surface)", strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>

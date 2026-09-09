@@ -79,8 +79,19 @@ export default function Nav() {
         <ul className="hidden items-center justify-center md:flex">
           {navItems.map((item) => <li key={item.href}><NavLink href={item.href}>{item.label}</NavLink></li>)}
         </ul>
-        <div className="hidden flex-1 items-center justify-end gap-4 md:flex">
-          <a href="/login" className={`nav-signin-glow inline-flex ${FONTS.body}`}>Sign In</a>
+        <div className="hidden flex-1 items-center justify-end gap-3 md:flex">
+          <a
+            href="/login"
+            className={`inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-900 bg-white px-[1.05rem] py-2.5 text-body-sm font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
+          >
+            Log in
+          </a>
+          <a href="/signup" className={`nav-track-glow inline-flex ${FONTS.body}`}>
+            Get Track
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
         </div>
       </div>
 
@@ -91,7 +102,25 @@ export default function Nav() {
               {navItems.map((item) => (
                 <NavLink key={item.href} href={item.href} className={mobileLinkClass} onClick={closeMenu}>{item.label}</NavLink>
               ))}
-              <a href="/login" onClick={closeMenu} className={mobileLinkClass}>Sign in</a>
+              <div className="flex items-center gap-3 border-b border-[var(--home-border)] py-4">
+                <a
+                  href="/login"
+                  onClick={closeMenu}
+                  className={`inline-flex min-h-10 flex-1 items-center justify-center rounded-xl border border-slate-900 bg-white px-[1.05rem] py-2.5 text-[0.95rem] font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
+                >
+                  Log in
+                </a>
+                <a
+                  href="/signup"
+                  onClick={closeMenu}
+                  className={`nav-track-glow inline-flex min-h-11 flex-1 px-4 py-3 text-[0.95rem] ${FONTS.body}`}
+                >
+                  Get Track
+                  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>

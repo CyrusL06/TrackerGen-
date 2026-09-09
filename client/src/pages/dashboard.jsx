@@ -17,6 +17,7 @@ import TelegramConnect from "../components/ui/dashboard/telegramConnect";
 import TopNav from "../components/ui/dashboard/topNav";
 import TransactionModal from "../components/ui/dashboard/transactionModal";
 import TransactionsSection from "../components/ui/dashboard/transactionsSection";
+import { DisplayTitle, Eyebrow, SurfaceCard } from "../components/ui/dashboard/primitives.jsx";
 import {
   COLORS,
   DASHBOARD_TEXTURE,
@@ -62,6 +63,14 @@ function parseIsoDate(rawDate) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function dateKeyFromDate(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function monthKeyFromDate(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
 function toDashboardTxn(txn) {
   const rawDate = txn.rawDate ?? txn.date;
 
@@ -89,9 +98,45 @@ function normalizeFetchedTransactions(items) {
 }
 
 function buildCashFlowFromTransactions(transactions, selectedRange) {
-  const monthsToShow = rangeConfig[selectedRange] ?? rangeConfig["6m"];
   const now = new Date();
   const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  if (selectedRange === "1m") {
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const buckets = Array.from({ length: daysInMonth }, (_, index) => {
+      const dayDate = new Date(now.getFullYear(), now.getMonth(), index + 1);
+      const dateKey = dateKeyFromDate(dayDate);
+
+      return {
+        month: formatTxnDate(dateKey),
+        dateKey,
+        monthKey: monthKeyFromDate(dayDate),
+        income: 0,
+        expenses: 0,
+        net: 0,
+      };
+    });
+
+    const bucketLookup = new Map(buckets.map((bucket) => [bucket.dateKey, bucket]));
+
+    transactions.forEach((txn) => {
+      const bucket = bucketLookup.get(txn.rawDate);
+      if (!bucket) return;
+
+      if (txn.amount > 0) {
+        bucket.income += Math.abs(txn.amount);
+      } else if (txn.amount < 0) {
+        bucket.expenses += Math.abs(txn.amount);
+      }
+    });
+
+    return buckets.map((bucket) => ({
+      ...bucket,
+      net: bucket.income - bucket.expenses,
+    }));
+  }
+
+  const monthsToShow = rangeConfig[selectedRange] ?? rangeConfig["12m"];
 
   const buckets = Array.from({ length: monthsToShow }, (_, index) => {
     const monthDate = new Date(
@@ -102,7 +147,7 @@ function buildCashFlowFromTransactions(transactions, selectedRange) {
 
     return {
       month: monthLabels[monthDate.getMonth()],
-      monthKey: `${monthDate.getFullYear()}-${String(monthDate.getMonth() + 1).padStart(2, "0")}`,
+      monthKey: monthKeyFromDate(monthDate),
       income: 0,
       expenses: 0,
       net: 0,
@@ -115,7 +160,7 @@ function buildCashFlowFromTransactions(transactions, selectedRange) {
     const txnDate = parseIsoDate(txn.rawDate);
     if (!txnDate) return;
 
-    const monthKey = `${txnDate.getFullYear()}-${String(txnDate.getMonth() + 1).padStart(2, "0")}`;
+    const monthKey = monthKeyFromDate(txnDate);
     const bucket = bucketLookup.get(monthKey);
     if (!bucket) return;
 
@@ -161,14 +206,107 @@ function buildCategoryBreakdown(transactions) {
   });
 }
 
-function filterTransactionsByMonthKeys(transactions, monthKeys) {
+function filterTransactionsByBuckets(transactions, buckets, selectedRange) {
+  const bucketKeys = new Set(
+    buckets.map((bucket) => (selectedRange === "1m" ? bucket.dateKey : bucket.monthKey)),
+  );
+
   return transactions.filter((txn) => {
     const txnDate = parseIsoDate(txn.rawDate);
     if (!txnDate) return false;
 
-    const monthKey = `${txnDate.getFullYear()}-${String(txnDate.getMonth() + 1).padStart(2, "0")}`;
-    return monthKeys.has(monthKey);
+    const bucketKey = selectedRange === "1m" ? txn.rawDate : monthKeyFromDate(txnDate);
+    return bucketKeys.has(bucketKey);
   });
+}
+
+function buildDailyTimeline(transactions) {
+  const totalsByDay = new Map();
+
+  transactions.forEach((txn) => {
+    const txnDate = parseIsoDate(txn.rawDate);
+    if (!txnDate) return;
+
+    const dateKey = txn.rawDate;
+    const day = totalsByDay.get(dateKey) ?? {
+      dateKey,
+      label: formatTxnDate(dateKey),
+      income: 0,
+      expenses: 0,
+      net: 0,
+      entries: [],
+    };
+
+    if (txn.amount > 0) {
+      day.income += Math.abs(txn.amount);
+    } else if (txn.amount < 0) {
+      day.expenses += Math.abs(txn.amount);
+    }
+
+    day.net = day.income - day.expenses;
+    day.entries.push(txn);
+    totalsByDay.set(dateKey, day);
+  });
+
+  return Array.from(totalsByDay.values()).sort((left, right) => left.dateKey.localeCompare(right.dateKey));
+}
+
+function DailyTimelineSection({ days }) {
+  return (
+    <SurfaceCard className={TW.panelPadding}>
+      <div className="mb-4 flex flex-col gap-1">
+        <Eyebrow>Monthly Timeline</Eyebrow>
+        <DisplayTitle>Daily Net Totals</DisplayTitle>
+        <p className="max-w-xl text-[14px] leading-6 text-[color:var(--dashboard-muted)]">
+          Each day connects income and expenses into one net total for the monthly chart.
+        </p>
+      </div>
+
+      {days.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] px-4 py-8 text-center text-[14px] text-[color:var(--dashboard-muted)]">
+          No transactions recorded for this month yet.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {days.map((day) => (
+            <div key={day.dateKey} className="rounded-xl border border-[color:var(--dashboard-border)] bg-[color:var(--dashboard-surface-2)] p-4">
+              <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="text-[15px] font-semibold text-[color:var(--dashboard-text)]">{day.label}</div>
+                  <div className="text-[12px] text-[color:var(--dashboard-muted)]">{day.entries.length} transaction{day.entries.length === 1 ? "" : "s"}</div>
+                </div>
+                <div className="flex flex-wrap gap-2 text-[12px]">
+                  <span className="rounded-full bg-[color:color-mix(in_srgb,var(--dashboard-accent)_12%,transparent)] px-2.5 py-1 text-[color:var(--dashboard-accent)]">
+                    Income {formatWholeDollars(day.income)}
+                  </span>
+                  <span className="rounded-full bg-[color:color-mix(in_srgb,var(--dashboard-amber)_12%,transparent)] px-2.5 py-1 text-[color:var(--dashboard-amber)]">
+                    Expenses {formatWholeDollars(day.expenses)}
+                  </span>
+                  <span className="rounded-full bg-[color:color-mix(in_srgb,var(--dashboard-text)_8%,transparent)] px-2.5 py-1 text-[color:var(--dashboard-text)]">
+                    Net {formatCurrencyDelta(day.net)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="divide-y divide-[color:var(--dashboard-border)]">
+                {day.entries.map((txn) => (
+                  <div key={txn.id} className="flex items-center justify-between gap-3 py-2 text-[13px]">
+                    <div className="min-w-0">
+                      <div className="truncate font-medium text-[color:var(--dashboard-text)]">{txn.name}</div>
+                      <div className="text-[12px] text-[color:var(--dashboard-muted)]">{txn.cat}</div>
+                    </div>
+                    <div className={`shrink-0 font-semibold ${txn.amount > 0 ? "text-[color:var(--dashboard-accent)]" : "text-[color:var(--dashboard-red)]"}`}>
+                      {formatCurrencyDelta(txn.amount)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </SurfaceCard>
+  );
 }
 
 export default function Dashboard({ theme = "dark", onThemeChange }) {
@@ -194,8 +332,8 @@ export default function Dashboard({ theme = "dark", onThemeChange }) {
   const [telegramError, setTelegramError] = useState("");
   const onboardingSummary = location.state?.onboardingSummary ?? null;
   const cashFlowData = buildCashFlowFromTransactions(txns, selectedRange);
-  const selectedMonthKeys = new Set(cashFlowData.map((bucket) => bucket.monthKey));
-  const rangeTxns = filterTransactionsByMonthKeys(txns, selectedMonthKeys);
+  const rangeTxns = filterTransactionsByBuckets(txns, cashFlowData, selectedRange);
+  const dailyTimeline = selectedRange === "1m" ? buildDailyTimeline(rangeTxns) : [];
   const categoryBreakdown = buildCategoryBreakdown(rangeTxns);
 
   useEffect(() => {
@@ -563,6 +701,12 @@ export default function Dashboard({ theme = "dark", onThemeChange }) {
             categoryBreakdown={categoryBreakdown}
           />
         </div>
+
+        {selectedRange === "1m" ? (
+          <div className="mb-3">
+            <DailyTimelineSection days={dailyTimeline} />
+          </div>
+        ) : null}
 
         <div className="mb-3">
           <TelegramConnect
