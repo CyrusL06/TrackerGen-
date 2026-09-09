@@ -79,8 +79,19 @@ export default function Nav() {
         <ul className="hidden items-center justify-center md:flex">
           {navItems.map((item) => <li key={item.href}><NavLink href={item.href}>{item.label}</NavLink></li>)}
         </ul>
-        <div className="hidden flex-1 items-center justify-end gap-4 md:flex">
-          <a href="/login" className={`nav-signin-glow inline-flex ${FONTS.body}`}>Sign In</a>
+        <div className="hidden flex-1 items-center justify-end gap-3 md:flex">
+          <a
+            href="/login"
+            className={`inline-flex h-10 items-center justify-center rounded-xl border border-slate-900 bg-white px-4 text-body-sm font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100 ${FONTS.body}`}
+          >
+            Log in
+          </a>
+          <a
+            href="/signup"
+            className={`inline-flex h-10 items-center justify-center rounded-xl bg-[var(--action-primary)] px-4 text-body-sm font-semibold text-white no-underline transition-colors hover:bg-[var(--action-primary-hover)] ${FONTS.body}`}
+          >
+            Get Track
+          </a>
         </div>
       </div>
 
